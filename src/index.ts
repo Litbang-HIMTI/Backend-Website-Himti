@@ -1,7 +1,7 @@
 import "express-async-errors";
 import mongoose from "mongoose";
 import app from "./app";
-import { ___prod___ } from "./utils/contants";
+import { ___prod___ } from "./utils/constants";
 
 (async () => {
 	try {

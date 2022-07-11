@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cookieparser from "cookie-parser";
 import path from "path";
 import expressSession from "express-session";
+import { ___prod___ } from "./utils/constants";
 import { authRouter } from "./api/v1/auth";
 import { NotFoundError } from "./utils/notFoundError";
 import { ExpressErrorHandler } from "./utils/ExpressErrorHandler";
@@ -14,7 +15,7 @@ dotenv.config();
 const app = express();
 const sessionCfg = {
 	secret: process.env.SESSION_SECRET!,
-	cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 /* 1 week */, secure: process.env.NODE_ENV === "production" },
+	cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 /* 1 week */, secure: ___prod___ },
 	resave: false,
 	saveUninitialized: false,
 };
