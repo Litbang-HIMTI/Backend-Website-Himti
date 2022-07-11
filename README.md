@@ -1,5 +1,6 @@
 # Backend-Website-Himti
 
+Currently in development. Before contributing please see [CONTRIBUTING.md](docs/CONTRIBUTING.md)
 Express.js + Node.js (typescript) + MongoDB
 
 # Getting started
@@ -13,7 +14,7 @@ In the api directory, you can run:
 ### `npm start`
 
 Runs the API in the production mode.\
-Open [http://localhost:4000](http://localhost:4000) to view it in your browser.
+Open [http://localhost:4000](http://localhost:4000) to view it in your browser. **Note:** Set your port in .env file.
 
 ### `npm run dev:ts`
 
