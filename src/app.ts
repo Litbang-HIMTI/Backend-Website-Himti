@@ -7,9 +7,10 @@ import cookieparser from "cookie-parser";
 import path from "path";
 import expressSession from "express-session";
 import { ___prod___ } from "./utils/constants";
-import { authRouter } from "./api/v1/auth";
 import { NotFoundError } from "./utils/notFoundError";
 import { ExpressErrorHandler } from "./utils/ExpressErrorHandler";
+import { authRouter } from "./api/v1/auth";
+import { userRouter } from "./api/v1/user";
 
 dotenv.config();
 const app = express();
@@ -38,8 +39,11 @@ app.get("/", (_req, res) => {
 	});
 });
 
+// V1
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
 
+// --------------------------------------------------
 // ! Not found page error
 app.all("*", NotFoundError);
 
