@@ -1,6 +1,6 @@
 # Backend-Website-Himti
 
-Currently in development. Before contributing please see [CONTRIBUTING.md](docs/CONTRIBUTING.md)
+Currently in development. Before contributing please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) \
 Express.js + Node.js (typescript) + MongoDB
 
 # Getting started
