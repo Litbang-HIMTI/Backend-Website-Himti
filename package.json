@@ -8,7 +8,6 @@
 		"watch": "tsc -w",
 		"dev": "nodemon dist/index.js",
 		"dev:ts": "nodemon src/index.ts",
-		"test:watch": "jest --watchAll --no-cache",
 		"build": "tsc"
 	},
 	"jest": {
