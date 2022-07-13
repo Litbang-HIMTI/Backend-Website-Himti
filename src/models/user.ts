@@ -8,9 +8,9 @@ import { Schema, model, Document } from "mongoose";
  * @editor = "Content editor. Limited access to dashboard that includes blog & events"
  * @forum_moderator = "Forum moderator. Limited access to dashboard that includes forum"
  */
-export type TRoles = "user" | "admin" | "editor" | "forum_moderator";
-export const validRoles: TRoles[] = ["user", "admin", "editor", "forum_moderator"];
-export interface IUser {
+type TRoles = "user" | "admin" | "editor" | "forum_moderator";
+const validRoles: TRoles[] = ["user", "admin", "editor", "forum_moderator"];
+interface IUser {
 	username: string;
 	first_name: string;
 	last_name: string;
@@ -22,14 +22,18 @@ export interface IUser {
 interface IUserModel extends IUser, Document {}
 
 // ---------------------------------------------
-export const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUserModel>(
 	{
 		username: {
 			type: String,
 			required: true,
 			unique: true,
 			minlength: 5,
-			maxlength: 20,
+			maxlength: 30,
+			validate: {
+				validator: (v: string) => /^[a-zA-Z0-9_]+$/.test(v),
+				message: "Username must be alphanumeric and cannot contain spaces",
+			},
 		},
 		first_name: {
 			type: String,
@@ -48,6 +52,7 @@ export const userSchema = new Schema<IUser>(
 				validator: (v: string) => {
 					return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
 				},
+				message: "Invalid email address provided",
 			},
 		},
 		password: {
@@ -60,11 +65,8 @@ export const userSchema = new Schema<IUser>(
 					// atleast 1 lowercase, 1 uppercase, 1 number, 1 special character, minimal length of 8
 					return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/.test(v);
 				},
+				message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character",
 			},
-		},
-		createdAt: {
-			type: Date,
-			default: Date.now,
 		},
 		// ! need @ts-ignore on latest mongoose
 		role: {
@@ -74,12 +76,23 @@ export const userSchema = new Schema<IUser>(
 				validator: (v: TRoles[]) => {
 					return v.every((role) => validRoles.includes(role));
 				},
+				message: "Invalid role provided",
 			},
+		},
+		createdAt: {
+			type: Date,
+			default: Date.now,
+			immutable: true, // disable editing
 		},
 	},
 	{ collection: "users" }
 );
 
-const userModel = model<IUserModel>("users", userSchema);
+export const userModel = model<IUserModel>("users", userSchema);
 
-export { userModel };
+export const validateQuery = (data: IUser) => {
+	const valid = data.username && data.first_name && data.last_name && data.email && data.password && data.role && data.role.length > 0;
+	const queryData = (({ username, first_name, last_name, email, password, role }: IUser) => ({ username, first_name, last_name, email, password, role }))(data);
+
+	return { valid, queryData };
+};
