@@ -1,9 +1,21 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Recommended Tools & Extensions](#recommended-tools--extensions)
+- [Learning Resource](#learning-resource)
+  - [Text](#text)
+  - [Videos](#videos)
+- [Notes](#notes)
+  - [Typescript/Node.js](#typescriptnodejs)
+  - [Mongoose](#mongoose)
+  - [Usefull Sites](#usefull-sites)
+
 # Recommended Tools & Extensions
 
 - [VSCode](https://code.visualstudio.com/)
 - [GitHub Desktop](https://desktop.github.com/)
 
-# Learning Resouce
+# Learning Resource
 
 ## Text
 

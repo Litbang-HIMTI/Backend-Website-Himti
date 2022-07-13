@@ -16,9 +16,9 @@
 Backend tech stack:
 Express.js + Node.js (typescript) + MongoDB
 
-# Table Of Content
+# Table of Contents
 
-- [Table Of Content](#table-of-content)
+- [Table of Contents](#table-of-contents)
 - [Getting started](#getting-started)
   - [Set up your .env](#set-up-your-env)
   - [Available Scripts](#available-scripts)
