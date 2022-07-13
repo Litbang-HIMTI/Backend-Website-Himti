@@ -38,6 +38,7 @@
 		"@types/express": "^4.17.13",
 		"@types/express-session": "^1.17.5",
 		"@types/jest": "^27.4.0",
+		"@types/mongoose": "^5.10.5",
 		"@types/morgan": "^1.9.3",
 		"@types/node": "^17.0.5",
 		"nodemon": "^2.0.15",
@@ -52,7 +53,7 @@
 		"express-async-errors": "^3.1.1",
 		"express-session": "^1.17.3",
 		"helmet": "^5.0.2",
-		"mongoose": "^6.1.8",
+		"mongoose": "^5.10.19",
 		"morgan": "^1.10.0"
 	}
 }
