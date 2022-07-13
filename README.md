@@ -6,7 +6,6 @@
 <p align="center">
   <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Litbang-HIMTI/Backend-Website-Himti"></a>
   <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/pulls"><img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/Litbang-HIMTI/Backend-Website-Himti"></a>
-  <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/releases/latest"><img alt="github downloads"  src="https://img.shields.io/github/downloads/Litbang-HIMTI/Backend-Website-Himti/total?label=downloads (github)"></a>
   <br />
   <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Litbang-HIMTI/Backend-Website-Himti?style=social"></a>
   <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/Litbang-HIMTI/Backend-Website-Himti?style=social"></a>
