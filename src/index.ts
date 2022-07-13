@@ -8,7 +8,12 @@ import { ___prod___ } from "./utils/constants";
 		if (!process.env.MONGO_URI) {
 			throw new Error('??>> {" MONGO_URI must be defined!! "} ');
 		}
-		await mongoose.connect(process.env.MONGO_URI);
+		await mongoose.connect(process.env.MONGO_URI, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true,
+			useFindAndModify: false,
+		});
 
 		const port = process.env.PORT || 42069;
 		app.listen(port, () => {

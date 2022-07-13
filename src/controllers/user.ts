@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { userModel } from "../models/user";
+import { userModel, validateQuery } from "../models/user";
 
-// User API Routes must be protected. Only authenticated users can access these routes.
 // GET
 export const getAllUsers = async (_req: Request, res: Response) => {
 	const users = await userModel.find({});
@@ -24,5 +23,31 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 // PUT update
+export const updateUser = async (req: Request, res: Response) => {
+	const { username } = req.params;
+	const { valid, queryData } = validateQuery(req.body); // extra validation (optional)
+	if (!valid) {
+		res.status(400).json({
+			data: "Invalid or missing data",
+			success: false,
+		});
+		return;
+	}
+
+	// find and update while it's validated using mongoose
+	const user = await userModel.findOneAndUpdate({ username }, queryData, { runValidators: true, new: true });
+	res.json({
+		data: user ? user : `User ${username} not found`,
+		success: !!user,
+	});
+};
 
 // DELETE delete
+export const deleteUser = async (req: Request, res: Response) => {
+	const { username } = req.params;
+	const user = await userModel.findOneAndDelete({ username });
+	res.json({
+		data: user,
+		success: !!user,
+	});
+};
