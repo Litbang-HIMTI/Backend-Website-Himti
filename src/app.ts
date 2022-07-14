@@ -23,23 +23,18 @@ const sessionCfg = {
 };
 
 app.set("trust proxy", true);
+
+// middleware
 app.use(morgan("dev")); // logger, use preset dev
 app.use(helmet()); // security
 app.use(cors()); // cors (cross-origin resource sharing)
 app.use(express.json()); // json parser / body parser for post request except html post form
 app.use(express.urlencoded({ extended: false })); // urlencoded parser / body parser for html post form.
 app.use(cookieparser()); // cookie parser
-app.use("/static", express.static(path.join(__dirname, "../public"))); // static files
+app.use(express.static(path.join(__dirname, "../public"))); // static files
 app.use(expressSession(sessionCfg)); // session
 
 // --------------------------------------------------
-// Routes
-app.get("/", (_req, res) => {
-	res.json({
-		message: "Hello world",
-	});
-});
-
 // V1
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);

@@ -57,6 +57,7 @@
 ## Mongoose & MongoDB
 
 - [Validate on update](https://stackoverflow.com/questions/15627967/why-mongoose-doesnt-validate-on-update)
+- [mongoose-find-vs-exec-how-to-return-values](https://stackoverflow.com/questions/50932847/mongoose-find-vs-exec-how-to-return-values)
 
 ## Usefull Sites
 
