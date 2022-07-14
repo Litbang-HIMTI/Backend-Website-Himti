@@ -16,7 +16,7 @@ interface IUser {
 	last_name: string;
 	email: string;
 	password: string;
-	createdAt: Date;
+	group: string[];
 	role: TRoles[];
 }
 interface IUserModel extends IUser, Document {}
@@ -79,13 +79,12 @@ const userSchema = new Schema<IUserModel>(
 				message: "Invalid role provided",
 			},
 		},
-		createdAt: {
-			type: Date,
-			default: Date.now,
-			immutable: true, // disable editing
+		group: {
+			type: Array,
+			default: [],
 		},
 	},
-	{ collection: "users" }
+	{ collection: "users", timestamps: true } // timestamps add createdAt and updatedAt fields automatically
 );
 
 export const userModel = model<IUserModel>("users", userSchema);

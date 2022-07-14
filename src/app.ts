@@ -11,6 +11,7 @@ import { NotFoundError } from "./utils/notFoundError";
 import { ExpressErrorHandler } from "./utils/ExpressErrorHandler";
 import { authRouter } from "./api/v1/auth";
 import { userRouter } from "./api/v1/user";
+import { groupRouter } from "./api/v1/group";
 
 dotenv.config();
 const app = express();
@@ -42,6 +43,7 @@ app.get("/", (_req, res) => {
 // V1
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
+app.use("/v1/group", groupRouter);
 
 // --------------------------------------------------
 // ! Not found page error

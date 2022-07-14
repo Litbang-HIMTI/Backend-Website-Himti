@@ -7,15 +7,17 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 	res.status(200).json({
 		data: users,
 		length: users.length,
+		message: "Users retrieved successfully",
 		success: true,
 	});
 };
 
 export const getCertainUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username });
+	const user = await userModel.findOne({ username: username });
 	if (!user) {
 		res.status(404).json({
+			data: null,
 			message: "User not found",
 			success: false,
 		});
@@ -23,6 +25,7 @@ export const getCertainUser = async (req: Request, res: Response) => {
 	}
 	res.status(200).json({
 		data: user,
+		message: `User ${username} retrieved successfully`,
 		success: true,
 	});
 };
@@ -34,6 +37,7 @@ export const createUser = async (req: Request, res: Response) => {
 	res.status(201).json({
 		data: user,
 		created: !!data, // read https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean
+		message: !!data ? "User created successfully" : "Fail to create user",
 		success: true,
 	});
 };
@@ -51,19 +55,23 @@ export const updateUser = async (req: Request, res: Response) => {
 	}
 
 	// find and update while it's validated using mongoose
-	const user = await userModel.findOneAndUpdate({ username }, queryData, { runValidators: true, new: true });
+	const user = await userModel.findOneAndUpdate({ username: username }, queryData, { runValidators: true, new: true });
 	res.status(200).json({
 		data: user ? user : `User ${username} not found`,
-		success: !!user,
+		updated: !!user,
+		message: !!user ? "User updated successfully" : "Fail to update user",
+		success: true,
 	});
 };
 
 // DELETE
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOneAndDelete({ username });
+	const user = await userModel.findOneAndDelete({ username: username });
 	res.status(200).json({
-		data: user,
-		success: !!user,
+		data: user ? user : `User ${username} not found`,
+		deleted: !!user,
+		message: !!user ? "User deleted successfully" : "Fail to delete user ",
+		success: true,
 	});
 };

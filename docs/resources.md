@@ -16,6 +16,7 @@
 - [VSCode](https://code.visualstudio.com/)
 - [GitHub Desktop](https://desktop.github.com/)
 - [Postman](https://www.postman.com/downloads/)
+- [Github Copilot](https://github.com/features/copilot)
 
 # Learning Resource
 
