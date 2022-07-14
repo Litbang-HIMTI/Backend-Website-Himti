@@ -3,7 +3,7 @@ import { userModel, validateQuery } from "../models/user";
 
 // GET
 export const getAllUsers = async (_req: Request, res: Response) => {
-	const users = await userModel.find({});
+	const users = await userModel.find({}).select("-password");
 	res.status(200).json({
 		data: users,
 		length: users.length,
@@ -14,7 +14,7 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 
 export const getCertainUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username: username });
+	const user = await userModel.findOne({ username: username }).select("-password");
 	if (!user) {
 		res.status(404).json({
 			data: null,
@@ -67,7 +67,7 @@ export const updateUser = async (req: Request, res: Response) => {
 // DELETE
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOneAndDelete({ username: username });
+	const user = await userModel.findOneAndDelete({ username: username }).select("-password");
 	res.status(200).json({
 		data: user ? user : `User ${username} not found`,
 		deleted: !!user,

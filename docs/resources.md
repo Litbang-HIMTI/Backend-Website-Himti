@@ -3,11 +3,12 @@
 - [Table of Contents](#table-of-contents)
 - [Recommended Tools & Extensions](#recommended-tools--extensions)
 - [Learning Resource](#learning-resource)
-  - [Text](#text)
+  - [Documentation](#documentation)
+  - [Text/Article](#textarticle)
   - [Videos](#videos)
-- [Notes](#notes)
+- [Note](#note)
   - [Typescript/Node.js](#typescriptnodejs)
-  - [Mongoose](#mongoose)
+  - [Mongoose & MongoDB](#mongoose--mongodb)
   - [Usefull Sites](#usefull-sites)
   - [Status Codes](#status-codes)
 
@@ -20,11 +21,19 @@
 
 # Learning Resource
 
-## Text
+## Documentation
+
+- [MongoDb](https://www.mongodb.com/docs/manual/)
+- [Mongoose](https://mongoosejs.com/docs/)
+- [Express](https://expressjs.com/en/api.html)
+- [Typescript](https://www.typescriptlang.org/docs/)
+
+## Text/Article
 
 - [What Is a REST API? by The Postman Team](https://blog.postman.com/rest-api-examples/)
 - [REST Model & Controller with Express](https://restful-api-node-typescript.books.dalenguyen.me/en/latest/using-controller-and-model.html)
 - [Model & Controller TypeScript Support Mongoose](https://mongoosejs.com/docs/typescript.html)
+- [Typescript getting started](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
 
 ## Videos
 
@@ -38,14 +47,14 @@
 - [Express JS Crash Course by Traversy Media (1h 14m)](https://youtu.be/L72fhGm1tfE)
 - [**Node.js** and Express.js - Full Course by FreeCodeCamp (8h 16m)](https://youtu.be/Oe421EPjeBE)
 
-# Notes
+# Note
 
 ## Typescript/Node.js
 
 - [Double Exclamation mark](https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean)
 - [Keep certain properties from objects](https://stackoverflow.com/questions/22202766/keeping-only-certain-properties-in-a-javascript-object)
 
-## Mongoose
+## Mongoose & MongoDB
 
 - [Validate on update](https://stackoverflow.com/questions/15627967/why-mongoose-doesnt-validate-on-update)
 

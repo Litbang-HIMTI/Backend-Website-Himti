@@ -14,7 +14,13 @@ export const getAllGroups = async (_req: Request, res: Response) => {
 
 export const getCertainGroup = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
-	const group = await GroupModel.findOne({ name: groupname });
+	// get a group and its users using mongoose
+	const group = await GroupModel.aggregate([
+		{ $match: { name: groupname } },
+		{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+		{ $unset: ["users.password"] },
+	]).exec();
+
 	if (!group) {
 		res.status(404).json({
 			data: null,
