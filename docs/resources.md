@@ -9,11 +9,13 @@
   - [Typescript/Node.js](#typescriptnodejs)
   - [Mongoose](#mongoose)
   - [Usefull Sites](#usefull-sites)
+  - [Status Codes](#status-codes)
 
 # Recommended Tools & Extensions
 
 - [VSCode](https://code.visualstudio.com/)
 - [GitHub Desktop](https://desktop.github.com/)
+- [Postman](https://www.postman.com/downloads/)
 
 # Learning Resource
 
@@ -49,3 +51,9 @@
 ## Usefull Sites
 
 - [Regex101](https://regex101.com/) - Validate & Test your regex here
+
+## Status Codes
+
+- [HttpStatusCode Enum](https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=net-6.0)
+- [HTTP status code for update and delete?](https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete)
+- [HTTP decision diagram](https://github.com/for-GET/http-decision-diagram)

@@ -4,9 +4,25 @@ import { userModel, validateQuery } from "../models/user";
 // GET
 export const getAllUsers = async (_req: Request, res: Response) => {
 	const users = await userModel.find({});
-	res.json({
+	res.status(200).json({
 		data: users,
 		length: users.length,
+		success: true,
+	});
+};
+
+export const getCertainUser = async (req: Request, res: Response) => {
+	const { username } = req.params;
+	const user = await userModel.findOne({ username });
+	if (!user) {
+		res.status(404).json({
+			message: "User not found",
+			success: false,
+		});
+		return;
+	}
+	res.status(200).json({
+		data: user,
 		success: true,
 	});
 };
@@ -22,7 +38,7 @@ export const createUser = async (req: Request, res: Response) => {
 	});
 };
 
-// PUT update
+// PUT
 export const updateUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const { valid, queryData } = validateQuery(req.body); // extra validation (optional)
@@ -36,17 +52,17 @@ export const updateUser = async (req: Request, res: Response) => {
 
 	// find and update while it's validated using mongoose
 	const user = await userModel.findOneAndUpdate({ username }, queryData, { runValidators: true, new: true });
-	res.json({
+	res.status(200).json({
 		data: user ? user : `User ${username} not found`,
 		success: !!user,
 	});
 };
 
-// DELETE delete
+// DELETE
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOneAndDelete({ username });
-	res.json({
+	res.status(200).json({
 		data: user,
 		success: !!user,
 	});

@@ -40,8 +40,8 @@ app.get("/", (_req, res) => {
 });
 
 // V1
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/user", userRouter);
+app.use("/v1/auth", authRouter);
+app.use("/v1/user", userRouter);
 
 // --------------------------------------------------
 // ! Not found page error
