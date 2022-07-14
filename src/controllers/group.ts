@@ -21,7 +21,7 @@ export const getCertainGroup = async (req: Request, res: Response) => {
 		{ $unset: ["users.password"] },
 	]).exec();
 
-	if (!group) {
+	if (group.length === 0) {
 		res.status(404).json({
 			data: null,
 			message: "Group not found",
@@ -29,6 +29,7 @@ export const getCertainGroup = async (req: Request, res: Response) => {
 		});
 		return;
 	}
+
 	res.status(200).json({
 		data: group,
 		message: `Group ${groupname} retrieved successfully`,
