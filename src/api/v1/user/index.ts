@@ -1,13 +1,17 @@
 import { Router } from "express";
-import { createUser, getAllUsers, getCertainUser, updateUser, deleteUser } from "../../../controllers/user";
+import { validateAdmin } from "../../../controllers/auth";
+import { createUser, getAllUsers, getCertainUserPublic, getCertainUserPrivate, updateUserData, changePassword, deleteUser } from "../../../controllers/user";
 
 const r = Router();
 
-// TODO: Make authentication so only authenticated users can access these routes. Also some of it must also be restricted to certain roles.
+r.get("/:username", getCertainUserPublic);
+
+r.use(validateAdmin);
 r.get("/", getAllUsers);
-r.post("/", createUser);
-r.get("/:username", getCertainUser);
-r.put("/:username", updateUser);
+r.post("/", createUser); // ! register only allowed for admin for now
+r.get("/:username/admin", getCertainUserPrivate);
+r.put("/:username", updateUserData);
+r.put("/:username/password", changePassword);
 r.delete("/:username", deleteUser);
 
-export { r as userRouter };
+export { r as userRouterV1 };

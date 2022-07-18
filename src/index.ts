@@ -13,6 +13,7 @@ import { ___prod___ } from "./utils/constants";
 			useCreateIndex: true,
 			useFindAndModify: false,
 		});
+		mongoose.set("debug", ___prod___);
 
 		const port = process.env.PORT || 42069;
 		app.listen(port, () => {

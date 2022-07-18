@@ -1,4 +1,5 @@
 import { Schema, model, Document } from "mongoose";
+import crypto from "crypto";
 
 // ---------------------------------------------
 /**
@@ -15,9 +16,12 @@ interface IUser {
 	first_name: string;
 	last_name: string;
 	email: string;
-	password: string;
 	group: string[];
 	role: TRoles[];
+	salt: string;
+	hash: string;
+	setPassword: (password: string) => void;
+	validatePassword: (password: string) => boolean;
 }
 interface IUserModel extends IUser, Document {}
 
@@ -55,19 +59,6 @@ const userSchema = new Schema<IUserModel>(
 				message: "Invalid email address provided",
 			},
 		},
-		password: {
-			type: String,
-			required: true,
-			minlength: 8,
-			maxlength: 100,
-			validate: {
-				validator: (v: string) => {
-					// atleast 1 lowercase, 1 uppercase, 1 number, 1 special character, minimal length of 8
-					return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/.test(v);
-				},
-				message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character",
-			},
-		},
 		// ! need @ts-ignore on latest mongoose
 		role: {
 			type: Array,
@@ -83,15 +74,27 @@ const userSchema = new Schema<IUserModel>(
 			type: Array,
 			default: [],
 		},
+		hash: String,
+		salt: String,
 	},
 	{ collection: "users", timestamps: true } // timestamps add createdAt and updatedAt fields automatically
 );
 
+userSchema.methods.setPassword = function (password) {
+	this.salt = crypto.randomBytes(16).toString("hex");
+	this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
+};
+
+userSchema.methods.validatePassword = function (password) {
+	const hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
+	return this.hash === hash;
+};
+
 export const userModel = model<IUserModel>("users", userSchema);
 
 export const validateQuery = (data: IUser) => {
-	const valid = data.username && data.first_name && data.last_name && data.email && data.password && data.role && data.role.length > 0;
-	const queryData = (({ username, first_name, last_name, email, password, role }: IUser) => ({ username, first_name, last_name, email, password, role }))(data);
+	const valid = data.username && data.first_name && data.last_name && data.email && data.role && data.role.length > 0;
+	const queryData = (({ username, first_name, last_name, email, role }: IUser) => ({ username, first_name, last_name, email, role }))(data);
 
 	return { valid, queryData };
 };

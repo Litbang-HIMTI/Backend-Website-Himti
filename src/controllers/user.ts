@@ -1,9 +1,21 @@
 import { Request, Response } from "express";
 import { userModel, validateQuery } from "../models/user";
 
+const validatePasswordInputed = (password: string) => {
+	let success = true;
+	// validate password manually //
+	if (!password) return { message: "Password is required", success: false };
+	if (password.length < 8) return { message: "Password must be at least 8 characters long", success: false };
+	if (password.length > 250) return { message: "Password must be at most 250 characters long", success: false };
+	if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/.test(password))
+		return { message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character", success: false };
+
+	return { message: "", success };
+};
+
 // GET
 export const getAllUsers = async (_req: Request, res: Response) => {
-	const users = await userModel.find({}).select("-password");
+	const users = await userModel.find({}).select("-hash -salt");
 	res.status(200).json({
 		data: users,
 		length: users.length,
@@ -12,18 +24,34 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getCertainUser = async (req: Request, res: Response) => {
+export const getCertainUserPublic = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username: username }).select("-password");
-	if (!user) {
-		res.status(404).json({
+	const user = await userModel.findOne({ username: username }).select("-hash -salt -role -username -email -createdAt -updatedAt");
+	if (!user)
+		return res.status(404).json({
 			data: null,
 			message: "User not found",
 			success: false,
 		});
-		return;
-	}
-	res.status(200).json({
+
+	return res.status(200).json({
+		data: user,
+		message: `User ${username} retrieved successfully`,
+		success: true,
+	});
+};
+
+export const getCertainUserPrivate = async (req: Request, res: Response) => {
+	const { username } = req.params;
+	const user = await userModel.findOne({ username: username }).select("-hash -salt");
+	if (!user)
+		return res.status(404).json({
+			data: null,
+			message: "User not found",
+			success: false,
+		});
+
+	return res.status(200).json({
 		data: user,
 		message: `User ${username} retrieved successfully`,
 		success: true,
@@ -32,46 +60,78 @@ export const getCertainUser = async (req: Request, res: Response) => {
 
 // POST
 export const createUser = async (req: Request, res: Response) => {
+	// validate password manually //
+	const { password } = req.body;
+	const checkPass = validatePasswordInputed(password);
+	if (!checkPass.success) return res.status(400).json(checkPass);
+
+	// register user //
 	const user = new userModel(req.body);
-	const data = await user.save();
-	res.status(201).json({
-		data: user,
-		created: !!data, // read https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean
-		message: !!data ? "User created successfully" : "Fail to create user",
-		success: true,
+	user.setPassword(password);
+	const dataSaved = await user.save({ validateBeforeSave: true });
+
+	// @ts-ignore
+	const { hash, salt, ...dataReturn } = dataSaved._doc;
+	return res.status(201).json({
+		data: dataReturn,
+		message: !!dataSaved ? "User created successfully" : "Fail to create user",
+		success: !!dataSaved, // read https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean
 	});
 };
 
 // PUT
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUserData = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const { valid, queryData } = validateQuery(req.body); // extra validation (optional)
-	if (!valid) {
-		res.status(400).json({
+	if (!valid)
+		return res.status(400).json({
 			data: "Invalid or missing data",
 			success: false,
 		});
-		return;
-	}
 
 	// find and update while it's validated using mongoose
 	const user = await userModel.findOneAndUpdate({ username: username }, queryData, { runValidators: true, new: true });
-	res.status(200).json({
+	return res.status(200).json({
 		data: user ? user : `User ${username} not found`,
-		updated: !!user,
 		message: !!user ? "User updated successfully" : "Fail to update user",
-		success: true,
+		success: !!user,
+	});
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+	const { username } = req.params;
+	const { password } = req.body;
+	const checkPass = validatePasswordInputed(password);
+	if (!checkPass.success) return res.status(400).json(checkPass);
+
+	// find and update while it's validated using mongoose
+	const user = await userModel.findOne({ username: username });
+	if (!user)
+		return res.status(404).json({
+			data: null,
+			message: "User not found",
+			success: false,
+		});
+
+	user.setPassword(password);
+	const dataSaved = await user.save({ validateBeforeSave: true });
+
+	// @ts-ignore
+	const { hash, salt, ...dataReturn } = dataSaved._doc;
+	return res.status(200).json({
+		data: dataReturn,
+		message: !!dataSaved ? "Password updated successfully" : "Fail to update password",
+		success: !!dataSaved,
 	});
 };
 
 // DELETE
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOneAndDelete({ username: username }).select("-password");
+	const user = await userModel.findOneAndDelete({ username: username }).select("-hash -salt");
 	res.status(200).json({
 		data: user ? user : `User ${username} not found`,
-		deleted: !!user,
 		message: !!user ? "User deleted successfully" : "Fail to delete user ",
-		success: true,
+		success: !!user,
 	});
 };

@@ -18,19 +18,17 @@ export const getCertainGroup = async (req: Request, res: Response) => {
 	const group = await GroupModel.aggregate([
 		{ $match: { name: groupname } },
 		{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
-		{ $unset: ["users.password"] },
+		{ $unset: ["users.hash", "users.salt"] },
 	]).exec();
 
-	if (group.length === 0) {
-		res.status(404).json({
+	if (group.length === 0)
+		return res.status(404).json({
 			data: null,
 			message: "Group not found",
 			success: false,
 		});
-		return;
-	}
 
-	res.status(200).json({
+	return res.status(200).json({
 		data: group,
 		message: `Group ${groupname} retrieved successfully`,
 		success: true,
@@ -40,12 +38,11 @@ export const getCertainGroup = async (req: Request, res: Response) => {
 // POST
 export const createGroup = async (req: Request, res: Response) => {
 	const group = new GroupModel(req.body);
-	const data = await group.save();
+	const dataSaved = await group.save();
 	res.status(201).json({
 		data: group,
-		created: !!data,
-		message: !!data ? "Group created successfully" : "Fail to create group",
-		success: true,
+		message: !!dataSaved ? "Group created successfully" : "Fail to create group",
+		success: !!dataSaved,
 	});
 };
 
@@ -57,9 +54,8 @@ export const updateGroup = async (req: Request, res: Response) => {
 	const group = await GroupModel.findOneAndUpdate({ name: groupname }, req.body, { runValidators: true, new: true });
 	res.status(200).json({
 		data: group ? group : `Group ${groupname} not found`,
-		updated: !!group,
 		message: !!group ? "Group updated successfully" : "Fail to update group",
-		success: true,
+		success: !!group,
 	});
 };
 
@@ -69,8 +65,7 @@ export const deleteGroup = async (req: Request, res: Response) => {
 	const group = await GroupModel.findOneAndDelete({ name: groupname });
 	res.status(200).json({
 		data: group ? group : `Group ${groupname} not found`,
-		deleted: !!group,
 		message: !!group ? "Group deleted successfully" : "Fail to delete group",
-		success: true,
+		success: !!group,
 	});
 };

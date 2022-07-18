@@ -9,6 +9,8 @@
 - [Note](#note)
   - [Typescript/Node.js](#typescriptnodejs)
   - [Mongoose & MongoDB](#mongoose--mongodb)
+  - [Auth reference](#auth-reference)
+  - [Security](#security)
   - [Usefull Sites](#usefull-sites)
   - [Status Codes](#status-codes)
 
@@ -27,6 +29,7 @@
 - [Mongoose](https://mongoosejs.com/docs/)
 - [Express](https://expressjs.com/en/api.html)
 - [Typescript](https://www.typescriptlang.org/docs/)
+- [Better Comments (VsCode Extension)](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)
 
 ## Text/Article
 
@@ -58,6 +61,18 @@
 
 - [Validate on update](https://stackoverflow.com/questions/15627967/why-mongoose-doesnt-validate-on-update)
 - [mongoose-find-vs-exec-how-to-return-values](https://stackoverflow.com/questions/50932847/mongoose-find-vs-exec-how-to-return-values)
+- [Express session with mongodb](https://stackoverflow.com/questions/23260676/express-4-sessions-not-persisting-when-restarting-server)
+- [Connect Mongo](https://www.npmjs.com/package/connect-mongo)
+
+## Auth reference
+
+- [Passport tutorial](https://github.com/AntonioErdeljac/passport-tutorial)
+- [Learn how to handle authentication with Node using Passport.js](https://www.freecodecamp.org/news/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e/)
+- [a very basic session auth in node.js with express.js](https://www.codexpedia.com/node-js/a-very-basic-session-auth-in-node-js-with-express-js/)
+
+## Security
+
+- [Prevent Brute Force Attacks in Node.JS](https://levelup.gitconnected.com/prevent-brute-force-attacks-in-node-js-419367ae35e6)
 
 ## Usefull Sites
 
