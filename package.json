@@ -10,13 +10,6 @@
 		"dev:ts": "nodemon src/index.ts",
 		"build": "tsc"
 	},
-	"jest": {
-		"preset": "ts-jest",
-		"testEnvironment": "node",
-		"setupFilesAfterEnv": [
-			"./src/test/setup.ts"
-		]
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Litbang-HIMTI/Backend-Website-Himti.git"
@@ -45,11 +38,13 @@
 		"typescript": "^4.5.5"
 	},
 	"dependencies": {
+		"connect-mongo": "^4.6.0",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"dotenv": "^14.3.2",
 		"express": "^4.17.2",
 		"express-async-errors": "^3.1.1",
+		"express-rate-limit": "^6.4.0",
 		"express-session": "^1.17.3",
 		"helmet": "^5.0.2",
 		"mongoose": "^5.10.19",

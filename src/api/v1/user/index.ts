@@ -1,12 +1,17 @@
 import { Router } from "express";
-import { createUser, getAllUsers, updateUser, deleteUser } from "../../../controllers/user";
+import { validateAdmin } from "../../../controllers/auth";
+import { createUser, getAllUsers, getCertainUserPublic, getCertainUserPrivate, updateUserData, changePassword, deleteUser } from "../../../controllers/user";
 
 const r = Router();
 
-// TODO: User API Routes must be protected. Only authenticated users can access these routes.
+r.get("/:username", getCertainUserPublic);
+
+r.use(validateAdmin);
 r.get("/", getAllUsers);
-r.post("/", createUser);
-r.put("/:username", updateUser);
+r.post("/", createUser); // ! register only allowed for admin for now
+r.get("/:username/admin", getCertainUserPrivate);
+r.put("/:username", updateUserData);
+r.put("/:username/password", changePassword);
 r.delete("/:username", deleteUser);
 
-export { r as userRouter };
+export { r as userRouterV1 };
