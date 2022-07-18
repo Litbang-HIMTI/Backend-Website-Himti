@@ -69,6 +69,7 @@
 - [Passport tutorial](https://github.com/AntonioErdeljac/passport-tutorial)
 - [Learn how to handle authentication with Node using Passport.js](https://www.freecodecamp.org/news/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e/)
 - [a very basic session auth in node.js with express.js](https://www.codexpedia.com/node-js/a-very-basic-session-auth-in-node-js-with-express-js/)
+- [restfully-design-login-or-register](https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources)
 
 ## Security
 
