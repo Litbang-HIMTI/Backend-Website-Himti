@@ -12,7 +12,30 @@ export const getAllGroups = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getCertainGroup = async (req: Request, res: Response) => {
+export const getCertainGroup_public = async (req: Request, res: Response) => {
+	const { groupname } = req.params;
+	// get a group and its users using mongoose
+	const group = await GroupModel.aggregate([
+		{ $match: { name: groupname } },
+		{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+		{ $unset: ["users.hash", "users.salt", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
+	]).exec();
+
+	if (group.length === 0)
+		return res.status(404).json({
+			data: null,
+			message: "Group not found",
+			success: false,
+		});
+
+	return res.status(200).json({
+		data: group,
+		message: `Group ${groupname} retrieved successfully`,
+		success: true,
+	});
+};
+
+export const getCertainGroup_admin = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	// get a group and its users using mongoose
 	const group = await GroupModel.aggregate([

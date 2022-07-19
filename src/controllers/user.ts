@@ -24,7 +24,7 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getCertainUserPublic = async (req: Request, res: Response) => {
+export const getCertainUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt -role -username -email -createdAt -updatedAt");
 	if (!user)
@@ -41,7 +41,7 @@ export const getCertainUserPublic = async (req: Request, res: Response) => {
 	});
 };
 
-export const getCertainUserPrivate = async (req: Request, res: Response) => {
+export const getCertainUser_admin = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt");
 	if (!user)
