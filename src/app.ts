@@ -20,6 +20,7 @@ import { ExpressErrorHandler } from "./utils/ExpressErrorHandler";
 import { authRouterV1 } from "./api/v1/auth";
 import { userRouterV1 } from "./api/v1/user";
 import { groupRouterV1 } from "./api/v1/group";
+import { shortlinkRouterV1 } from "./api/v1/shortlink";
 
 // --------------------------------------------------
 dotenv.config(); // load env
@@ -56,6 +57,7 @@ app.use(expressSession(sessionCfg)); // session
 app.use("/v1/auth", authRouterV1);
 app.use("/v1/user", userRouterV1);
 app.use("/v1/group", groupRouterV1);
+app.use("/v1/shortlink", shortlinkRouterV1);
 
 // --------------------------------------------------
 // ! Not found page error

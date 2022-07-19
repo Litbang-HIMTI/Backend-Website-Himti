@@ -1,18 +1,27 @@
 import { Router } from "express";
 import { validateAdmin } from "../../../controllers/auth";
-import { createUser, getAllUsers, getCertainUser_public, getCertainUser_admin, updateUserData, changePassword, deleteUser } from "../../../controllers/user";
+import { createUser, getAllUsers, getOneUser_public, getOneUser_protected, updateUserData, changePassword, deleteUser } from "../../../controllers/user";
 
 const r = Router();
 
-r.get("/:username", getCertainUser_public);
+// * Public
+r.get("/:username", getOneUser_public);
 
 // * Protected admin only
 r.use(validateAdmin);
+
+// GET
 r.get("/", getAllUsers);
+r.get("/:username/admin", getOneUser_protected);
+
+// POST
 r.post("/", createUser); // ! register only allowed for admin for now
-r.get("/:username/admin", getCertainUser_admin);
+
+// PUT
 r.put("/:username", updateUserData);
 r.put("/:username/password", changePassword);
+
+// DELETE
 r.delete("/:username", deleteUser);
 
 export { r as userRouterV1 };

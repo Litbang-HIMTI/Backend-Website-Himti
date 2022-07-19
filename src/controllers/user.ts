@@ -24,36 +24,36 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getCertainUser_public = async (req: Request, res: Response) => {
+export const getOneUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt -role -username -email -createdAt -updatedAt");
 	if (!user)
 		return res.status(404).json({
 			data: null,
-			message: "User not found",
+			message: `User "${username}" not found`,
 			success: false,
 		});
 
 	return res.status(200).json({
 		data: user,
-		message: `User ${username} retrieved successfully`,
+		message: `User "${username}" retrieved successfully`,
 		success: true,
 	});
 };
 
-export const getCertainUser_admin = async (req: Request, res: Response) => {
+export const getOneUser_protected = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt");
 	if (!user)
 		return res.status(404).json({
 			data: null,
-			message: "User not found",
+			message: `User "${username}" not found`,
 			success: false,
 		});
 
 	return res.status(200).json({
 		data: user,
-		message: `User ${username} retrieved successfully`,
+		message: `User "${username}" retrieved successfully`,
 		success: true,
 	});
 };
@@ -92,7 +92,7 @@ export const updateUserData = async (req: Request, res: Response) => {
 	// find and update while it's validated using mongoose
 	const user = await userModel.findOneAndUpdate({ username: username }, queryData, { runValidators: true, new: true });
 	return res.status(200).json({
-		data: user ? user : `User ${username} not found`,
+		data: user ? user : `User "${username}" not found`,
 		message: !!user ? "User updated successfully" : "Fail to update user",
 		success: !!user,
 	});
@@ -130,7 +130,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOneAndDelete({ username: username }).select("-hash -salt");
 	res.status(200).json({
-		data: user ? user : `User ${username} not found`,
+		data: user ? user : `User "${username}" not found`,
 		message: !!user ? "User deleted successfully" : "Fail to delete user ",
 		success: !!user,
 	});

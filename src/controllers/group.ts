@@ -12,7 +12,7 @@ export const getAllGroups = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getCertainGroup_public = async (req: Request, res: Response) => {
+export const getOneGroup_public = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	// get a group and its users using mongoose
 	const group = await GroupModel.aggregate([
@@ -24,18 +24,18 @@ export const getCertainGroup_public = async (req: Request, res: Response) => {
 	if (group.length === 0)
 		return res.status(404).json({
 			data: null,
-			message: "Group not found",
+			message: `Group "${groupname}" not found`,
 			success: false,
 		});
 
 	return res.status(200).json({
 		data: group,
-		message: `Group ${groupname} retrieved successfully`,
+		message: `Group "${groupname}" retrieved successfully`,
 		success: true,
 	});
 };
 
-export const getCertainGroup_admin = async (req: Request, res: Response) => {
+export const getOneGroup_protected = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	// get a group and its users using mongoose
 	const group = await GroupModel.aggregate([
@@ -47,13 +47,13 @@ export const getCertainGroup_admin = async (req: Request, res: Response) => {
 	if (group.length === 0)
 		return res.status(404).json({
 			data: null,
-			message: "Group not found",
+			message: `Group "${groupname}" not found`,
 			success: false,
 		});
 
 	return res.status(200).json({
 		data: group,
-		message: `Group ${groupname} retrieved successfully`,
+		message: `Group "${groupname}" retrieved successfully`,
 		success: true,
 	});
 };
@@ -76,7 +76,7 @@ export const updateGroup = async (req: Request, res: Response) => {
 	// find and update while it's validated using mongoose
 	const group = await GroupModel.findOneAndUpdate({ name: groupname }, req.body, { runValidators: true, new: true });
 	res.status(200).json({
-		data: group ? group : `Group ${groupname} not found`,
+		data: group ? group : `Group "${groupname}" not found`,
 		message: !!group ? "Group updated successfully" : "Fail to update group",
 		success: !!group,
 	});
@@ -87,7 +87,7 @@ export const deleteGroup = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	const group = await GroupModel.findOneAndDelete({ name: groupname });
 	res.status(200).json({
-		data: group ? group : `Group ${groupname} not found`,
+		data: group ? group : `Group "${groupname}" not found`,
 		message: !!group ? "Group deleted successfully" : "Fail to delete group",
 		success: !!group,
 	});
