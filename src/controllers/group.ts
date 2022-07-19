@@ -4,7 +4,7 @@ import { GroupModel } from "../models/group";
 // GET
 export const getAllGroups = async (_req: Request, res: Response) => {
 	const groups = await GroupModel.find({});
-	res.status(200).json({
+	return res.status(200).json({
 		data: groups,
 		length: groups.length,
 		message: "Groups retrieved successfully",
@@ -62,7 +62,7 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 export const createGroup = async (req: Request, res: Response) => {
 	const group = new GroupModel(req.body);
 	const dataSaved = await group.save();
-	res.status(201).json({
+	return res.status(201).json({
 		data: group,
 		message: !!dataSaved ? "Group created successfully" : "Fail to create group",
 		success: !!dataSaved,
@@ -75,7 +75,7 @@ export const updateGroup = async (req: Request, res: Response) => {
 
 	// find and update while it's validated using mongoose
 	const group = await GroupModel.findOneAndUpdate({ name: groupname }, req.body, { runValidators: true, new: true });
-	res.status(200).json({
+	return res.status(200).json({
 		data: group ? group : `Group "${groupname}" not found`,
 		message: !!group ? "Group updated successfully" : "Fail to update group",
 		success: !!group,
@@ -86,7 +86,7 @@ export const updateGroup = async (req: Request, res: Response) => {
 export const deleteGroup = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	const group = await GroupModel.findOneAndDelete({ name: groupname });
-	res.status(200).json({
+	return res.status(200).json({
 		data: group ? group : `Group "${groupname}" not found`,
 		message: !!group ? "Group deleted successfully" : "Fail to delete group",
 		success: !!group,

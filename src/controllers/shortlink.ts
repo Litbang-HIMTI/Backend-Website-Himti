@@ -4,7 +4,7 @@ import { shortLinkModel } from "../models/shortlink";
 // GET
 export const getAllShortLinks = async (_req: Request, res: Response) => {
 	const shortLinks = await shortLinkModel.find({});
-	res.status(200).json({
+	return res.status(200).json({
 		data: shortLinks,
 		length: shortLinks.length,
 		message: "All custom shortLink retrieved successfully",
@@ -35,7 +35,7 @@ export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;
 	const shortLink = new shortLinkModel({ url, shorten });
 	await shortLink.save();
-	res.status(200).json({
+	return res.status(200).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink created successfully" : "Fail to create shortLink",
 		success: !!shortLink,
@@ -47,7 +47,7 @@ export const updateShortLink = async (req: Request, res: Response) => {
 	const { shorten } = req.params;
 	const { url } = req.body;
 	const shortLink = await shortLinkModel.findOneAndUpdate({ shorten }, { url }, { runValidators: true, new: true });
-	res.status(200).json({
+	return res.status(200).json({
 		data: shortLink ? shortLink : `ShortLink ${shorten} not found`,
 		message: !!shortLink ? "ShortLink updated successfully" : "Fail to update shortLink",
 		success: !!shortLink,
@@ -58,7 +58,7 @@ export const updateShortLink = async (req: Request, res: Response) => {
 export const deleteShortLink = async (req: Request, res: Response) => {
 	const { shorten } = req.params;
 	const shortLink = await shortLinkModel.findOneAndDelete({ shorten });
-	res.status(200).json({
+	return res.status(200).json({
 		data: shortLink ? shortLink : `ShortLink ${shorten} not found`,
 		message: !!shortLink ? "ShortLink deleted successfully" : "Fail to delete shortLink",
 		success: !!shortLink,

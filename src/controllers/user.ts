@@ -16,7 +16,7 @@ const validatePasswordInputed = (password: string) => {
 // GET
 export const getAllUsers = async (_req: Request, res: Response) => {
 	const users = await userModel.find({}).select("-hash -salt");
-	res.status(200).json({
+	return res.status(200).json({
 		data: users,
 		length: users.length,
 		message: "Users retrieved successfully",
@@ -129,7 +129,7 @@ export const changePassword = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOneAndDelete({ username: username }).select("-hash -salt");
-	res.status(200).json({
+	return res.status(200).json({
 		data: user ? user : `User "${username}" not found`,
 		message: !!user ? "User deleted successfully" : "Fail to delete user ",
 		success: !!user,

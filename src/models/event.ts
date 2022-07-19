@@ -1,17 +1,17 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import isEmail from "validator/lib/isEmail";
-import { imageUrlRegex } from "../utils/regex";
+import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
 
 interface Ievent {
 	name: string;
-	thumbnail?: string;
-	tags?: string[];
 	description: string;
 	content: string;
 	price: number;
 	startDate: Date;
 	endDate: Date;
+	thumbnail?: string;
+	tags?: string[];
 	location?: string;
 	link?: string;
 	organizer?: string;
@@ -23,18 +23,10 @@ const eventSchema = new Schema<IeventModel>({
 	name: {
 		type: String,
 		required: true,
-	},
-	thumbnail: {
-		type: String,
 		validate: {
-			validator: (v: string) => isURL(v) && imageUrlRegex.test(v),
-			message: "Thumbnail must be a valid image url",
+			validator: (v: string) => urlSafeRegex.test(v),
+			message: "Event name must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
 		},
-		default: "",
-	},
-	tags: {
-		type: Array,
-		default: [],
 	},
 	description: {
 		type: String,
@@ -56,13 +48,25 @@ const eventSchema = new Schema<IeventModel>({
 		type: Date,
 		required: true,
 	},
+	thumbnail: {
+		type: String,
+		validate: {
+			validator: (v: string) => isURL(v) && imageUrlRegex.test(v),
+			message: "Thumbnail must be a valid image url",
+		},
+		default: undefined,
+	},
+	tags: {
+		type: Array,
+		default: [],
+	},
 	location: {
 		type: String,
-		default: "",
+		default: undefined,
 	},
 	link: {
 		type: String,
-		default: "",
+		default: undefined,
 		validate: {
 			validator: (v: string) => isURL(v),
 			message: "Link must be a valid url",
@@ -70,11 +74,11 @@ const eventSchema = new Schema<IeventModel>({
 	},
 	organizer: {
 		type: String,
-		default: "",
+		default: undefined,
 	},
 	email: {
 		type: String,
-		default: "",
+		default: undefined,
 		validate: {
 			validator: (v: string) => isEmail(v),
 			message: "Email must be a valid email",

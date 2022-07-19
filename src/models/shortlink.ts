@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
-import { alphaNumericUnderscoreRegex } from "../utils/regex";
+import { urlSaferRegex } from "../utils/regex";
 
 interface IShortLink {
 	url: string;
@@ -24,8 +24,8 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 			required: true,
 			unique: true,
 			validate: {
-				validator: (v: string) => alphaNumericUnderscoreRegex.test(v),
-				message: "Shorten link must be alphanumeric and cannot contain spaces",
+				validator: (v: string) => urlSaferRegex.test(v),
+				message: "Shorten link must be alphanumeric and cannot contain spaces. Allowed characters: a-z, A-Z, 0-9, _, -",
 			},
 		},
 	},

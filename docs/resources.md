@@ -13,6 +13,7 @@
   - [Security](#security)
   - [Usefull Sites](#usefull-sites)
   - [Status Codes](#status-codes)
+  - [URL](#url)
 
 # Recommended Tools & Extensions
 
@@ -84,3 +85,7 @@
 - [HttpStatusCode Enum](https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=net-6.0)
 - [HTTP status code for update and delete?](https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete)
 - [HTTP decision diagram](https://github.com/for-GET/http-decision-diagram)
+
+## URL
+
+- [Safe character for url](https://stackoverflow.com/questions/695438/what-are-the-safe-characters-for-making-urls)

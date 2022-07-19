@@ -1,7 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
 import isEmail from "validator/lib/isEmail";
-import { alphaNumericUnderscoreRegex } from "../utils/regex";
+import { urlSaferRegex } from "../utils/regex";
 
 // ---------------------------------------------
 /**
@@ -37,8 +37,8 @@ const userSchema = new Schema<IUserModel>(
 			minlength: 5,
 			maxlength: 40,
 			validate: {
-				validator: (v: string) => alphaNumericUnderscoreRegex.test(v),
-				message: "Username must be alphanumeric and cannot contain spaces",
+				validator: (v: string) => urlSaferRegex.test(v),
+				message: "Username must be alphanumeric and cannot contain spaces. Allowed characters: a-z, A-Z, 0-9, _, -",
 			},
 		},
 		first_name: {

@@ -1,5 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-import { alphaNumericUnderscoreRegex } from "../utils/regex";
+import { urlSaferRegex } from "../utils/regex";
 
 interface IGroup {
 	name: string;
@@ -15,8 +15,8 @@ const groupSchema = new Schema<IGroupModel>(
 			required: true,
 			unique: true,
 			validate: {
-				validator: (v: string) => alphaNumericUnderscoreRegex.test(v),
-				message: "Group name must be alphanumeric and cannot contain spaces",
+				validator: (v: string) => urlSaferRegex.test(v),
+				message: "Group name must be alphanumeric and cannot contain spaces. Allowed characters: a-z, A-Z, 0-9, _, -",
 			},
 		},
 		description: {
