@@ -1,4 +1,6 @@
 import { Schema, model, Document } from "mongoose";
+import isURL from "validator/lib/isURL";
+import { alphaNumericUnderscoreRegex } from "../utils/regex";
 
 interface IShortLink {
 	url: string;
@@ -13,7 +15,7 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 			required: true,
 			unique: true,
 			validate: {
-				validator: (v: string) => /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(v),
+				validator: (v: string) => isURL(v),
 				message: "URL must be a valid URL",
 			},
 		},
@@ -22,7 +24,7 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 			required: true,
 			unique: true,
 			validate: {
-				validator: (v: string) => /^[a-zA-Z0-9_]+$/.test(v),
+				validator: (v: string) => alphaNumericUnderscoreRegex.test(v),
 				message: "Shorten link must be alphanumeric and cannot contain spaces",
 			},
 		},

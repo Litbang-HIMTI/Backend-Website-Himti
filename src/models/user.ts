@@ -1,5 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
+import isEmail from "validator/lib/isEmail";
+import { alphaNumericUnderscoreRegex } from "../utils/regex";
 
 // ---------------------------------------------
 /**
@@ -33,9 +35,9 @@ const userSchema = new Schema<IUserModel>(
 			required: true,
 			unique: true,
 			minlength: 5,
-			maxlength: 30,
+			maxlength: 40,
 			validate: {
-				validator: (v: string) => /^[a-zA-Z0-9_]+$/.test(v),
+				validator: (v: string) => alphaNumericUnderscoreRegex.test(v),
 				message: "Username must be alphanumeric and cannot contain spaces",
 			},
 		},
@@ -53,9 +55,7 @@ const userSchema = new Schema<IUserModel>(
 			unique: true,
 			minlength: 3,
 			validate: {
-				validator: (v: string) => {
-					return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-				},
+				validator: (v: string) => isEmail(v),
 				message: "Invalid email address provided",
 			},
 		},
@@ -64,9 +64,7 @@ const userSchema = new Schema<IUserModel>(
 			type: Array,
 			required: true,
 			validate: {
-				validator: (v: TRoles[]) => {
-					return v.every((role) => validRoles.includes(role));
-				},
+				validator: (v: TRoles[]) => v.every((role) => validRoles.includes(role)),
 				message: "Invalid role provided",
 			},
 		},
