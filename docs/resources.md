@@ -13,6 +13,7 @@
   - [Security](#security)
   - [Usefull Sites](#usefull-sites)
   - [Status Codes](#status-codes)
+  - [URL](#url)
 
 # Recommended Tools & Extensions
 
@@ -69,6 +70,7 @@
 - [Passport tutorial](https://github.com/AntonioErdeljac/passport-tutorial)
 - [Learn how to handle authentication with Node using Passport.js](https://www.freecodecamp.org/news/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e/)
 - [a very basic session auth in node.js with express.js](https://www.codexpedia.com/node-js/a-very-basic-session-auth-in-node-js-with-express-js/)
+- [restfully-design-login-or-register](https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources)
 
 ## Security
 
@@ -83,3 +85,7 @@
 - [HttpStatusCode Enum](https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=net-6.0)
 - [HTTP status code for update and delete?](https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete)
 - [HTTP decision diagram](https://github.com/for-GET/http-decision-diagram)
+
+## URL
+
+- [Safe character for url](https://stackoverflow.com/questions/695438/what-are-the-safe-characters-for-making-urls)
