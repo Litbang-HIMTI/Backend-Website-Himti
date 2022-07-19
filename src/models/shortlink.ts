@@ -21,6 +21,10 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 			type: String,
 			required: true,
 			unique: true,
+			validate: {
+				validator: (v: string) => /^[a-zA-Z0-9_]+$/.test(v),
+				message: "Shorten link must be alphanumeric and cannot contain spaces",
+			},
 		},
 	},
 	{ collection: "shortlinks", timestamps: true }
