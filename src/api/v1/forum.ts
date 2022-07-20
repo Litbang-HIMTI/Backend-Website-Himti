@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateForumMod } from "../../../controllers/auth";
-import * as cForum from "../../../controllers/forum";
+import { validateForumMod } from "../../controllers/auth";
+import * as cForum from "../../controllers/forum";
 
 const r = Router();
 

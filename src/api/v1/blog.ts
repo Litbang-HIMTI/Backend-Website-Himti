@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateEditor } from "../../../controllers/auth";
-import * as cBlog from "../../../controllers/blog";
+import { validateEditor } from "../../controllers/auth";
+import * as cBlog from "../../controllers/blog";
 
 const r = Router();
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateAdmin } from "../../../controllers/auth";
-import { createUser, getAllUsers, getOneUser_public, getOneUser_protected, updateUserData, changePassword, deleteUser } from "../../../controllers/user";
+import { validateAdmin } from "../../controllers/auth";
+import { createUser, getAllUsers, getOneUser_public, getOneUser_protected, updateUserData, changePassword, deleteUser } from "../../controllers/user";
 
 const r = Router();
 
