@@ -10,17 +10,10 @@ r.get("/:groupname", getOneGroup_public);
 // * Protected admin only
 r.use(validateAdmin);
 
-// GET
 r.get("/", getAllGroups);
-r.get("/:groupname/admin", getOneGroup_protected);
-
-// POST
 r.post("/", createGroup);
-
-// PUT
+r.get("/:groupname/admin", getOneGroup_protected);
 r.put("/:groupname", updateGroup);
-
-// DELETE
 r.delete("/:groupname", deleteGroup);
 
 export { r as groupRouterV1 };

@@ -22,6 +22,30 @@ export const validateAdmin = async (req: Request, res: Response, next: NextFunct
 	}
 };
 
+export const validateEditor = async (req: Request, res: Response, next: NextFunction) => {
+	if (req.session.user && (req.session.role?.includes("editor") || req.session.role?.includes("admin"))) {
+		next();
+	} else {
+		res.status(403).json({ message: "Need to be editor" });
+	}
+};
+
+export const validateForumMod = async (req: Request, res: Response, next: NextFunction) => {
+	if (req.session.user && (req.session.role?.includes("forum_moderator") || req.session.role?.includes("admin"))) {
+		next();
+	} else {
+		res.status(403).json({ message: "Need to be forum moderator" });
+	}
+};
+
+export const validateShortlinkMod = async (req: Request, res: Response, next: NextFunction) => {
+	if (req.session.user && (req.session.role?.includes("shortlink_moderator") || req.session.role?.includes("admin"))) {
+		next();
+	} else {
+		res.status(403).json({ message: "Need to be shortlink moderator" });
+	}
+};
+
 export const login = async (req: Request, res: Response) => {
 	const { username, password } = req.body;
 	if (!username) return res.status(400).json({ message: "Username is required", success: false });
@@ -32,6 +56,7 @@ export const login = async (req: Request, res: Response) => {
 	if (!valid) return res.status(400).json({ message: "Invalid username or password", success: false });
 
 	// save session
+	req.session.userId = user._id;
 	req.session.user = username;
 	req.session.role = user.role;
 

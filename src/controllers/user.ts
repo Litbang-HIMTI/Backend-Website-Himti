@@ -8,7 +8,7 @@ const validatePasswordInputed = (password: string) => {
 	if (password.length < 8) return { message: "Password must be at least 8 characters long", success: false };
 	if (password.length > 250) return { message: "Password must be at most 250 characters long", success: false };
 	if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/.test(password))
-		return { message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character", success: false };
+		return { message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character (@$!%*?&._-)", success: false };
 
 	return { message: "", success };
 };

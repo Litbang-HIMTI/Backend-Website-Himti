@@ -1,5 +1,6 @@
 import { Schema, model, Document } from "mongoose";
-import { urlSaferRegex } from "../utils/regex";
+import { urlSafeRegex } from "../utils/regex";
+import { cGroup } from "../utils/constants";
 
 interface IGroup {
 	name: string;
@@ -8,6 +9,7 @@ interface IGroup {
 
 interface IGroupModel extends IGroup, Document {}
 
+// ---------------------------------------------
 const groupSchema = new Schema<IGroupModel>(
 	{
 		name: {
@@ -15,8 +17,8 @@ const groupSchema = new Schema<IGroupModel>(
 			required: true,
 			unique: true,
 			validate: {
-				validator: (v: string) => urlSaferRegex.test(v),
-				message: "Group name must be alphanumeric and cannot contain spaces. Allowed characters: a-z, A-Z, 0-9, _, -",
+				validator: (v: string) => urlSafeRegex.test(v),
+				message: "Group name must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
 			},
 		},
 		description: {
@@ -24,7 +26,7 @@ const groupSchema = new Schema<IGroupModel>(
 			required: true,
 		},
 	},
-	{ collection: "groups", timestamps: true }
+	{ collection: cGroup, timestamps: true }
 );
 
-export const GroupModel = model<IGroupModel>("groups", groupSchema);
+export const GroupModel = model<IGroupModel>(cGroup, groupSchema);
