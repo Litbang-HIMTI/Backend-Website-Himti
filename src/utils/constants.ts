@@ -3,31 +3,41 @@
  */ export const ___prod___ = process.env.NODE_ENV === "production";
 
 /**
+ * Repository issue link
+ */
+export const ___issue___ = "https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues";
+
+/**
  * User collection name
  */
-export const cUser = "users";
+export const colUser = "users";
 
 /**
  * Shortlink collection name
  */
-export const cShortLink = "shortlinks";
+export const colShortLink = "shortlinks";
 
 /**
  * Group collection name
  */
-export const cGroup = "groups";
+export const colGroup = "groups";
 
 /**
  * Event collection name
  */
-export const cEvent = "events";
+export const colEvent = "events";
+
+/**
+ * Blog Revision collection name
+ */
+export const colEventRevision = "event_revisions";
 
 /**
  * Blog collection name
  */
-export const cBlog = "blogs";
+export const colBlog = "blogs";
 
 /**
- * Blog Revision name
+ * Blog Revision collection name
  */
-export const cBlogRevision = "blog_revisions";
+export const colBlogRevision = "blog_revisions";

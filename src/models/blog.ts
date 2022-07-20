@@ -1,7 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
-import { cBlog, cBlogRevision, cUser } from "../utils/constants";
+import { colBlog, colBlogRevision, colUser } from "../utils/constants";
+import { DocumentResult } from "../utils/generic";
 
 type TVisibility = "public" | "draft" | "private";
 const validVisibility: TVisibility[] = ["public", "draft", "private"];
@@ -16,21 +17,19 @@ interface IBlog {
 	pinned?: boolean;
 	showAtHome?: boolean;
 }
-
 interface IBlogRevision extends IBlog {
 	revision: number;
 	blogId: string;
 }
-
-interface IBlogModel extends IBlog, Document {}
-interface IBlogRevisionModel extends IBlogRevision, Document {}
+export interface IBlogModel extends IBlog, Document, DocumentResult<IBlogModel> {}
+export interface IBlogRevisionModel extends IBlogRevision, Document, DocumentResult<IBlogRevisionModel> {}
 
 // ---------------------------------------------
 const blogSchema = new Schema<IBlogModel>(
 	{
 		author: {
 			type: Schema.Types.ObjectId,
-			ref: cUser,
+			ref: colUser,
 			required: true,
 		},
 		title: {
@@ -68,7 +67,7 @@ const blogSchema = new Schema<IBlogModel>(
 				validator: (v: string[]) => v.every((tag) => urlSafeRegex.test(tag)),
 				message: "Tags must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
 			},
-			default: undefined,
+			default: [],
 		},
 		pinned: {
 			type: Boolean,
@@ -79,7 +78,7 @@ const blogSchema = new Schema<IBlogModel>(
 			default: false,
 		},
 	},
-	{ collection: cBlog, timestamps: true }
+	{ collection: colBlog, timestamps: true }
 );
 
 const blogRevisionSchema = new Schema<IBlogRevisionModel>(
@@ -91,12 +90,12 @@ const blogRevisionSchema = new Schema<IBlogRevisionModel>(
 		},
 		blogId: {
 			type: Schema.Types.ObjectId,
-			ref: cBlog,
+			ref: colBlog,
 			required: true,
 		},
 	},
-	{ collection: cBlogRevision, timestamps: true }
+	{ collection: colBlogRevision, timestamps: true }
 );
 
-export const blogModel = model<IBlogModel>(cBlog, blogSchema);
-export const blogRevisionModel = model<IBlogRevisionModel>(cBlogRevision, blogRevisionSchema);
+export const blogModel = model<IBlogModel>(colBlog, blogSchema);
+export const blogRevisionModel = model<IBlogRevisionModel>(colBlogRevision, blogRevisionSchema);

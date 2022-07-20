@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { blogModel, blogRevisionModel } from "../models/blog";
+import { ___issue___ } from "../utils/constants";
+import { blogModel, blogRevisionModel, IBlogRevisionModel } from "../models/blog";
 
 // --------------------------------------------------------------------------------------------
 // BLOG
@@ -34,7 +35,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -61,17 +62,17 @@ export const updateBlog = async (req: Request, res: Response) => {
 			const revision = await blogRevisionModel.find({ blogId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 			if (revision.length > 0) {
 				// update revision by spread and save new revision with incremented revision number
-				revisionPost = await blogRevisionModel.create({ ...req.body, author: req.session.userId!, revision: revision[0].revision + 1, blogId: _id });
+				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: req.session.userId!, revision: revision[0].revision + 1, blogId: _id });
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await blogRevisionModel.create({ ...req.body, author: req.session.userId!, revision: 1, blogId: _id });
+				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: req.session.userId!, revision: 1, blogId: _id });
 			}
 		}
 
 		return res.status(200).json({
 			data: blog,
 			message: !!blog
-				? `Successfully updated Blog${!!revisionPost ? ` and successfully old post moved to revision history` : ` fail to move old post to revision history`}`
+				? `Successfully updated Blog${!!revisionPost ? ` and successfully moved old blog post to revision history` : ` fail to move old blog post to revision history`}`
 				: `Blog _id: "${_id}" not found`,
 			success: !!blog,
 		});
@@ -85,7 +86,7 @@ export const updateBlog = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -97,11 +98,11 @@ export const deleteBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const blog = await blogModel.findByIdAndDelete(_id);
-		const { deletedCount } = await blogRevisionModel.deleteMany({ blogId: _id });
+		const { deletedCount, ok } = await blogRevisionModel.deleteMany({ blogId: _id });
 		return res.status(200).json({
 			data: blog,
 			message: !!blog
-				? `Successfully deleted blog post${deletedCount > 0 ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Got 0 deleted)"}`
+				? `Successfully deleted blog post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
 				: `Blog _id: "${_id}" not found`,
 			success: !!blog,
 		});
@@ -115,7 +116,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -155,14 +156,14 @@ export const getOneBlogRevision = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
 	}
 };
 
-export const getPostRevisions = async (req: Request, res: Response) => {
+export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const blogRevisions = await blogRevisionModel.find({ blogId: _id });
@@ -184,7 +185,7 @@ export const getPostRevisions = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -221,7 +222,7 @@ export const updateBlogRevision = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -248,7 +249,7 @@ export const deleteBlogRevision = async (req: Request, res: Response) => {
 		} else {
 			return res.status(500).json({
 				data: error,
-				message: "Server error! If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
+				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}

@@ -1,36 +1,25 @@
 import { Router } from "express";
 import { validateEditor } from "../../../controllers/auth";
-import {
-	getAllBlogs,
-	getOneBlog,
-	createBlog,
-	updateBlog,
-	deleteBlog,
-	getPostRevisions,
-	getAllBlogRevisions,
-	getOneBlogRevision,
-	// createBlogRevision,
-	updateBlogRevision,
-	deleteBlogRevision,
-} from "../../../controllers/blog";
+import * as cBlog from "../../../controllers/blog";
 
 const r = Router();
 
 // * revision protected
-r.get("/revision", validateEditor, getAllBlogRevisions);
-// r.post("/revision", validateEditor, createBlogRevision); // blog revision is automatically created when a blog is updated
-r.get("/revision/:_id", validateEditor, getOneBlogRevision);
-r.put("/revision/:_id", validateEditor, updateBlogRevision);
-r.delete("/revision/:_id", validateEditor, deleteBlogRevision);
+// * Revision is automatically created when a blog post is updated
+r.get("/revision", validateEditor, cBlog.getAllBlogRevisions);
+r.get("/revision/:_id", validateEditor, cBlog.getOneBlogRevision);
+r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
+r.delete("/revision/:_id", validateEditor, cBlog.deleteBlogRevision);
 
 // * public get blog
-r.get("/", getAllBlogs);
-r.get("/:_id", getOneBlog);
+r.get("/", cBlog.getAllBlogs);
+r.get("/:_id", cBlog.getOneBlog);
 
-// * protected blog
-r.post("/", validateEditor, createBlog);
-r.get("/:_id/revision", validateEditor, getPostRevisions);
-r.put("/:_id", validateEditor, updateBlog);
-r.delete("/:_id", validateEditor, deleteBlog);
+// * protected editor only
+r.use(validateEditor);
+r.post("/", cBlog.createBlog);
+r.get("/:_id/revision", cBlog.getBlogRevisionsByBlogId);
+r.put("/:_id", cBlog.updateBlog);
+r.delete("/:_id", cBlog.deleteBlog);
 
 export { r as blogRouterV1 };

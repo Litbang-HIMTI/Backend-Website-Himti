@@ -2,10 +2,12 @@ import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import isEmail from "validator/lib/isEmail";
 import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
-import { cEvent } from "../utils/constants";
+import { colEvent, colEventRevision, colUser } from "../utils/constants";
+import { DocumentResult } from "../utils/generic";
 
 interface Ievent {
-	name: string;
+	author: string;
+	title: string;
 	description: string;
 	content: string;
 	price: number;
@@ -20,17 +22,23 @@ interface Ievent {
 	pinned?: boolean;
 	showAtHome?: boolean;
 }
-interface IeventModel extends Ievent, Document {}
+interface IEventRevision extends Ievent {
+	revision: number;
+	eventId: string;
+}
+export interface IeventModel extends Ievent, Document, DocumentResult<IeventModel> {}
+export interface IEventRevisionModel extends IEventRevision, Document, DocumentResult<IEventRevisionModel> {}
 
 // ---------------------------------------------
 const eventSchema = new Schema<IeventModel>(
 	{
-		name: {
+		author: { type: Schema.Types.ObjectId, ref: colUser },
+		title: {
 			type: String,
 			required: true,
 			validate: {
 				validator: (v: string) => urlSafeRegex.test(v),
-				message: "Event name must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
+				message: "Event title must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
 			},
 		},
 		description: {
@@ -98,7 +106,24 @@ const eventSchema = new Schema<IeventModel>(
 			default: false,
 		},
 	},
-	{ collection: cEvent, timestamps: true }
+	{ collection: colEvent, timestamps: true }
 );
 
-export const eventModel = model<IeventModel>(cEvent, eventSchema);
+const eventRevisionSchema = new Schema<IEventRevisionModel>(
+	{
+		...eventSchema.obj,
+		revision: {
+			type: Number,
+			required: true,
+		},
+		eventId: {
+			type: Schema.Types.ObjectId,
+			ref: colEvent,
+			required: true,
+		},
+	},
+	{ collection: colEventRevision, timestamps: true }
+);
+
+export const eventModel = model<IeventModel>(colEvent, eventSchema);
+export const eventRevisionModel = model<IEventRevisionModel>(colEventRevision, eventRevisionSchema);

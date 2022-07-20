@@ -2,7 +2,7 @@ import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
 import isEmail from "validator/lib/isEmail";
 import { urlSaferRegex } from "../utils/regex";
-import { cUser } from "../utils/constants";
+import { colUser } from "../utils/constants";
 
 // ---------------------------------------------
 /**
@@ -77,7 +77,7 @@ const userSchema = new Schema<IUserModel>(
 		hash: String,
 		salt: String,
 	},
-	{ collection: cUser, timestamps: true } // timestamps add createdAt and updatedAt fields automatically
+	{ collection: colUser, timestamps: true } // timestamps add createdAt and updatedAt fields automatically
 );
 
 userSchema.methods.setPassword = function (password) {
@@ -90,7 +90,7 @@ userSchema.methods.validatePassword = function (password) {
 	return this.hash === hash;
 };
 
-export const userModel = model<IUserModel>(cUser, userSchema);
+export const userModel = model<IUserModel>(colUser, userSchema);
 
 export const validateQuery = (data: IUser) => {
 	const valid = data.username && data.first_name && data.last_name && data.email && data.role && data.role.length > 0;

@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { urlSafeRegex } from "../utils/regex";
-import { cGroup } from "../utils/constants";
+import { colGroup } from "../utils/constants";
 
 interface IGroup {
 	name: string;
@@ -26,7 +26,7 @@ const groupSchema = new Schema<IGroupModel>(
 			required: true,
 		},
 	},
-	{ collection: cGroup, timestamps: true }
+	{ collection: colGroup, timestamps: true }
 );
 
-export const GroupModel = model<IGroupModel>(cGroup, groupSchema);
+export const GroupModel = model<IGroupModel>(colGroup, groupSchema);
