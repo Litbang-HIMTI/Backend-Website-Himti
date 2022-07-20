@@ -72,7 +72,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 	// @ts-ignore
 	const { hash, salt, ...dataReturn } = dataSaved._doc;
-	return res.status(201).json({
+	return res.status(!!dataSaved ? 201 : 200).json({
 		data: dataReturn,
 		message: !!dataSaved ? "User created successfully" : "Fail to create user",
 		success: !!dataSaved, // read https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean

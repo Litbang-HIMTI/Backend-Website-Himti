@@ -29,7 +29,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Blog _id: "${_id}" not found`,
+				message: `Blog _id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -80,7 +80,7 @@ export const updateBlog = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Blog _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -110,7 +110,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Blog _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -150,7 +150,7 @@ export const getOneBlogRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: error,
-				message: `Blog revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -179,7 +179,7 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 			return res.status(400).json({
 				data: null,
 				length: 0,
-				message: "Blog post revisions not found",
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -195,7 +195,7 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 // POST
 export const createBlogRevision = async (req: Request, res: Response) => {
 	const blogRevision = await blogRevisionModel.create({ ...req.body, author: req.session.userId! });
-	return res.status(200).json({
+	return res.status(!!blogRevision ? 201 : 200).json({
 		data: blogRevision,
 		message: !!blogRevision ? "Blog revision created successfully" : "Fail to create blog revision",
 		success: !!blogRevision,
@@ -216,7 +216,7 @@ export const updateBlogRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Blog revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -243,7 +243,7 @@ export const deleteBlogRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Blog revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {

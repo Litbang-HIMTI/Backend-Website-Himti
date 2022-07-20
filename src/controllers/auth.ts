@@ -68,7 +68,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	req.session.destroy((err) => {
-		if (err) console.log(err);
+		if (err) return res.status(500).json({ message: `Error logging out. ${err}`, success: false });
 
 		return res.status(200).json({
 			message: "Logout successful",

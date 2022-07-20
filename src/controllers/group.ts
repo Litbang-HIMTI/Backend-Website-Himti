@@ -22,7 +22,7 @@ export const getOneGroup_public = async (req: Request, res: Response) => {
 	]).exec();
 
 	if (group.length === 0)
-		return res.status(404).json({
+		return res.status(200).json({
 			data: null,
 			message: `Group "${groupname}" not found`,
 			success: false,
@@ -45,7 +45,7 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 	]).exec();
 
 	if (group.length === 0)
-		return res.status(404).json({
+		return res.status(200).json({
 			data: null,
 			message: `Group "${groupname}" not found`,
 			success: false,
@@ -61,8 +61,8 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 // POST
 export const createGroup = async (req: Request, res: Response) => {
 	const group = new GroupModel(req.body);
-	const dataSaved = await group.save();
-	return res.status(201).json({
+	const dataSaved = await group.save({ validateBeforeSave: true });
+	return res.status(!!dataSaved ? 201 : 200).json({
 		data: group,
 		message: !!dataSaved ? "Group created successfully" : "Fail to create group",
 		success: !!dataSaved,

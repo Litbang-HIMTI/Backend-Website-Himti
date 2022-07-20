@@ -29,7 +29,7 @@ export const getOneEvent = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -45,7 +45,7 @@ export const getOneEvent = async (req: Request, res: Response) => {
 // POST
 export const createEvent = async (req: Request, res: Response) => {
 	const event = await eventModel.create({ ...req.body, author: req.session.userId });
-	return res.status(200).json({
+	return res.status(!!event ? 201 : 200).json({
 		data: event,
 		message: !!event ? "Event created successfully" : "Fail to create event",
 		success: true,
@@ -69,7 +69,7 @@ export const updateEvent = async (req: Request, res: Response) => {
 			}
 		}
 
-		return res.status(200).json({
+		return res.status(!!event ? 201 : 200).json({
 			data: event,
 			message: !!event
 				? `Successfully updated event${!!revisionPost ? ` and successfully moved old event post to revision history` : ` fail to move old event post to revision history`}`
@@ -80,7 +80,7 @@ export const updateEvent = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -110,7 +110,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -150,7 +150,7 @@ export const getOneEventRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -178,7 +178,7 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -195,9 +195,9 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 export const createEventRevision = async (req: Request, res: Response) => {
 	const eventRevision = await eventRevisionModel.create(req.body);
 
-	return res.status(200).json({
+	return res.status(!!eventRevision ? 201 : 200).json({
 		data: eventRevision,
-		message: !!eventRevision ? "Event revision created successfully" : "Event revision not created",
+		message: !!eventRevision ? "Event revision created successfully" : "Fail to create event revision",
 		success: !!eventRevision,
 	});
 };
@@ -217,7 +217,7 @@ export const updateEventRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -245,7 +245,7 @@ export const deleteEventRevision = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Event revision _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {

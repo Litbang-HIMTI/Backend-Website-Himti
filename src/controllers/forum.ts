@@ -29,7 +29,7 @@ export const getOneForum = async (req: Request, res: Response) => {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Forum _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -74,7 +74,7 @@ export const getForumsByCategoryName = async (req: Request, res: Response) => {
 export const createForum = async (req: Request, res: Response) => {
 	const forum = await forumModel.create({ ...req.body, author: req.session.userId });
 
-	return res.status(!!forum ? 200 : 400).json({
+	return res.status(!!forum ? 201 : 200).json({
 		data: forum,
 		message: !!forum ? "Forum post created successfully" : "Fail to create forum post",
 		success: !!forum,
@@ -89,14 +89,14 @@ export const updateForum = async (req: Request, res: Response) => {
 
 		return res.status(200).json({
 			data: forum,
-			message: !!forum ? "Forum updated successfully" : "Fail to update forum",
+			message: !!forum ? "Forum updated successfully" : `Fail to update forum _id: "${_id}" not found`,
 			success: !!forum,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Forum _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -117,14 +117,14 @@ export const deleteForum = async (req: Request, res: Response) => {
 
 		return res.status(200).json({
 			data: forum,
-			message: !!forum ? "Forum deleted successfully" : "Fail to delete forum",
+			message: !!forum ? "Forum deleted successfully" : `Fail to delete forum _id: "${_id}" not found`,
 			success: !!forum,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Forum _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -154,7 +154,7 @@ export const getOneForumCategory = async (req: Request, res: Response) => {
 	const { name } = req.params;
 	const category = await forumCategoryModel.findOne({ name });
 
-	return res.status(!!category ? 200 : 400).json({
+	return res.status(200).json({
 		data: category,
 		message: !!category ? "Forum category retrieved successfully" : `Forum category name: "${name}" not found`,
 		success: !!category,
@@ -165,7 +165,7 @@ export const getOneForumCategory = async (req: Request, res: Response) => {
 export const createForumCategory = async (req: Request, res: Response) => {
 	const category = await forumCategoryModel.create({ ...req.body });
 
-	return res.status(200).json({
+	return res.status(!!category ? 201 : 200).json({
 		data: category,
 		message: !!category ? "Forum category created successfully" : "Fail to create forum category",
 		success: !!category,
@@ -179,16 +179,16 @@ export const updateForumCategory = async (req: Request, res: Response) => {
 	try {
 		const category = await forumCategoryModel.findByIdAndUpdate(_id, { ...req.body }, { new: true });
 
-		return res.status(!!category ? 200 : 400).json({
+		return res.status(200).json({
 			data: category,
-			message: !!category ? "Forum category updated successfully" : "Fail to update forum category",
+			message: !!category ? "Forum category updated successfully" : `Fail to update forum category _id: "${_id}" not found`,
 			success: !!category,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Forum category _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
@@ -209,14 +209,14 @@ export const deleteForumCategory = async (req: Request, res: Response) => {
 
 		return res.status(200).json({
 			data: category,
-			message: !!category ? "Forum category deleted successfully" : "Fail to delete forum category",
+			message: !!category ? "Forum category deleted successfully" : `Fail to delete forum category _id: "${_id}" not found`,
 			success: !!category,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
 			return res.status(400).json({
 				data: null,
-				message: `Forum category _id: "${_id}" not found`,
+				message: `_id: "${_id}" is invalid`,
 				success: false,
 			});
 		} else {
