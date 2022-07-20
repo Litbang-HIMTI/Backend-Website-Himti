@@ -2,10 +2,8 @@ import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
 import { colBlog, colBlogRevision, colUser } from "../utils/constants";
-import { DocumentResult } from "../utils/generic";
+import { DocumentResult, validVisibility } from "../utils/types";
 
-type TVisibility = "public" | "draft" | "private";
-const validVisibility: TVisibility[] = ["public", "draft", "private"];
 interface IBlog {
 	author: string;
 	title: string;

@@ -34,8 +34,8 @@ export const getOneEvent = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -85,8 +85,8 @@ export const updateEvent = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -115,8 +115,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -155,8 +155,8 @@ export const getOneEventRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -183,8 +183,8 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -222,8 +222,8 @@ export const updateEventRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -250,8 +250,8 @@ export const deleteEventRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}

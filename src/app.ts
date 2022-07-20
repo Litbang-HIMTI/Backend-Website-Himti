@@ -24,6 +24,7 @@ import { groupRouterV1 } from "./api/v1/group";
 import { shortlinkRouterV1 } from "./api/v1/shortlink";
 import { eventRouterV1 } from "./api/v1/event";
 import { blogRouterV1 } from "./api/v1/blog";
+import { forumRouterV1 } from "./api/v1/forum";
 
 // --------------------------------------------------
 dotenv.config(); // load env
@@ -63,6 +64,7 @@ app.use("/v1/group", groupRouterV1);
 app.use("/v1/shortlink", shortlinkRouterV1);
 app.use("/v1/event", eventRouterV1);
 app.use("/v1/blog", blogRouterV1);
+app.use("/v1/forum", forumRouterV1);
 
 // --------------------------------------------------
 // ! Not found page error

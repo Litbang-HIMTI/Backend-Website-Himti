@@ -4,7 +4,7 @@ import * as cEvent from "../../../controllers/event";
 
 const r = Router();
 // * revision protected
-// * Revision is automatically created when an event is updated
+// * revision is automatically created when an event is updated
 r.get("/revision", validateEditor, cEvent.getAllEventRevisions);
 r.get("/revision/:_id", validateEditor, cEvent.getOneEventRevision);
 r.put("/revision/:_id", validateEditor, cEvent.updateEventRevision);

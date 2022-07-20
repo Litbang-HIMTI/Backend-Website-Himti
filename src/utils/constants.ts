@@ -41,3 +41,13 @@ export const colBlog = "blogs";
  * Blog Revision collection name
  */
 export const colBlogRevision = "blog_revisions";
+
+/**
+ * Forum collection name
+ */
+export const colForum = "forums";
+
+/**
+ * Forum Category collection name
+ */
+export const colForumCategory = "forum_categories";

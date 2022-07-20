@@ -34,8 +34,8 @@ export const getOneBlog = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -85,8 +85,8 @@ export const updateBlog = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -115,8 +115,8 @@ export const deleteBlog = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -155,8 +155,8 @@ export const getOneBlogRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -184,8 +184,8 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -221,8 +221,8 @@ export const updateBlogRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}
@@ -248,8 +248,8 @@ export const deleteBlogRevision = async (req: Request, res: Response) => {
 			});
 		} else {
 			return res.status(500).json({
-				data: error,
-				message: `Server error! If you think that this is a bug, please submit an issue at ${___issue___}`,
+				data: null,
+				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
 				success: false,
 			});
 		}

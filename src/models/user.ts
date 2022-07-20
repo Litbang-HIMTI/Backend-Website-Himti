@@ -2,7 +2,7 @@ import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
 import isEmail from "validator/lib/isEmail";
 import { urlSaferRegex } from "../utils/regex";
-import { colUser } from "../utils/constants";
+import { colGroup, colUser } from "../utils/constants";
 
 // ---------------------------------------------
 /**
@@ -71,7 +71,8 @@ const userSchema = new Schema<IUserModel>(
 			},
 		},
 		group: {
-			type: Array,
+			type: [Schema.Types.ObjectId],
+			ref: colGroup,
 			default: [],
 		},
 		hash: String,

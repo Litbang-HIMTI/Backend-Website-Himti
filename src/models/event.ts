@@ -3,7 +3,7 @@ import isURL from "validator/lib/isURL";
 import isEmail from "validator/lib/isEmail";
 import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
 import { colEvent, colEventRevision, colUser } from "../utils/constants";
-import { DocumentResult } from "../utils/generic";
+import { DocumentResult } from "../utils/types";
 
 interface Ievent {
 	author: string;
@@ -32,7 +32,7 @@ export interface IEventRevisionModel extends IEventRevision, Document, DocumentR
 // ---------------------------------------------
 const eventSchema = new Schema<IeventModel>(
 	{
-		author: { type: Schema.Types.ObjectId, ref: colUser },
+		author: { type: Schema.Types.ObjectId, ref: colUser, required: true },
 		title: {
 			type: String,
 			required: true,
