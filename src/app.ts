@@ -10,6 +10,7 @@ import MongoStore from "connect-mongo";
 import "express-session";
 declare module "express-session" {
 	interface SessionData {
+		userId: string;
 		user: string;
 		role: string[];
 	}
@@ -22,6 +23,7 @@ import { userRouterV1 } from "./api/v1/user";
 import { groupRouterV1 } from "./api/v1/group";
 import { shortlinkRouterV1 } from "./api/v1/shortlink";
 import { eventRouterV1 } from "./api/v1/event";
+import { blogRouterV1 } from "./api/v1/blog";
 
 // --------------------------------------------------
 dotenv.config(); // load env
@@ -60,6 +62,7 @@ app.use("/v1/user", userRouterV1);
 app.use("/v1/group", groupRouterV1);
 app.use("/v1/shortlink", shortlinkRouterV1);
 app.use("/v1/event", eventRouterV1);
+app.use("/v1/blog", blogRouterV1);
 
 // --------------------------------------------------
 // ! Not found page error
@@ -69,5 +72,3 @@ app.all("*", NotFoundError);
 app.use(ExpressErrorHandler);
 
 export default app;
-
-// TODO: REPLACE OR DELETE .placeholder after development is done

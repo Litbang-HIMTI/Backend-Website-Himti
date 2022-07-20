@@ -1,6 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import { urlSaferRegex } from "../utils/regex";
+import { colShortLink } from "../utils/constants";
 
 interface IShortLink {
 	url: string;
@@ -8,6 +9,7 @@ interface IShortLink {
 }
 interface IShortLinkModel extends IShortLink, Document {}
 
+// ---------------------------------------------
 const shortLinkSchema = new Schema<IShortLinkModel>(
 	{
 		url: {
@@ -29,7 +31,7 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 			},
 		},
 	},
-	{ collection: "shortlinks", timestamps: true }
+	{ collection: colShortLink, timestamps: true }
 );
 
-export const shortLinkModel = model<IShortLinkModel>("ShortLink", shortLinkSchema);
+export const shortLinkModel = model<IShortLinkModel>(colShortLink, shortLinkSchema);
