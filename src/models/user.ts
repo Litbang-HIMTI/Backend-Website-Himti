@@ -1,8 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
 import isEmail from "validator/lib/isEmail";
-import { urlSaferRegex } from "../utils/regex";
-import { colGroup, colUser } from "../utils/constants";
+import { DocumentResult, colGroup, colUser, urlSaferRegex } from "../utils";
 
 // ---------------------------------------------
 /**
@@ -27,7 +26,7 @@ interface IUser {
 	setPassword: (password: string) => void;
 	validatePassword: (password: string) => boolean;
 }
-interface IUserModel extends IUser, Document {}
+interface IUserModel extends IUser, Document, DocumentResult<IUserModel> {}
 
 // ---------------------------------------------
 const userSchema = new Schema<IUserModel>(

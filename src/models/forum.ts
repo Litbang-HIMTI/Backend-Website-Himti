@@ -1,6 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-import { urlSafeRegex } from "../utils/regex";
-import { colForum, colForumCategory, colUser } from "../utils/constants";
+import { colForum, colForumCategory, colUser, urlSafeRegex } from "../utils";
 
 interface IForum {
 	author: Schema.Types.ObjectId;

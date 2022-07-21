@@ -16,8 +16,8 @@ declare module "express-session" {
 	}
 }
 import { ___prod___ } from "./utils/constants";
-import { NotFoundError } from "./utils/notFoundError";
-import { ExpressErrorHandler } from "./utils/ExpressErrorHandler";
+import { NotFoundError } from "./utils/error/notFoundError";
+import { ExpressErrorHandler } from "./utils/error/ExpressErrorHandler";
 import { authRouterV1 } from "./api/v1/auth";
 import { userRouterV1 } from "./api/v1/user";
 import { groupRouterV1 } from "./api/v1/group";

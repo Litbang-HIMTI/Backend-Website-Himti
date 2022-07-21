@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ___prod___ } from "./constants";
+import { ___prod___ } from "../constants";
 
 const badRequestName = ["ValidationError", "CastError"];
 const badRequestMessage = ["Argument passed"];

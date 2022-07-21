@@ -1,8 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
-import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
-import { colBlog, colBlogRevision, colUser } from "../utils/constants";
-import { DocumentResult, validVisibility } from "../utils/types";
+import { DocumentResult, validVisibility, colBlog, colBlogRevision, colUser, imageUrlRegex, urlSafeRegex } from "../utils";
 
 interface IBlog {
 	author: Schema.Types.ObjectId;

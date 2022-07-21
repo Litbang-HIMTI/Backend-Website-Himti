@@ -1,9 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import isEmail from "validator/lib/isEmail";
-import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
-import { colEvent, colEventRevision, colUser } from "../utils/constants";
-import { DocumentResult } from "../utils/types";
+import { DocumentResult, colEvent, colEventRevision, colUser, imageUrlRegex, urlSafeRegex } from "../utils";
 
 interface Ievent {
 	author: Schema.Types.ObjectId;

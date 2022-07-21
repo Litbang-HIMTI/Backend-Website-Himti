@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { commentModel } from "../../models/comment";
-import { ___issue___ } from "../../utils/constants";
+import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 // GET
 export const getAllComments = async (_req: Request, res: Response) => {
@@ -26,17 +26,9 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `authorId: "${authorId}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, authorId, "authorId");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -53,17 +45,9 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "forumId");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -73,24 +57,16 @@ export const createComment = async (req: Request, res: Response) => {
 	const { forumId, content } = req.body;
 	try {
 		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, forumId: Types.ObjectId(forumId), content });
-		return res.status(200).json({
+		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
-			message: "Comment created successfully",
-			success: true,
+			message: !!comment ? "Comment created successfully" : `Unable to create comment. If you think that this is a bug, please submit an issue at ${___issue___}`,
+			success: !!comment,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `forumId: "${forumId}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, forumId, "forumId");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -101,24 +77,16 @@ export const updateComment = async (req: Request, res: Response) => {
 	const { content } = req.body;
 	try {
 		const comment = await commentModel.findByIdAndUpdate(_id, { content }, { runValidators: true, new: true });
-		return res.status(200).json({
+		return res.status(!!comment ? 200 : 422).json({
 			data: comment,
-			message: "Comment updated successfully",
-			success: true,
+			message: !!comment ? "Comment updated successfully" : `Fail to update. Comment _id: "${_id}" not found`,
+			success: !!comment,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "comment _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -127,9 +95,9 @@ export const updateComment = async (req: Request, res: Response) => {
 export const deleteComment = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	const comment = await commentModel.findByIdAndDelete(_id);
-	return res.status(200).json({
+	return res.status(!!comment ? 200 : 422).json({
 		data: comment,
-		message: "Comment deleted successfully",
-		success: true,
+		message: !!comment ? "Comment deleted successfully" : `Comment _id: "${_id}" not found`,
+		success: !!comment,
 	});
 };

@@ -1,6 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-import { urlSafeRegex } from "../utils/regex";
-import { colGroup } from "../utils/constants";
+import { colGroup, urlSafeRegex } from "../utils";
 
 interface IGroup {
 	name: string;

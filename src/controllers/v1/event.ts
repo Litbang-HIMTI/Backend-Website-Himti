@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { ___issue___ } from "../../utils/constants";
 import { eventModel, eventRevisionModel, IEventRevisionModel } from "../../models/event";
+import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // EVENT
@@ -20,25 +20,16 @@ export const getOneEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const event = await eventModel.findById(_id);
-
-		return res.status(200).json({
+		return res.status(!!event ? 200 : 422).json({
 			data: event,
 			message: !!event ? "Event retrieved successfully" : `Event _id: "${_id}" not found`,
 			success: !!event,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -46,9 +37,9 @@ export const getOneEvent = async (req: Request, res: Response) => {
 // POST
 export const createEvent = async (req: Request, res: Response) => {
 	const event = await eventModel.create({ ...req.body, author: req.session.userId });
-	return res.status(!!event ? 201 : 200).json({
+	return res.status(!!event ? 201 : 500).json({
 		data: event,
-		message: !!event ? "Event created successfully" : "Fail to create event",
+		message: !!event ? "Event created successfully" : `Unable to create event. If you think that this is a bug, please submit an issue at ${___issue___}`,
 		success: true,
 	});
 };
@@ -75,7 +66,7 @@ export const updateEvent = async (req: Request, res: Response) => {
 			}
 		}
 
-		return res.status(!!event ? 201 : 200).json({
+		return res.status(!!event ? 200 : 422).json({
 			data: event,
 			message: !!event
 				? `Successfully updated event${!!revisionPost ? ` and successfully moved old event post to revision history` : ` fail to move old event post to revision history`}`
@@ -84,17 +75,9 @@ export const updateEvent = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -104,8 +87,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const event = await eventModel.findByIdAndDelete(_id);
-		const { deletedCount, ok } = await eventRevisionModel.deleteMany({ blogId: _id });
-		return res.status(200).json({
+		const { deletedCount, ok } = await eventRevisionModel.deleteMany({ eventId: Types.ObjectId(_id) });
+		return res.status(!!event ? 200 : 422).json({
 			data: event,
 			message: !!event
 				? `Successfully deleted event post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
@@ -114,17 +97,9 @@ export const deleteEvent = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -146,25 +121,16 @@ export const getOneEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const eventRevision = await eventRevisionModel.findById(_id);
-
-		return res.status(200).json({
+		return res.status(!!eventRevision ? 200 : 422).json({
 			data: eventRevision,
 			message: !!eventRevision ? "Event revision retrieved successfully" : `Event revision _id: "${_id}" not found`,
 			success: !!eventRevision,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event revision _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -173,7 +139,6 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 	const { _id } = req.params;
 	try {
 		const eventRevisions = await eventRevisionModel.find({ eventId: _id });
-
 		return res.status(200).json({
 			data: eventRevisions,
 			length: eventRevisions.length,
@@ -182,17 +147,9 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "eventId");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -200,10 +157,9 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 // POST
 export const createEventRevision = async (req: Request, res: Response) => {
 	const eventRevision = await eventRevisionModel.create(req.body);
-
-	return res.status(!!eventRevision ? 201 : 200).json({
+	return res.status(!!eventRevision ? 201 : 500).json({
 		data: eventRevision,
-		message: !!eventRevision ? "Event revision created successfully" : "Fail to create event revision",
+		message: !!eventRevision ? "Event revision created successfully" : `Unable to create event revision. If you think that this is a bug, please submit an issue at ${___issue___}`,
 		success: !!eventRevision,
 	});
 };
@@ -212,26 +168,17 @@ export const createEventRevision = async (req: Request, res: Response) => {
 export const updateEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const eventRevision = await eventRevisionModel.findByIdAndUpdate(_id, req.body, { new: true });
-
-		return res.status(200).json({
+		const eventRevision = await eventRevisionModel.findByIdAndUpdate(_id, req.body, { runValidators: true, new: true });
+		return res.status(!!eventRevision ? 200 : 422).json({
 			data: eventRevision,
-			message: !!eventRevision ? "Event revision updated successfully" : `Event revision _id: "${_id}" not found`,
+			message: !!eventRevision ? "Event revision updated successfully" : `Fail to update. Event revision _id: "${_id}" not found`,
 			success: !!eventRevision,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event revision _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
@@ -241,25 +188,16 @@ export const deleteEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const eventRevision = await eventRevisionModel.findByIdAndDelete(_id);
-
-		return res.status(200).json({
+		return res.status(!!eventRevision ? 200 : 422).json({
 			data: eventRevision,
 			message: !!eventRevision ? "Event revision deleted successfully" : `Event revision _id: "${_id}" not found`,
 			success: !!eventRevision,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return res.status(400).json({
-				data: null,
-				message: `_id: "${_id}" is invalid`,
-				success: false,
-			});
+			return error_400_id(res, _id, "Event revision _id");
 		} else {
-			return res.status(500).json({
-				data: null,
-				message: `Server error (${error.name})! If you think that this is a bug, please submit an issue at ${___issue___}`,
-				success: false,
-			});
+			return error_500(res, error);
 		}
 	}
 };
