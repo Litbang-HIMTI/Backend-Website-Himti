@@ -11,10 +11,10 @@
   <a href="https://github.com/Litbang-HIMTI/Backend-Website-Himti/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/Litbang-HIMTI/Backend-Website-Himti?style=social"></a>
 </p>
 
-**Currently in development.**
-
 Backend tech stack:
-Express.js + Node.js (typescript) + MongoDB
+MongoDB + Express.js + Node.js (typescript)
+
+Docs made using swagger.
 
 # Table of Contents
 

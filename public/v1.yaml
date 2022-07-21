@@ -1,0 +1,210 @@
+openapi: 3.0.2
+info:
+  title: HIMTI UIN Jakarta Backend API
+  description: |-
+    This document details our API as it is right now. It is in no way a promise to never change it, although we will endeavour to publicly notify any major change.
+
+    Some useful links:
+    - [Backend repository](https://github.com/Litbang-HIMTI/Backend-Website-Himti)
+    - [Frontend repository](https://github.com/Litbang-HIMTI/Frontend-Website-Himti)
+  contact:
+    email: litbanghimtiuinjkt@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/Litbang-HIMTI/Backend-Website-Himti/blob/main/LICENSE
+  version: "1.0"
+externalDocs:
+  description: Find out more about HIMTI UIN Jakarta
+  url: https://himtiuinjkt.or.id/
+servers:
+  - url: /v1
+    description: The production server
+tags:
+  - name: Blog
+  - name: Event
+  - name: Forum
+  - name: Comment
+  - name: Shortlink
+  - name: User
+  - name: Group
+  - name: Auth
+  - name: pet
+    description: Everything about your Pets
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: store
+    description: Access to Petstore orders
+    externalDocs:
+      description: Find out more about our store
+      url: http://swagger.io
+paths:
+  /blog:
+    get:
+      tags:
+        - Blog
+      summary: Get all blogs
+      description: Get all blogs
+      operationId: getAllBlogs
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogList"
+      security: []
+    post:
+      tags:
+        - Blog
+      summary: Create a blog post
+      description: Create a blog post
+      operationId: createBlog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog to create
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogCreateResponse"
+      security: []
+  /blog/{_id}:
+    get:
+      # get blog by id
+    put:
+      tags:
+        - Blog
+      summary: Update a blog post
+      description: Update a blog post
+      operationId: updateBlog
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Blog ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogEditResponse"
+      security: []
+
+components:
+  schemas:
+    blog:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        visibility:
+          type: boolean
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+        showAtHome:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    blogList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogEditCreateRequest:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            title:
+              type: string
+            visibility:
+              type: boolean
+            description:
+              type: string
+            content:
+              type: string
+            thumbnail:
+              type: string
+            tags:
+              type: array
+              items:
+                type: string
+            pinned:
+              type: boolean
+            showAtHome:
+              type: boolean
+    blogEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+security:
+  - Bearer: []

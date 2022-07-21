@@ -12,7 +12,7 @@ r.delete("/category/:_id", validateForumMod, cForum.deleteForumCategory);
 // * public
 r.get("/category", cForum.getAllForumCategories);
 r.get("/category/:name", cForum.getOneForumCategory);
-r.get("/by/category/:name", cForum.getForumsByCategoryName);
+r.get("/byCategory/:name", cForum.getForumsByCategoryName);
 r.get("/", cForum.getAllForums);
 r.get("/:_id", cForum.getOneForum);
 r.get("/:_id/full", cForum.getOneForumAndItsComments);
