@@ -3,12 +3,14 @@ import { urlSafeRegex } from "../utils/regex";
 import { colForum, colForumCategory, colUser } from "../utils/constants";
 
 interface IForum {
-	author: string;
+	author: Schema.Types.ObjectId;
 	title: string;
 	content: string;
-	category: string;
-	pinned: boolean;
-	showAtHome: boolean;
+	category: Schema.Types.ObjectId;
+	editedBy?: Schema.Types.ObjectId;
+	locked?: boolean;
+	pinned?: boolean;
+	showAtHome?: boolean;
 }
 interface IForumCategory {
 	name: string;
@@ -40,6 +42,15 @@ const forumSchema = new Schema<IForumModel>(
 			type: Schema.Types.ObjectId,
 			ref: colForumCategory,
 			required: true,
+		},
+		editedBy: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
+			default: undefined,
+		},
+		locked: {
+			type: Boolean,
+			default: false,
 		},
 		pinned: {
 			type: Boolean,

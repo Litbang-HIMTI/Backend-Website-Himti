@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateForumMod } from "../../controllers/auth";
-import * as cForum from "../../controllers/forum";
+import { validateForumMod } from "../../controllers/v1/auth";
+import * as cForum from "../../controllers/v1/forum";
 
 const r = Router();
 
@@ -15,6 +15,7 @@ r.get("/category/:name", cForum.getOneForumCategory);
 r.get("/by/category/:name", cForum.getForumsByCategoryName);
 r.get("/", cForum.getAllForums);
 r.get("/:_id", cForum.getOneForum);
+r.get("/:_id/full", cForum.getOneForumAndItsComments);
 
 // * protected forummod only
 r.use(validateForumMod);

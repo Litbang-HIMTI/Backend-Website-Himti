@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userModel, validateQuery } from "../models/user";
+import { userModel, validateQuery } from "../../models/user";
 
 const validatePasswordInputed = (password: string) => {
 	let success = true;

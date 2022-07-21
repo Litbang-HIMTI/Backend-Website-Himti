@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateShortlinkMod } from "../../controllers/auth";
-import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortLink, deleteShortLink } from "../../controllers/shortlink";
+import { validateShortlinkMod } from "../../controllers/v1/auth";
+import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortLink, deleteShortLink } from "../../controllers/v1/shortlink";
 
 const r = Router();
 

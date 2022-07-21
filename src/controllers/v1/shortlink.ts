@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { shortLinkModel } from "../models/shortlink";
+import { shortLinkModel } from "../../models/shortlink";
 
 // GET
 export const getAllShortLinks = async (_req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { userModel } from "../models/user";
+import { userModel } from "../../models/user";
 
 export const validatePassword = async (username: string, password: string) => {
 	const userGet = await userModel.findOne({ username: username });

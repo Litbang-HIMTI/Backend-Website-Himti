@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ___issue___ } from "../utils/constants";
-import { blogModel, blogRevisionModel, IBlogRevisionModel } from "../models/blog";
+import { Types } from "mongoose";
+import { ___issue___ } from "../../utils/constants";
+import { blogModel, blogRevisionModel, IBlogRevisionModel } from "../../models/blog";
 
 // --------------------------------------------------------------------------------------------
 // BLOG
@@ -62,10 +63,15 @@ export const updateBlog = async (req: Request, res: Response) => {
 			const revision = await blogRevisionModel.find({ blogId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 			if (revision.length > 0) {
 				// update revision by spread and save new revision with incremented revision number
-				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: req.session.userId!, revision: revision[0].revision + 1, blogId: _id });
+				revisionPost = await blogRevisionModel.create({
+					...(blog._doc as IBlogRevisionModel),
+					author: Types.ObjectId(req.session.userId!),
+					revision: revision[0].revision + 1,
+					blogId: Types.ObjectId(_id!),
+				});
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: req.session.userId!, revision: 1, blogId: _id });
+				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: Types.ObjectId(req.session.userId!), revision: 1, blogId: Types.ObjectId(_id!) });
 			}
 		}
 

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ___issue___ } from "../utils/constants";
-import { eventModel, eventRevisionModel, IEventRevisionModel } from "../models/event";
+import { Types } from "mongoose";
+import { ___issue___ } from "../../utils/constants";
+import { eventModel, eventRevisionModel, IEventRevisionModel } from "../../models/event";
 
 // --------------------------------------------------------------------------------------------
 // EVENT
@@ -62,10 +63,15 @@ export const updateEvent = async (req: Request, res: Response) => {
 			const revision = await eventRevisionModel.find({ eventId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 			if (revision.length > 0) {
 				// update revision by spread and save new revision with incremented revision number
-				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), author: req.session.userId!, revision: revision[0].revision + 1, eventId: _id });
+				revisionPost = await eventRevisionModel.create({
+					...(event._doc as IEventRevisionModel),
+					author: Types.ObjectId(req.session.userId!),
+					revision: revision[0].revision + 1,
+					eventId: Types.ObjectId(_id),
+				});
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), author: req.session.userId!, revision: 1, eventId: _id });
+				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), author: Types.ObjectId(req.session.userId!), revision: 1, eventId: Types.ObjectId(_id) });
 			}
 		}
 

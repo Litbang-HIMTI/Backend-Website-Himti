@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { GroupModel } from "../models/group";
+import { GroupModel } from "../../models/group";
+import { colUser } from "../../utils/constants";
 
 // GET
 export const getAllGroups = async (_req: Request, res: Response) => {
@@ -17,7 +18,7 @@ export const getOneGroup_public = async (req: Request, res: Response) => {
 	// get a group and its users using mongoose
 	const group = await GroupModel.aggregate([
 		{ $match: { name: groupname } },
-		{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+		{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
 		{ $unset: ["users.hash", "users.salt", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
 	]).exec();
 
@@ -76,8 +77,8 @@ export const updateGroup = async (req: Request, res: Response) => {
 	// find and update while it's validated using mongoose
 	const group = await GroupModel.findOneAndUpdate({ name: groupname }, req.body, { runValidators: true, new: true });
 	return res.status(200).json({
-		data: group ? group : `Group "${groupname}" not found`,
-		message: !!group ? "Group updated successfully" : "Fail to update group",
+		data: group,
+		message: !!group ? "Group updated successfully" : `Fail to update group. Group "${groupname}" not found`,
 		success: !!group,
 	});
 };
@@ -87,8 +88,8 @@ export const deleteGroup = async (req: Request, res: Response) => {
 	const { groupname } = req.params;
 	const group = await GroupModel.findOneAndDelete({ name: groupname });
 	return res.status(200).json({
-		data: group ? group : `Group "${groupname}" not found`,
-		message: !!group ? "Group deleted successfully" : "Fail to delete group",
+		data: group,
+		message: !!group ? "Group deleted successfully" : `Fail to delete group. Group "${groupname}" not found`,
 		success: !!group,
 	});
 };

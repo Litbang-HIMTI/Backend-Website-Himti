@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
-import { ___issue___ } from "../utils/constants";
-import { forumModel, forumCategoryModel } from "../models/forum";
+import { Types } from "mongoose";
+import { ___issue___ } from "../../utils/constants";
+import { colComment } from "../../utils/constants";
+import { forumModel, forumCategoryModel } from "../../models/forum";
+import { commentModel } from "../../models/comment";
 
 // --------------------------------------------------------------------------------------------
 // FORUM
@@ -40,6 +43,29 @@ export const getOneForum = async (req: Request, res: Response) => {
 			});
 		}
 	}
+};
+
+export const getOneForumAndItsComments = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	const mId = Types.ObjectId(_id);
+	const forum = await forumModel
+		.aggregate([{ $match: { _id: mId } }, { $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } }, { $unset: ["comments.forumId"] }])
+		.exec();
+
+	console.log(forum);
+
+	if (forum.length === 0)
+		return res.status(200).json({
+			data: null,
+			message: `Forum _id: "${_id}" not found`,
+			success: false,
+		});
+
+	return res.status(200).json({
+		data: forum[0],
+		message: `Forum _id: "${_id}" retrieved successfully`,
+		success: true,
+	});
 };
 
 export const getForumsByCategoryName = async (req: Request, res: Response) => {
@@ -85,7 +111,7 @@ export const createForum = async (req: Request, res: Response) => {
 export const updateForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, author: req.session.userId }, { new: true });
+		const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, updatedBy: req.session.userId }, { new: true });
 
 		return res.status(200).json({
 			data: forum,
@@ -114,10 +140,14 @@ export const deleteForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const forum = await forumModel.findByIdAndDelete(_id);
+		// delete its comments
+		const { deletedCount, ok } = await commentModel.deleteMany({ forumId: _id });
 
 		return res.status(200).json({
 			data: forum,
-			message: !!forum ? "Forum deleted successfully" : `Fail to delete forum _id: "${_id}" not found`,
+			message: !!forum
+				? `Successfully deleted forum post ${ok ? ` and its comments (Got ${deletedCount} deleted)` : " and fail to delete its comments (Operations failed)"}`
+				: `Fail to delete forum _id: "${_id}" not found`,
 			success: !!forum,
 		});
 	} catch (error) {

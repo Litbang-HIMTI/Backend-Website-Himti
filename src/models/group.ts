@@ -6,7 +6,6 @@ interface IGroup {
 	name: string;
 	description: string;
 }
-
 interface IGroupModel extends IGroup, Document {}
 
 // ---------------------------------------------

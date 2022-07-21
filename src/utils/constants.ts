@@ -51,3 +51,8 @@ export const colForum = "forums";
  * Forum Category collection name
  */
 export const colForumCategory = "forum_categories";
+
+/**
+ * Comment collection name
+ */
+export const colComment = "comments";

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateEditor } from "../../controllers/auth";
-import * as cEvent from "../../controllers/event";
+import { validateEditor } from "../../controllers/v1/auth";
+import * as cEvent from "../../controllers/v1/event";
 
 const r = Router();
 // * revision protected
