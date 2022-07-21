@@ -1,6 +1,6 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { login, logout, check } from "../../../controllers/auth";
+import { login, logout, check } from "../../controllers/v1/auth";
 
 const limiter = rateLimit({
 	windowMs: 10 * 60 * 1000, // 10 minutes

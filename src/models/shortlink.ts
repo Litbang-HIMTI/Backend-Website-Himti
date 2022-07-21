@@ -1,7 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
-import { urlSaferRegex } from "../utils/regex";
-import { colShortLink } from "../utils/constants";
+import { colShortLink, urlSaferRegex } from "../utils";
 
 interface IShortLink {
 	url: string;

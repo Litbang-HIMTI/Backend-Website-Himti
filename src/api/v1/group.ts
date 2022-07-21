@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { validateAdmin } from "../../../controllers/auth";
-import { getAllGroups, getOneGroup_public, getOneGroup_protected, createGroup, updateGroup, deleteGroup } from "../../../controllers/group";
+import { validateAdmin } from "../../controllers/v1/auth";
+import { getAllGroups, getOneGroup_public, getOneGroup_protected, createGroup, updateGroup, deleteGroup } from "../../controllers/v1/group";
 
 const r = Router();
 

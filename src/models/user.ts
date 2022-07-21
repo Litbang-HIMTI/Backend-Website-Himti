@@ -1,17 +1,16 @@
 import { Schema, model, Document } from "mongoose";
 import crypto from "crypto";
 import isEmail from "validator/lib/isEmail";
-import { urlSaferRegex } from "../utils/regex";
-import { colUser } from "../utils/constants";
+import { DocumentResult, colGroup, colUser, urlSaferRegex } from "../utils";
 
 // ---------------------------------------------
 /**
  * Roles interface
- * @user = "Site user. Not implemented."
  * @admin = "Do everything can access dashboard"
  * @editor = "Content editor. Limited access to dashboard that includes blog & events"
  * @forum_moderator = "Forum moderator. Limited access to dashboard that includes forum"
  * @shortlink_moderator = "Shortlink moderator. Limited access to dashboard that includes shortlink"
+ * @user = "Site user. Not implemented."
  */
 type TRoles = "admin" | "editor" | "forum_moderator" | "shortlink_moderator" | "user";
 const validRoles: TRoles[] = ["admin", "editor", "forum_moderator", "shortlink_moderator", "user"];
@@ -20,14 +19,14 @@ interface IUser {
 	first_name: string;
 	last_name: string;
 	email: string;
-	group: string[];
+	group?: Schema.Types.ObjectId[];
 	role: TRoles[];
 	salt: string;
 	hash: string;
 	setPassword: (password: string) => void;
 	validatePassword: (password: string) => boolean;
 }
-interface IUserModel extends IUser, Document {}
+interface IUserModel extends IUser, Document, DocumentResult<IUserModel> {}
 
 // ---------------------------------------------
 const userSchema = new Schema<IUserModel>(
@@ -71,7 +70,8 @@ const userSchema = new Schema<IUserModel>(
 			},
 		},
 		group: {
-			type: Array,
+			type: [Schema.Types.ObjectId],
+			ref: colGroup,
 			default: [],
 		},
 		hash: String,

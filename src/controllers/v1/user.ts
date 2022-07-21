@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { userModel, validateQuery } from "../models/user";
+import { userModel, validateQuery } from "../../models/user";
+import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
 	let success = true;
@@ -28,7 +29,7 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt -role -username -email -createdAt -updatedAt");
 	if (!user)
-		return res.status(404).json({
+		return res.status(422).json({
 			data: null,
 			message: `User "${username}" not found`,
 			success: false,
@@ -45,7 +46,7 @@ export const getOneUser_protected = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOne({ username: username }).select("-hash -salt");
 	if (!user)
-		return res.status(404).json({
+		return res.status(422).json({
 			data: null,
 			message: `User "${username}" not found`,
 			success: false,
@@ -70,32 +71,39 @@ export const createUser = async (req: Request, res: Response) => {
 	user.setPassword(password);
 	const dataSaved = await user.save({ validateBeforeSave: true });
 
-	// @ts-ignore
+	// return response //
 	const { hash, salt, ...dataReturn } = dataSaved._doc;
-	return res.status(201).json({
+	return res.status(!!dataSaved ? 201 : 500).json({
 		data: dataReturn,
-		message: !!dataSaved ? "User created successfully" : "Fail to create user",
+		message: !!dataSaved ? "User created successfully" : `Unable to create user. If you think that this is a bug, please submit an issue at ${___issue___}`,
 		success: !!dataSaved, // read https://stackoverflow.com/questions/7452720/what-does-the-double-exclamation-operator-mean
 	});
 };
 
 // PUT
 export const updateUserData = async (req: Request, res: Response) => {
-	const { username } = req.params;
-	const { valid, queryData } = validateQuery(req.body); // extra validation (optional)
+	const { _id } = req.params;
+	const { valid, queryData } = validateQuery(req.body); // extra validation (optional for more security) //
 	if (!valid)
 		return res.status(400).json({
 			data: "Invalid or missing data",
 			success: false,
 		});
 
-	// find and update while it's validated using mongoose
-	const user = await userModel.findOneAndUpdate({ username: username }, queryData, { runValidators: true, new: true });
-	return res.status(200).json({
-		data: user ? user : `User "${username}" not found`,
-		message: !!user ? "User updated successfully" : "Fail to update user",
-		success: !!user,
-	});
+	try {
+		const user = await userModel.findByIdAndUpdate(_id, queryData, { new: true });
+		return res.status(!!user ? 200 : 422).json({
+			data: user,
+			message: !!user ? `User "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
+			success: !!user,
+		});
+	} catch (error) {
+		if (error.name === "CastError") {
+			return error_400_id(res, _id, "User _id");
+		} else {
+			return error_500(res, error);
+		}
+	}
 };
 
 export const changePassword = async (req: Request, res: Response) => {
@@ -107,7 +115,7 @@ export const changePassword = async (req: Request, res: Response) => {
 	// find and update while it's validated using mongoose
 	const user = await userModel.findOne({ username: username });
 	if (!user)
-		return res.status(404).json({
+		return res.status(422).json({
 			data: null,
 			message: "User not found",
 			success: false,
@@ -116,11 +124,10 @@ export const changePassword = async (req: Request, res: Response) => {
 	user.setPassword(password);
 	const dataSaved = await user.save({ validateBeforeSave: true });
 
-	// @ts-ignore
 	const { hash, salt, ...dataReturn } = dataSaved._doc;
-	return res.status(200).json({
+	return res.status(!!dataSaved ? 200 : 500).json({
 		data: dataReturn,
-		message: !!dataSaved ? "Password updated successfully" : "Fail to update password",
+		message: !!dataSaved ? "Password updated successfully" : `Unable to update user password. If you think that this is a bug, please submit an issue at ${___issue___}`,
 		success: !!dataSaved,
 	});
 };
@@ -129,9 +136,9 @@ export const changePassword = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
 	const { username } = req.params;
 	const user = await userModel.findOneAndDelete({ username: username }).select("-hash -salt");
-	return res.status(200).json({
-		data: user ? user : `User "${username}" not found`,
-		message: !!user ? "User deleted successfully" : "Fail to delete user ",
+	return res.status(!!user ? 200 : 422).json({
+		data: user,
+		message: !!user ? "User deleted successfully" : `Fail to delete user. User username: "${username}" not found`,
 		success: !!user,
 	});
 };

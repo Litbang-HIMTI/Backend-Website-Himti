@@ -1,13 +1,9 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
-import { imageUrlRegex, urlSafeRegex } from "../utils/regex";
-import { colBlog, colBlogRevision, colUser } from "../utils/constants";
-import { DocumentResult } from "../utils/generic";
+import { DocumentResult, validVisibility, colBlog, colBlogRevision, colUser, imageUrlRegex, urlSafeRegex } from "../utils";
 
-type TVisibility = "public" | "draft" | "private";
-const validVisibility: TVisibility[] = ["public", "draft", "private"];
 interface IBlog {
-	author: string;
+	author: Schema.Types.ObjectId;
 	title: string;
 	visibility: string;
 	description: string;
@@ -19,7 +15,7 @@ interface IBlog {
 }
 interface IBlogRevision extends IBlog {
 	revision: number;
-	blogId: string;
+	blogId: Schema.Types.ObjectId;
 }
 export interface IBlogModel extends IBlog, Document, DocumentResult<IBlogModel> {}
 export interface IBlogRevisionModel extends IBlogRevision, Document, DocumentResult<IBlogRevisionModel> {}

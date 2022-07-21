@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { userModel } from "../models/user";
+import { userModel } from "../../models/user";
 
 export const validatePassword = async (username: string, password: string) => {
 	const userGet = await userModel.findOne({ username: username });
@@ -68,7 +68,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	req.session.destroy((err) => {
-		if (err) console.log(err);
+		if (err) return res.status(500).json({ message: `Error logging out. ${err}`, success: false });
 
 		return res.status(200).json({
 			message: "Logout successful",

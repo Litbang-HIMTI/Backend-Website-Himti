@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { validateEditor } from "../../../controllers/auth";
-import * as cBlog from "../../../controllers/blog";
+import { validateEditor } from "../../controllers/v1/auth";
+import * as cBlog from "../../controllers/v1/blog";
 
 const r = Router();
 
 // * revision protected
-// * Revision is automatically created when a blog post is updated
+// * revision is automatically created when a blog post is updated
 r.get("/revision", validateEditor, cBlog.getAllBlogRevisions);
 r.get("/revision/:_id", validateEditor, cBlog.getOneBlogRevision);
 r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
