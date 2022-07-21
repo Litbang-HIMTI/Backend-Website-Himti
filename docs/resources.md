@@ -31,6 +31,7 @@
 - [Express](https://expressjs.com/en/api.html)
 - [Typescript](https://www.typescriptlang.org/docs/)
 - [Better Comments (VsCode Extension)](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)
+- [Swagger.io](https://swagger.io/docs/)
 
 ## Text/Article
 

@@ -18,7 +18,7 @@ externalDocs:
   url: https://himtiuinjkt.or.id/
 servers:
   - url: /v1
-    description: The production server
+    description: V1 API
 tags:
   - name: Blog
   - name: Event
@@ -28,16 +28,6 @@ tags:
   - name: User
   - name: Group
   - name: Auth
-  - name: pet
-    description: Everything about your Pets
-    externalDocs:
-      description: Find out more
-      url: http://swagger.io
-  - name: store
-    description: Access to Petstore orders
-    externalDocs:
-      description: Find out more about our store
-      url: http://swagger.io
 paths:
   /blog:
     get:
