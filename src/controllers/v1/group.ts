@@ -61,12 +61,11 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 
 // POST
 export const createGroup = async (req: Request, res: Response) => {
-	const group = new GroupModel(req.body);
-	const dataSaved = await group.save({ validateBeforeSave: true });
-	return res.status(!!dataSaved ? 201 : 200).json({
+	const group = GroupModel.create(req.body);
+	return res.status(!!group ? 201 : 200).json({
 		data: group,
-		message: !!dataSaved ? "Group created successfully" : "Fail to create group",
-		success: !!dataSaved,
+		message: !!group ? "Group created successfully" : "Fail to create group",
+		success: !!group,
 	});
 };
 

@@ -33,8 +33,7 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 // POST
 export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;
-	const shortLink = new shortLinkModel({ url, shorten });
-	await shortLink.save({ validateBeforeSave: true });
+	const shortLink = shortLinkModel.create({ url, shorten });
 	return res.status(!!shortLink ? 201 : 200).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink created successfully" : "Fail to create shortLink",
