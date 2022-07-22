@@ -52,8 +52,8 @@ export const login = async (req: Request, res: Response) => {
 	if (!password) return res.status(400).json({ message: "Password is required", success: false });
 
 	const { user, valid } = await validatePassword(username, password);
-	if (!user) return res.status(400).json({ message: "Invalid username or password", success: false });
-	if (!valid) return res.status(400).json({ message: "Invalid username or password", success: false });
+	if (!user) return res.status(401).json({ message: "Invalid username or password", success: false });
+	if (!valid) return res.status(401).json({ message: "Invalid username or password", success: false });
 
 	// save session
 	req.session.userId = user._id;
