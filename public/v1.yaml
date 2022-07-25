@@ -81,6 +81,13 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "500":
           description: A server error
           content:
@@ -125,7 +132,7 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -168,13 +175,20 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -212,13 +226,20 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -245,6 +266,13 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/blogRevisionList"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "500":
           description: A server error
           content:
@@ -283,13 +311,20 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -333,13 +368,20 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -377,13 +419,20 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/error_notfound"
+                $ref: "#/components/schemas/error_notFound"
         "500":
           description: A server error
           content:
@@ -398,7 +447,21 @@ paths:
 
 components:
   schemas:
-    error_notfound:
+    error_forbidden:
+      type: object
+      properties:
+        message:
+          type: object
+          nullable: true
+          default: null
+        status:
+          type: string
+          description: Error message
+          default: "{Details why the request was forbidden}"
+        success:
+          type: boolean
+          default: false
+    error_notFound:
       type: object
       properties:
         data:
@@ -476,31 +539,28 @@ components:
     blogEditCreateRequest:
       type: object
       properties:
-        data:
-          type: object
-          properties:
-            title:
-              type: string
-            visibility:
-              type: string
-              enum:
-                - public
-                - draft
-                - private
-            description:
-              type: string
-            content:
-              type: string
-            thumbnail:
-              type: string
-            tags:
-              type: array
-              items:
-                type: string
-            pinned:
-              type: boolean
-            showAtHome:
-              type: boolean
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+        showAtHome:
+          type: boolean
     blogEditResponse:
       type: object
       properties:
