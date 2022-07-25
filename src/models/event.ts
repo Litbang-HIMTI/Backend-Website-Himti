@@ -1,11 +1,12 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
 import isEmail from "validator/lib/isEmail";
-import { DocumentResult, colEvent, colEventRevision, colUser, imageUrlRegex, urlSafeRegex } from "../utils";
+import { DocumentResult, validVisibility, colEvent, colEventRevision, colUser, imageUrlRegex, urlSafeRegex } from "../utils";
 
 interface Ievent {
 	author: Schema.Types.ObjectId;
 	title: string;
+	visibility: string;
 	description: string;
 	content: string;
 	price: number;
@@ -38,6 +39,11 @@ const eventSchema = new Schema<IeventModel>(
 				validator: (v: string) => urlSafeRegex.test(v),
 				message: "Event title must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
 			},
+		},
+		visibility: {
+			type: String,
+			required: true,
+			enum: validVisibility,
 		},
 		description: {
 			type: String,
