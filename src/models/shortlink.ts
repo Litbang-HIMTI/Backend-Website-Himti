@@ -5,6 +5,7 @@ import { colShortLink, urlSaferRegex } from "../utils";
 interface IShortLink {
 	url: string;
 	shorten: string;
+	clickCount?: number;
 }
 interface IShortLinkModel extends IShortLink, Document {}
 
@@ -28,6 +29,10 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 				validator: (v: string) => urlSaferRegex.test(v),
 				message: "Shorten link must be alphanumeric and cannot contain spaces. Allowed characters: a-z, A-Z, 0-9, _, -",
 			},
+		},
+		clickCount: {
+			type: Number,
+			default: 0,
 		},
 	},
 	{ collection: colShortLink, timestamps: true }

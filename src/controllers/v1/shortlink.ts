@@ -15,20 +15,29 @@ export const getAllShortLinks = async (_req: Request, res: Response) => {
 
 export const getOneShortLink_public = async (req: Request, res: Response) => {
 	const { shorten } = req.params;
-	// check if exist
-	const shortLink = await shortLinkModel.findOne({ shorten });
-	if (!shortLink)
-		return res.status(422).json({
-			data: null,
-			message: `ShortLink "${shorten}" not found`,
-			success: false,
-		});
+	// get GET parameter
+	const { updateClick } = req.query;
+	if (!shorten) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
 
-	return res.status(200).json({
-		data: shortLink,
-		message: "ShortLink found and retrieved successfully",
-		success: true,
-	});
+	if (parseInt(updateClick as any) === 1) {
+		const shortLink = await shortLinkModel.findOneAndUpdate({ shorten }, { $inc: { clickCount: 1 } }, { new: true });
+		if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink "${shorten}" not found`, success: false });
+
+		return res.status(200).json({
+			data: shortLink,
+			message: "ShortLink found and updated successfully",
+			success: true,
+		});
+	} else {
+		const shortLink = await shortLinkModel.findOne({ shorten });
+		if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink "${shorten}" not found`, success: false });
+
+		return res.status(200).json({
+			data: shortLink,
+			message: "ShortLink found and retrieved successfully",
+			success: true,
+		});
+	}
 };
 
 // POST
