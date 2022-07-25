@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { commentModel } from "../../models/comment";
+import { forumModel } from "../../models/forum";
 import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 // GET
@@ -56,6 +57,23 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 export const createComment = async (req: Request, res: Response) => {
 	const { forumId, content } = req.body;
 	try {
+		// first get forum from forumId
+		const forum = await forumModel.findById(forumId);
+		if (!forum)
+			return res.status(422).json({
+				data: null,
+				message: `Forum _id: "${forumId}" not found`,
+				success: false,
+			});
+
+		if (forum.locked) {
+			// check if logged in or not
+			if (!req.session) return res.status(403).json({ data: null, message: "Forum is locked", success: false });
+			// * if logged in check if user is moderator or not
+			else if (!req.session.role?.includes("forum_moderator") && !req.session.role?.includes("admin"))
+				return res.status(403).json({ data: null, message: "Forum is locked", success: false });
+		}
+
 		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, forumId: Types.ObjectId(forumId), content });
 		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
