@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: HIMTI UIN Jakarta Backend API
   description: |-
-    This document details our API as it is right now. It is in no way a promise to never change it, although we will endeavour to publicly notify any major change.
+    This document details our API as it is right now. It is in no way a promise to never change it, any changes can be tracked on our github.
 
     Some useful links:
     - [Backend repository](https://github.com/Litbang-HIMTI/Backend-Website-Himti)
@@ -29,12 +29,13 @@ tags:
   - name: Group
   - name: Auth
 paths:
+  # -----------------------------------------------------------------------------------
   /blog:
     get:
       tags:
         - Blog
-      summary: Get all blogs
-      description: Get all blogs
+      summary: Get all blog posts
+      description: Get all blog posts
       operationId: getAllBlogs
       parameters: []
       responses:
@@ -45,6 +46,13 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/blogList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
       security: []
     post:
       tags:
@@ -66,10 +74,66 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/blogCreateResponse"
-      security: []
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
   /blog/{_id}:
     get:
-      # get blog by id
+      tags:
+        - Blog
+      summary: Get a blog post by ID
+      description: Get a blog post by ID
+      operationId: getBlogById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blog"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
     put:
       tags:
         - Blog
@@ -97,10 +161,270 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/blogEditResponse"
-      security: []
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Blog
+      summary: Delete a blog post
+      description: Delete a blog post
+      operationId: deleteBlog
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  # -----------------------------------------------------------------------------------
+  /blog/revision:
+    get:
+      tags:
+        - Blog
+      summary: Get all blog post revisions
+      description: Get all blog post revisions
+      operationId: getAllBlogRevisions
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /blog/revision/{_id}:
+    get:
+      tags:
+        - Blog
+      summary: Get a blog post revision by ID
+      description: Get a blog post revision by ID
+      operationId: getBlogRevisionById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevision"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    put:
+      tags:
+        - Blog
+      summary: Update a blog post revision
+      description: Update a blog post revision
+      operationId: updateBlogRevision
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Blog post revision ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog post revision to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Blog
+      summary: Delete a blog post revision
+      description: Delete a blog post revision
+      operationId: deleteBlogRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notfound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+
+  # -----------------------------------------------------------------------------------
 
 components:
   schemas:
+    error_notfound:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          default: null
+        message:
+          type: string
+          default: '{params}: "{value}" not found'
+        success:
+          type: boolean
+          default: false
+    error_default:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          default: null
+        message:
+          type: string
+          default: "{err msg}. If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues"
+        success:
+          type: boolean
+          default: false
+    # -----------------------------------------------------------------------------------
     blog:
       type: object
       properties:
@@ -109,7 +433,11 @@ components:
         title:
           type: string
         visibility:
-          type: boolean
+          type: string
+          enum:
+            - public
+            - draft
+            - private
         description:
           type: string
         content:
@@ -122,8 +450,10 @@ components:
             type: string
         pinned:
           type: boolean
+          description: Whether the post is pinned or not
         showAtHome:
           type: boolean
+          description: Whether the blog post is shown at the home page or not
         created_at:
           type: string
           format: date-time
@@ -152,7 +482,11 @@ components:
             title:
               type: string
             visibility:
-              type: boolean
+              type: string
+              enum:
+                - public
+                - draft
+                - private
             description:
               type: string
             content:
@@ -176,6 +510,7 @@ components:
         message:
           type: string
           description: A message to be displayed to the user
+          default: "Successfully updated Blog and {successfully/fail} to moved old blog post to revision"
         success:
           type: boolean
           description: Whether the request was successful or not
@@ -188,13 +523,109 @@ components:
         message:
           type: string
           description: A message to be displayed to the user
+          default: "Blog created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted blog post and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    blogRevision:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          description: The revision number of this revision
+        blogId:
+          type: string
+          description: The id of the blog post this revision is for
+    blogRevisionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/blogRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogRevisionEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blogRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Blog revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogRevisionDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blogRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted Blog revision"
         success:
           type: boolean
           description: Whether the request was successful or not
 
   securitySchemes:
-    Bearer:
+    BasicAuth:
       type: http
-      scheme: bearer
+      scheme: basic
+
 security:
-  - Bearer: []
+  - basicAuth: []
