@@ -7,11 +7,11 @@ const r = Router();
 // * public
 r.get("/forum/:_id", getCommentByForumId);
 r.get("/author/:authorId", getCommentByAuthor);
+r.post("/", createComment);
 
 // * protected forummod only
 r.use(validateForumMod);
 r.get("/", getAllComments);
-r.post("/", createComment);
 r.put("/:_id", updateComment);
 r.delete("/:_id", deleteComment);
 

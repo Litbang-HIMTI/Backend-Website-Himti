@@ -5,14 +5,14 @@ import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortL
 const r = Router();
 
 // * Public
-r.get("/:shorten", getOneShortLink_public);
+r.get("/:shorten", getOneShortLink_public); // ? query option: ?updateClick=1
 
 // * Protected shortlinkmod only
 r.use(validateShortlinkMod);
 
 r.get("/", getAllShortLinks);
 r.post("/", createShortLink);
-r.put("/:shorten", updateShortLink);
-r.delete("/:shorten", deleteShortLink);
+r.put("/:_id", updateShortLink);
+r.delete("/:_id", deleteShortLink);
 
 export { r as shortlinkRouterV1 };
