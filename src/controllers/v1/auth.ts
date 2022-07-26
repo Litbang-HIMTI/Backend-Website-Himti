@@ -22,7 +22,11 @@ export const validateEditor = async (req: Request, res: Response, next: NextFunc
 	if (req.session && req.session.user && (req.session.role?.includes("editor") || req.session.role?.includes("admin"))) {
 		next();
 	} else {
-		res.status(403).json({ data: null, message: "Need to be editor", success: false });
+		if (req.session && req.session.user) {
+			res.status(403).json({ data: null, message: "Need to be editor", success: false });
+		} else {
+			res.status(401).json({ data: null, message: "Need to be logged in", success: false });
+		}
 	}
 };
 
@@ -30,7 +34,11 @@ export const validateForumMod = async (req: Request, res: Response, next: NextFu
 	if (req.session && req.session.user && (req.session.role?.includes("forum_moderator") || req.session.role?.includes("admin"))) {
 		next();
 	} else {
-		res.status(403).json({ data: null, message: "Need to be forum moderator", success: false });
+		if (req.session && req.session.user) {
+			res.status(403).json({ data: null, message: "Need to be forum moderator", success: false });
+		} else {
+			res.status(401).json({ data: null, message: "Need to be logged in", success: false });
+		}
 	}
 };
 
@@ -38,7 +46,11 @@ export const validateShortlinkMod = async (req: Request, res: Response, next: Ne
 	if (req.session && req.session.user && (req.session.role?.includes("shortlink_moderator") || req.session.role?.includes("admin"))) {
 		next();
 	} else {
-		res.status(403).json({ data: null, message: "Need to be shortlink moderator", success: false });
+		if (req.session && req.session.user) {
+			res.status(403).json({ data: null, message: "Need to be shortlink moderator", success: false });
+		} else {
+			res.status(401).json({ data: null, message: "Need to be logged in", success: false });
+		}
 	}
 };
 
