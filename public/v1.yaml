@@ -298,7 +298,8 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-      security: []
+      security:
+        - BasicAuth: []
   # -----------------------------------------------------------------------------------
   /blog/revision:
     get:
@@ -913,7 +914,7 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/eventRevision"
+                $ref: "#/components/schemas/eventRevisionEditResponse"
         "400":
           description: A bad request
           content:
@@ -964,7 +965,7 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/eventRevision"
+                $ref: "#/components/schemas/eventRevisionDeleteResponse"
         "400":
           description: A bad request
           content:
@@ -995,6 +996,535 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - BasicAuth: []
+  # -----------------------------------------------------------------------------------
+  /forum:
+    get:
+      tags:
+        - Forum
+      summary: Get all forums
+      description: Get all forums
+      operationId: getForums
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Forum
+      summary: Create a forum
+      description: Create a forum
+      operationId: createForum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /forum/{_id}:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum by its id
+      description: Get a forum by its id
+      operationId: getForumById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forum"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Forum
+      summary: Update a forum post
+      description: Update a forum post
+      operationId: updateForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Forum
+      summary: Delete a forum post
+      description: Delete a forum post
+      operationId: deleteForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /forum/{_id}/full:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum by its id with all comments
+      description: Get a forum by its id with all comments
+      operationId: getForumByIdFull
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumWithComment"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  # -----------------------------------------------------------------------------------
+  /forum/category:
+    get:
+      tags:
+        - Forum
+      summary: Get all forum categories
+      description: Get all forum categories
+      operationId: getForumCategories
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/forumCategory"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Forum
+      summary: Create a new forum category
+      description: Create a new forum category
+      operationId: createForumCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumCategoryEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /forum/category/{name}:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum category by its name
+      description: Get a forum category by its name
+      operationId: getForumCategoryById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategory"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /forum/category/{_id}:
+    put:
+      tags:
+        - Forum
+      summary: Update a forum category
+      description: Update a forum category
+      operationId: updateForumCategory
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumCategoryEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Forum
+      summary: Delete a forum category
+      description: Delete a forum category
+      operationId: deleteForumCategory
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  # -----------------------------------------------------------------------------------
+
+  # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 components:
   schemas:
@@ -1047,7 +1577,7 @@ components:
           uniqueItems: true
         author:
           type: string
-          description: The id of the author of this event
+          description: Fkey of the id of the author of this event
         title:
           type: string
         visibility:
@@ -1166,7 +1696,7 @@ components:
           type: string
         author:
           type: string
-          description: The id of the author of this event
+          description: Fkey of the id of the author of this event
         title:
           type: string
         visibility:
@@ -1202,7 +1732,7 @@ components:
           description: The revision number of this revision
         blogId:
           type: string
-          description: The id of the blog post this revision is for
+          description: Fkey of the id of the blog post this revision is for
     blogRevisionList:
       type: object
       properties:
@@ -1254,7 +1784,7 @@ components:
           uniqueItems: true
         author:
           type: string
-          description: The id of the author of this event
+          description: Fkey of the id of the author of this event
         title:
           type: string
         visibility:
@@ -1375,7 +1905,7 @@ components:
           uniqueItems: true
         author:
           type: string
-          description: The id of the author of this event
+          description: Fkey of the id of the author of this event
         title:
           type: string
         visibility:
@@ -1411,7 +1941,7 @@ components:
           description: The revision number of this revision
         eventId:
           type: string
-          description: The id of the event this revision is for
+          description: Fkey of the id of the event this revision is for
     eventRevisionList:
       type: object
       properties:
@@ -1455,6 +1985,246 @@ components:
           type: boolean
           description: Whether the request was successful or not
     # -----------------------------------------------------------------------------------
+    forum:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this forum
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        editedBy:
+          type: string
+          description: FKey of the id of the user who edited this forum
+        locked:
+          type: boolean
+          description: Whether the forum is locked or not
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    forumWithComment:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this forum
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        editedBy:
+          type: string
+          description: FKey of the id of the user who edited this forum
+        locked:
+          type: boolean
+          description: Whether the forum is locked or not
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+    forumList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/forum"
+        length:
+          type: integer
+          description: The amount of forums in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+    forumEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum post created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted forum and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    forumCategory:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    forumCategoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/forumCategory"
+        length:
+          type: integer
+          description: The amount of forum categories in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryEditCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    forumCategoryEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum category updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum category created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted forum category and {successfully/fail} to delete its forum posts"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this comment
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 
   securitySchemes:
     BasicAuth:
