@@ -5,7 +5,7 @@ import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortL
 const r = Router();
 
 // * Public
-r.get("/:shorten", getOneShortLink_public);
+r.get("/:shorten", getOneShortLink_public); // ? query option: ?updateClick=1
 
 // * Protected shortlinkmod only
 r.use(validateShortlinkMod);
