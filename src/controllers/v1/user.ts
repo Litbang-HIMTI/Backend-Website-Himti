@@ -5,13 +5,17 @@ import { error_400_id, error_500, ___issue___ } from "../../utils";
 const validatePasswordInputed = (password: string) => {
 	let success = true;
 	// validate password manually //
-	if (!password) return { message: "Password is required", success: false };
-	if (password.length < 8) return { message: "Password must be at least 8 characters long", success: false };
-	if (password.length > 250) return { message: "Password must be at most 250 characters long", success: false };
+	if (!password) return { data: null, message: "Password is required", success: false };
+	if (password.length < 8) return { data: null, message: "Password must be at least 8 characters long", success: false };
+	if (password.length > 250) return { data: null, message: "Password must be at most 250 characters long", success: false };
 	if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/.test(password))
-		return { message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character (@$!%*?&._-)", success: false };
+		return {
+			data: null,
+			message: "Password must be at least 8 characters long and contain at least one lowercase, one uppercase, one number and one special character (@$!%*?&._-)",
+			success: false,
+		};
 
-	return { message: "", success };
+	return { data: null, message: "", success };
 };
 
 // GET
@@ -91,7 +95,7 @@ export const updateUserData = async (req: Request, res: Response) => {
 		});
 
 	try {
-		const user = await userModel.findByIdAndUpdate(_id, queryData, { new: true });
+		const user = await userModel.findByIdAndUpdate(_id, queryData, { new: true }).select("-hash -salt");
 		return res.status(!!user ? 200 : 422).json({
 			data: user,
 			message: !!user ? `User "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
@@ -112,7 +116,6 @@ export const changePassword = async (req: Request, res: Response) => {
 	const checkPass = validatePasswordInputed(password);
 	if (!checkPass.success) return res.status(400).json(checkPass);
 
-	// find and update while it's validated using mongoose
 	const user = await userModel.findOne({ username: username });
 	if (!user)
 		return res.status(422).json({

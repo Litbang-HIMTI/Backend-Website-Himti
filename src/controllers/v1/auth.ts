@@ -95,10 +95,6 @@ export const check = async (req: Request, res: Response) => {
 			success: true,
 		});
 	} else {
-		return res.status(401).json({
-			data: null,
-			message: "Not logged in",
-			success: false,
-		});
+		return res.status(401).json({ data: null, message: "Not logged in", success: false });
 	}
 };
