@@ -5,15 +5,15 @@ import { getAllGroups, getOneGroup_public, getOneGroup_protected, createGroup, u
 const r = Router();
 
 // * Public
-r.get("/:groupname", getOneGroup_public);
+r.get("/:_id", getOneGroup_public);
 
 // * Protected admin only
 r.use(validateAdmin);
 
 r.get("/", getAllGroups);
 r.post("/", createGroup);
-r.get("/:groupname/admin", getOneGroup_protected);
-r.put("/:groupname", updateGroup);
-r.delete("/:groupname", deleteGroup);
+r.get("/:_id/admin", getOneGroup_protected);
+r.put("/:_id", updateGroup);
+r.delete("/:_id", deleteGroup);
 
 export { r as groupRouterV1 };

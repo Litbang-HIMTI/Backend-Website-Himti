@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { GroupModel } from "../../models/group";
 import { error_400_id, error_500, colUser, ___issue___ } from "../../utils";
 
@@ -14,49 +15,65 @@ export const getAllGroups = async (_req: Request, res: Response) => {
 };
 
 export const getOneGroup_public = async (req: Request, res: Response) => {
-	const { groupname } = req.params;
-	// get a group and its users using mongoose
-	const group = await GroupModel.aggregate([
-		{ $match: { name: groupname } },
-		{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
-		{ $unset: ["users.hash", "users.salt", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
-	]).exec();
+	const { _id } = req.params;
+	try {
+		// get a group and its users using mongoose
+		const group = await GroupModel.aggregate([
+			{ $match: { _id: Types.ObjectId(_id) } },
+			{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
+			{ $unset: ["users.hash", "users.salt", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
+		]).exec();
 
-	if (group.length === 0)
-		return res.status(422).json({
-			data: null,
-			message: `Group "${groupname}" not found`,
-			success: false,
+		if (group.length === 0)
+			return res.status(422).json({
+				data: null,
+				message: `Group "${_id}" not found`,
+				success: false,
+			});
+
+		return res.status(200).json({
+			data: group,
+			message: `Group "${_id}" retrieved successfully`,
+			success: true,
 		});
-
-	return res.status(200).json({
-		data: group,
-		message: `Group "${groupname}" retrieved successfully`,
-		success: true,
-	});
+	} catch (error) {
+		if (error.name === "CastError") {
+			return error_400_id(res, _id, "Group _id");
+		} else {
+			return error_500(res, error);
+		}
+	}
 };
 
 export const getOneGroup_protected = async (req: Request, res: Response) => {
-	const { groupname } = req.params;
+	const { _id } = req.params;
 	// get a group and its users using mongoose
-	const group = await GroupModel.aggregate([
-		{ $match: { name: groupname } },
-		{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
-		{ $unset: ["users.hash", "users.salt"] },
-	]).exec();
+	try {
+		const group = await GroupModel.aggregate([
+			{ $match: { _id: Types.ObjectId(_id) } },
+			{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+			{ $unset: ["users.hash", "users.salt"] },
+		]).exec();
 
-	if (group.length === 0)
-		return res.status(422).json({
-			data: null,
-			message: `Group "${groupname}" not found`,
-			success: false,
+		if (group.length === 0)
+			return res.status(422).json({
+				data: null,
+				message: `Group "${_id}" not found`,
+				success: false,
+			});
+
+		return res.status(200).json({
+			data: group,
+			message: `Group "${_id}" retrieved successfully`,
+			success: true,
 		});
-
-	return res.status(200).json({
-		data: group,
-		message: `Group "${groupname}" retrieved successfully`,
-		success: true,
-	});
+	} catch (error) {
+		if (error.name === "CastError") {
+			return error_400_id(res, _id, "Group _id");
+		} else {
+			return error_500(res, error);
+		}
+	}
 };
 
 // POST

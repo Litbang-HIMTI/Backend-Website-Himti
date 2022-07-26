@@ -2,11 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import { userModel } from "../../models/user";
 
-export const validatePassword = async (username: string, password: string) => {
-	const userGet = await userModel.findOne({ username: username });
-	return { user: userGet, valid: userGet ? userGet.validatePassword(password) : false };
-};
-
 export const validateLoggedIn = async (req: Request, res: Response, next: NextFunction) => {
 	if (req.session && req.session.user) {
 		next();
@@ -47,14 +42,22 @@ export const validateShortlinkMod = async (req: Request, res: Response, next: Ne
 	}
 };
 
+export const credentialCheck = async (usernameEmail: string, password: string) => {
+	const userGet = await userModel.findOne({ $or: [{ username: usernameEmail }, { email: usernameEmail }] });
+	return { user: userGet, valid: userGet ? userGet.validatePassword(password) : false };
+};
+
 export const login = async (req: Request, res: Response) => {
 	const { username, password } = req.body;
-	if (!username) return res.status(400).json({ data: null, message: "Username is required", success: false });
+	if (!username) return res.status(400).json({ data: null, message: "Username/email is required", success: false });
 	if (!password) return res.status(400).json({ data: null, message: "Password is required", success: false });
 
-	const { user, valid } = await validatePassword(username, password);
-	if (!user) return res.status(401).json({ data: null, message: "Invalid username or password", success: false });
-	if (!valid) return res.status(401).json({ data: null, message: "Invalid username or password", success: false });
+	// check if already logged in
+	if (req.session && req.session.user) return res.status(400).json({ data: null, message: "Already logged in", success: false });
+
+	const { user, valid } = await credentialCheck(username, password);
+	if (!user) return res.status(401).json({ data: null, message: "Invalid username/email or password", success: false });
+	if (!valid) return res.status(401).json({ data: null, message: "Invalid username/email or password", success: false });
 
 	// save session
 	req.session.userId = user._id;

@@ -12,9 +12,9 @@ r.use(validateAdmin);
 
 r.get("/", getAllUsers);
 r.post("/", createUser); // ! register only allowed for admin for now
-r.get("/:username/admin", getOneUser_protected);
 r.put("/:_id", updateUserData);
-r.put("/:username/password", changePassword);
 r.delete("/:username", deleteUser);
+r.get("/:username/admin", getOneUser_protected);
+r.put("/:username/password", changePassword);
 
 export { r as userRouterV1 };
