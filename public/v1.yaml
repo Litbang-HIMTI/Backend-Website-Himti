@@ -1822,6 +1822,243 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security: []
   # -----------------------------------------------------------------------------------
+  /shortlink:
+    get:
+      tags:
+        - Shortlink
+      summary: Get all shortlinks
+      description: Get all shortlinks
+      operationId: getAllShortlinks
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Shortlink
+      summary: Create a shortlink
+      description: Create a shortlink
+      operationId: createShortlink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/shortlinkEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /shortlink/{shorten}:
+    get:
+      tags:
+        - Shortlink
+      summary: Get a shortlink
+      description: Get a shortlink
+      operationId: getShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+        - name: updateClick
+          in: query
+          description: Update the click count of the shortlink
+          required: false
+          schema:
+            type: number
+            required:
+              - "1"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/shortlink"
+                  message:
+                    type: string
+                    description: A message
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /shortlink/{_id}:
+    put:
+      tags:
+        - Shortlink
+      summary: Update a shortlink
+      description: Update a shortlink
+      operationId: updateShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/shortlinkEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Shortlink
+      summary: Delete a shortlink
+      description: Delete a shortlink
+      operationId: deleteShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
 
 # -----------------------------------------------------------------------------------
 components:
@@ -2590,11 +2827,98 @@ components:
           type: boolean
           description: Whether the request was successful or not
     # -----------------------------------------------------------------------------------
+    shortlink:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        url:
+          type: string
+          description: The original url that this shortlink redirects to
+        shorten:
+          type: string
+          description: The shorten url (after last /)
+        clickCount:
+          type: integer
+          description: The amount of clicks this shortlink has received
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    shortlinkList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/shortlink"
+        length:
+          type: integer
+          description: The amount of shortlinks in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkEditCreateRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The original url that this shortlink redirects to
+        shorten:
+          type: string
+          description: The shorten url (after last /)
+    shortlinkEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
 
+  # -----------------------------------------------------------------------------------
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
-
+# -----------------------------------------------------------------------------------
 security:
   - basicAuth: []
