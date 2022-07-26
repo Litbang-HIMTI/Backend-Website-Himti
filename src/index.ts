@@ -37,6 +37,7 @@ const onError = (error: NodeJS.ErrnoException, port: string | number) => {
 			useUnifiedTopology: true,
 			useCreateIndex: true,
 			useFindAndModify: false,
+			dbName: ___prod___ ? process.env.DB_NAME : process.env.DB_NAME + "_dev",
 		});
 		mongoose.set("debug", ___prod___);
 		// @ts-ignore

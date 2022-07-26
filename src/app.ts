@@ -39,6 +39,7 @@ const sessionCfg = {
 	store: new MongoStore({
 		// save session to db
 		mongoUrl: process.env.MONGO_URI!,
+		dbName: ___prod___ ? process.env.DB_NAME : process.env.DB_NAME + "_dev",
 		collectionName: "sessions",
 		ttl,
 	}),
