@@ -118,7 +118,13 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/blog"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/blog"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
         "400":
           description: A bad request
           content:
@@ -249,6 +255,50 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - BasicAuth: []
+  /blog/{_id}/revision:
+    get:
+      tags:
+        - Blog
+      summary: Get all revisions of a blog post
+      description: Get all revisions of a blog post
+      operationId: getBlogRevisions
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
   # -----------------------------------------------------------------------------------
   /blog/revision:
     get:
@@ -286,13 +336,13 @@ paths:
     get:
       tags:
         - Blog
-      summary: Get a blog post revision by ID
-      description: Get a blog post revision by ID
+      summary: Get a blog post revision by its revision Id
+      description: Get a blog post revision by its revision Id
       operationId: getBlogRevisionById
       parameters:
         - name: _id
           in: path
-          description: ID of the blog post revision
+          description: Id of the blog post revision
           required: true
           schema:
             type: string
@@ -303,7 +353,13 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/blogRevision"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/blogRevision"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
         "400":
           description: A bad request
           content:
@@ -442,9 +498,504 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - BasicAuth: []
-
   # -----------------------------------------------------------------------------------
-
+  /event:
+    get:
+      tags:
+        - Event
+      summary: Get all events
+      description: Get all events
+      operationId: getAllEvents
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Event
+      summary: Create a new event
+      description: Create a new event
+      operationId: createEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/eventEditCreateRequest"
+        description: Event to create
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /event/{_id}:
+    get:
+      tags:
+        - Event
+      summary: Get an event by ID
+      description: Get an event by ID
+      operationId: getEventById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/event"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Event
+      summary: Update an event
+      description: Update an event
+      operationId: updateEvent
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Event ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/eventEditCreateRequest"
+        description: Event to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Event
+      summary: Delete an event
+      description: Delete an event
+      operationId: deleteEvent
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /event/{_id}/revision:
+    get:
+      tags:
+        - Event
+      summary: Get all revisions of an event by eventId
+      description: Get all revisions of an event by eventId
+      operationId: getEventRevisionsByEventId
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /event/revision:
+    get:
+      tags:
+        - Event
+      summary: Get all event revisions
+      description: Get all event revisions
+      operationId: getEventRevisions
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /event/revision/{_id}:
+    get:
+      tags:
+        - Event
+      summary: Get an event revision by its revision id
+      description: Get an event revision by its revision id
+      operationId: getEventRevisionByRevisionId
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/eventRevision"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    put:
+      tags:
+        - Event
+      summary: Update an event revision
+      description: Update an event revision
+      operationId: updateEventRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/eventRevision"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevision"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Event
+      summary: Delete an event revision
+      description: Delete an event revision
+      operationId: deleteEventRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevision"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+# -----------------------------------------------------------------------------------
 components:
   schemas:
     error_forbidden:
@@ -493,6 +1044,10 @@ components:
       properties:
         _id:
           type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: The id of the author of this event
         title:
           type: string
         visibility:
@@ -530,6 +1085,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/blog"
+        length:
+          type: integer
+          description: The number of blogs in this list
         message:
           type: string
           description: A message to be displayed to the user
@@ -606,6 +1164,9 @@ components:
       properties:
         _id:
           type: string
+        author:
+          type: string
+          description: The id of the author of this event
         title:
           type: string
         visibility:
@@ -649,6 +1210,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/blogRevision"
+        length:
+          type: integer
+          description: The number of revisions for this blog post
         message:
           type: string
           description: A message to be displayed to the user
@@ -681,6 +1245,216 @@ components:
         success:
           type: boolean
           description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    event:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: The id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    eventList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/event"
+        length:
+          type: integer
+          description: The amount of events in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+    eventEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Event and {successfully/fail} to moved old event to revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Event created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted event and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    eventRevision:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: The id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          description: The revision number of this revision
+        eventId:
+          type: string
+          description: The id of the event this revision is for
+    eventRevisionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/eventRevision"
+        length:
+          type: integer
+          description: The amount of events revision in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventRevisionEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/eventRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Event revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventRevisionDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/eventRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted Event revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
 
   securitySchemes:
     BasicAuth:
