@@ -1523,8 +1523,306 @@ paths:
       security:
         - BasicAuth: []
   # -----------------------------------------------------------------------------------
-
+  /comment:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments
+      description: Get all comments
+      operationId: getAllComments
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    post:
+      tags:
+        - Comment
+      summary: Create a comment
+      description: Create a comment
+      operationId: createComment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/commentEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/{_id}:
+    get:
+      tags:
+        - Comment
+      summary: Get a comment
+      description: Get a comment
+      operationId: getComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/comment"
+                  length:
+                    type: integer
+                    description: Number of comments
+                  message:
+                    type: string
+                    description: Message of the response
+                  success:
+                    type: boolean
+                    description: Success of the response
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    put:
+      tags:
+        - Comment
+      summary: Update a comment
+      description: Update a comment
+      operationId: updateComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/commentEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Comment
+      summary: Delete a comment
+      description: Delete a comment
+      operationId: deleteComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /comment/forum/{_id}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of a forum
+      description: Get all comments of a forum
+      operationId: getAllCommentsOfForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/author/{_authorId}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of an author
+      description: Get all comments of an author
+      operationId: getAllCommentsOfAuthor
+      parameters:
+        - name: _authorId
+          in: path
+          description: ID of the author
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
   # -----------------------------------------------------------------------------------
+
 # -----------------------------------------------------------------------------------
 components:
   schemas:
@@ -2219,12 +2517,79 @@ components:
           description: FKey of the id of the author of this comment
         content:
           type: string
+        forumId:
+          type: string
+          description: FKey of the id of the forum this comment belongs to
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+    commentList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+        length:
+          type: integer
+          description: The amount of comments in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentEditCreateRequest:
+      type: object
+      properties:
+        forumId:
+          type: string
+          description: FKey of the id of the forum this comment belongs to
+        content:
+          type: string
+    commentEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
 
   securitySchemes:
     BasicAuth:
