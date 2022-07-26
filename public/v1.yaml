@@ -7,6 +7,10 @@ info:
     Some useful links:
     - [Backend repository](https://github.com/Litbang-HIMTI/Backend-Website-Himti)
     - [Frontend repository](https://github.com/Litbang-HIMTI/Frontend-Website-Himti)
+
+    Authentication might not work when using swagger authorization, but you can still login using the login API located [here](#operations-Auth-login).
+
+    For staff, please do not try the secured api here when in production.
   contact:
     email: litbanghimtiuinjkt@gmail.com
   license:
@@ -2780,12 +2784,30 @@ paths:
               $ref: "#/components/schemas/authLogin"
       responses:
         "200":
-          description: A successful response
+          description: >
+            A successful response
+            The session ID is returned in a cookie named `connect.sid`. You need to include this cookie in subsequent requests.
           content:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/authLoginResponse"
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: connect.sid=abcde12345; Path=/; HttpOnly
         "400":
           description: A bad request
           content:
@@ -2799,7 +2821,7 @@ paths:
                   message:
                     type: string
                     description: A message describing the result of the request
-                    default: ["Username is required", "Password is required"]
+                    default: "Username/Password is required"
                   success:
                     type: boolean
                     description: Whether the request was successful or not
