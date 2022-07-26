@@ -96,7 +96,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /blog/{_id}:
     get:
       tags:
@@ -203,7 +203,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Blog
@@ -254,7 +254,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /blog/{_id}/revision:
     get:
       tags:
@@ -299,7 +299,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /blog/revision:
     get:
@@ -332,7 +332,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /blog/revision/{_id}:
     get:
       tags:
@@ -390,7 +390,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     put:
       tags:
         - Blog
@@ -447,7 +447,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Blog
@@ -498,7 +498,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /event:
     get:
@@ -567,7 +567,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /event/{_id}:
     get:
       tags:
@@ -681,7 +681,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Event
@@ -732,7 +732,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /event/{_id}/revision:
     get:
       tags:
@@ -784,7 +784,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /event/revision:
     get:
       tags:
@@ -829,7 +829,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /event/revision/{_id}:
     get:
       tags:
@@ -887,7 +887,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     put:
       tags:
         - Event
@@ -944,7 +944,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Event
@@ -995,7 +995,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /forum:
     get:
@@ -1062,7 +1062,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /forum/{_id}:
     get:
       tags:
@@ -1170,7 +1170,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Forum
@@ -1221,7 +1221,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /forum/{_id}/full:
     get:
       tags:
@@ -1361,7 +1361,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /forum/category/{name}:
     get:
       tags:
@@ -1470,7 +1470,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Forum
@@ -1521,7 +1521,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /comment:
     get:
@@ -1546,7 +1546,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     post:
       tags:
         - Comment
@@ -1645,7 +1645,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     put:
       tags:
         - Comment
@@ -1702,7 +1702,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Comment
@@ -1746,7 +1746,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /comment/forum/{_id}:
     get:
       tags:
@@ -1851,7 +1851,8 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-      security: []
+      security:
+        - cookieAuth: []
     post:
       tags:
         - Shortlink
@@ -1894,7 +1895,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /shortlink/{shorten}:
     get:
       tags:
@@ -1955,8 +1956,7 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-      security:
-        - BasicAuth: []
+      security: []
   /shortlink/{_id}:
     put:
       tags:
@@ -2014,7 +2014,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Shortlink
@@ -2058,7 +2058,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /user:
     get:
@@ -2090,7 +2090,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     post:
       tags:
         - User
@@ -2133,7 +2133,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /user/{_id}:
     put:
       tags:
@@ -2191,7 +2191,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /user/{username}:
     get:
       tags:
@@ -2302,7 +2302,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /user/{username}/admin:
     get:
       tags:
@@ -2357,7 +2357,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /user/{username}/password:
     put:
       tags:
@@ -2418,7 +2418,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
   /group:
     get:
@@ -2450,7 +2450,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     post:
       tags:
         - Group
@@ -2500,7 +2500,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /group/{_id}:
     get:
       tags:
@@ -2612,7 +2612,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
     delete:
       tags:
         - Group
@@ -2656,7 +2656,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   /group/{_id}/admin:
     get:
       tags:
@@ -2712,8 +2712,175 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security:
-        - BasicAuth: []
+        - cookieAuth: []
   # -----------------------------------------------------------------------------------
+  /auth:
+    get:
+      tags:
+        - "Auth"
+      summary: Get the current user details
+      description: Get the current user details
+      operationId: getAuth
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: not logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - "Auth"
+      summary: Login
+      description: Login. A cookie will be set on the response. You can login using either username or email.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/authLogin"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/authLoginResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: ["Username is required", "Password is required"]
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: "Invalid username/email or password"
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    delete:
+      tags:
+        - "Auth"
+      summary: Logout
+      description: Logout
+      operationId: logout
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logout successful
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: not logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
 
 # -----------------------------------------------------------------------------------
 components:
@@ -3908,11 +4075,35 @@ components:
         success:
           type: boolean
           description: Whether the request was successful or not
+    authLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username or email of the user
+        password:
+          type: string
+          description: The password of the user
+    authLoginResponse:
+      type: object
+      properties:
+        data:
+          type: string
+          default: "null"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Login successful"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+          default: true
   # -----------------------------------------------------------------------------------
   securitySchemes:
-    BasicAuth:
-      type: http
-      scheme: basic
+    cookieAuth: # arbitrary name for the security scheme; will be used in the "security" key later
+      type: apiKey
+      in: cookie
+      name: connect.sid # cookie name
 # -----------------------------------------------------------------------------------
 security:
-  - basicAuth: []
+  - cookieAuth: []
