@@ -21,7 +21,7 @@ export const getOneGroup_public = async (req: Request, res: Response) => {
 		const group = await GroupModel.aggregate([
 			{ $match: { _id: Types.ObjectId(_id) } },
 			{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
-			{ $unset: ["users.hash", "users.salt", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
+			{ $unset: ["users.hash", "users.salt", "users.role", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
 		]).exec();
 
 		if (group.length === 0)

@@ -2420,7 +2420,299 @@ paths:
       security:
         - BasicAuth: []
   # -----------------------------------------------------------------------------------
-
+  /group:
+    get:
+      tags:
+        - Group
+      summary: Get all groups
+      description: Get all groups
+      operationId: getAllGroups
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupList"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    post:
+      tags:
+        - Group
+      summary: Create a group
+      description: Create a group
+      operationId: createGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/groupEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /group/{_id}:
+    get:
+      tags:
+        - Group
+      summary: Get a group details along with its member by id
+      description: Get a group details along with its member by id
+      operationId: getGroupById
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/groupPublic"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Group
+      summary: Update a group
+      description: Update a group
+      operationId: updateGroup
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/groupEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+    delete:
+      tags:
+        - Group
+      summary: Delete a group
+      description: Delete a group
+      operationId: deleteGroup
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
+  /group/{_id}/admin:
+    get:
+      tags:
+        - Group
+      summary: Get group details along with its member (admin only) by id
+      description: Get group details along with its member (admin only) by id
+      operationId: getGroupAdmin
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/groupProtected"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - BasicAuth: []
   # -----------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------
@@ -3485,8 +3777,137 @@ components:
         success:
           type: boolean
           description: Whether the request was successful or not
-
     # -----------------------------------------------------------------------------------
+    group:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    groupPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/userPublic"
+    groupProtected:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/userProtected"
+    groupList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/group"
+        length:
+          type: integer
+          description: The amount of groups in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupEditCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+    groupEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
   # -----------------------------------------------------------------------------------
   securitySchemes:
     BasicAuth:
