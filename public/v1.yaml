@@ -1,0 +1,4131 @@
+openapi: 3.0.2
+info:
+  title: HIMTI UIN Jakarta Backend API
+  description: |-
+    This document details our API as it is right now. It is in no way a promise to never change it, any changes can be tracked on our github.
+
+    Some useful links:
+    - [Backend repository](https://github.com/Litbang-HIMTI/Backend-Website-Himti)
+    - [Frontend repository](https://github.com/Litbang-HIMTI/Frontend-Website-Himti)
+
+    Authentication might not work when using swagger authorization, but you can still login using the login API located [here](#operations-Auth-login).
+
+    For staff, please do not try the secured api here when in production.
+  contact:
+    email: litbanghimtiuinjkt@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/Litbang-HIMTI/Backend-Website-Himti/blob/main/LICENSE
+  version: "1.0"
+externalDocs:
+  description: Find out more about HIMTI UIN Jakarta
+  url: https://himtiuinjkt.or.id/
+servers:
+  - url: /v1
+    description: V1 API
+tags:
+  - name: Blog
+  - name: Event
+  - name: Forum
+  - name: Comment
+  - name: Shortlink
+  - name: User
+  - name: Group
+  - name: Auth
+paths:
+  # -----------------------------------------------------------------------------------
+  /blog:
+    get:
+      tags:
+        - Blog
+      summary: Get all blog posts
+      description: Get all blog posts
+      operationId: getAllBlogs
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Blog
+      summary: Create a blog post
+      description: Create a blog post
+      operationId: createBlog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog to create
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /blog/{_id}:
+    get:
+      tags:
+        - Blog
+      summary: Get a blog post by ID
+      description: Get a blog post by ID
+      operationId: getBlogById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/blog"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Blog
+      summary: Update a blog post
+      description: Update a blog post
+      operationId: updateBlog
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Blog ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Blog
+      summary: Delete a blog post
+      description: Delete a blog post
+      operationId: deleteBlog
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /blog/{_id}/revision:
+    get:
+      tags:
+        - Blog
+      summary: Get all revisions of a blog post
+      description: Get all revisions of a blog post
+      operationId: getBlogRevisions
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /blog/revision:
+    get:
+      tags:
+        - Blog
+      summary: Get all blog post revisions
+      description: Get all blog post revisions
+      operationId: getAllBlogRevisions
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionList"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /blog/revision/{_id}:
+    get:
+      tags:
+        - Blog
+      summary: Get a blog post revision by its revision Id
+      description: Get a blog post revision by its revision Id
+      operationId: getBlogRevisionById
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the blog post revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/blogRevision"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - Blog
+      summary: Update a blog post revision
+      description: Update a blog post revision
+      operationId: updateBlogRevision
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Blog post revision ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/blogEditCreateRequest"
+        description: Blog post revision to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Blog
+      summary: Delete a blog post revision
+      description: Delete a blog post revision
+      operationId: deleteBlogRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog post revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogRevisionDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /event:
+    get:
+      tags:
+        - Event
+      summary: Get all events
+      description: Get all events
+      operationId: getAllEvents
+      parameters: []
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Event
+      summary: Create a new event
+      description: Create a new event
+      operationId: createEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/eventEditCreateRequest"
+        description: Event to create
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /event/{_id}:
+    get:
+      tags:
+        - Event
+      summary: Get an event by ID
+      description: Get an event by ID
+      operationId: getEventById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/event"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Event
+      summary: Update an event
+      description: Update an event
+      operationId: updateEvent
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Event ID to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/eventEditCreateRequest"
+        description: Event to update
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Event
+      summary: Delete an event
+      description: Delete an event
+      operationId: deleteEvent
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /event/{_id}/revision:
+    get:
+      tags:
+        - Event
+      summary: Get all revisions of an event by eventId
+      description: Get all revisions of an event by eventId
+      operationId: getEventRevisionsByEventId
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /event/revision:
+    get:
+      tags:
+        - Event
+      summary: Get all event revisions
+      description: Get all event revisions
+      operationId: getEventRevisions
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /event/revision/{_id}:
+    get:
+      tags:
+        - Event
+      summary: Get an event revision by its revision id
+      description: Get an event revision by its revision id
+      operationId: getEventRevisionByRevisionId
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/eventRevision"
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - Event
+      summary: Update an event revision
+      description: Update an event revision
+      operationId: updateEventRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/eventRevision"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Event
+      summary: Delete an event revision
+      description: Delete an event revision
+      operationId: deleteEventRevision
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event revision
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventRevisionDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /forum:
+    get:
+      tags:
+        - Forum
+      summary: Get all forums
+      description: Get all forums
+      operationId: getForums
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Forum
+      summary: Create a forum
+      description: Create a forum
+      operationId: createForum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /forum/{_id}:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum by its id
+      description: Get a forum by its id
+      operationId: getForumById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forum"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Forum
+      summary: Update a forum post
+      description: Update a forum post
+      operationId: updateForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Forum
+      summary: Delete a forum post
+      description: Delete a forum post
+      operationId: deleteForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /forum/{_id}/full:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum by its id with all comments
+      description: Get a forum by its id with all comments
+      operationId: getForumByIdFull
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumWithComment"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  # -----------------------------------------------------------------------------------
+  /forum/category:
+    get:
+      tags:
+        - Forum
+      summary: Get all forum categories
+      description: Get all forum categories
+      operationId: getForumCategories
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/forumCategory"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - Forum
+      summary: Create a new forum category
+      description: Create a new forum category
+      operationId: createForumCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumCategoryEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /forum/category/{name}:
+    get:
+      tags:
+        - Forum
+      summary: Get a forum category by its name
+      description: Get a forum category by its name
+      operationId: getForumCategoryById
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategory"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /forum/category/{_id}:
+    put:
+      tags:
+        - Forum
+      summary: Update a forum category
+      description: Update a forum category
+      operationId: updateForumCategory
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/forumCategoryEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Forum
+      summary: Delete a forum category
+      description: Delete a forum category
+      operationId: deleteForumCategory
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum category
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategoryDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /comment:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments
+      description: Get all comments
+      operationId: getAllComments
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - Comment
+      summary: Create a comment
+      description: Create a comment
+      operationId: createComment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/commentEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/{_id}:
+    get:
+      tags:
+        - Comment
+      summary: Get a comment
+      description: Get a comment
+      operationId: getComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/comment"
+                  length:
+                    type: integer
+                    description: Number of comments
+                  message:
+                    type: string
+                    description: Message of the response
+                  success:
+                    type: boolean
+                    description: Success of the response
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - Comment
+      summary: Update a comment
+      description: Update a comment
+      operationId: updateComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/commentEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Comment
+      summary: Delete a comment
+      description: Delete a comment
+      operationId: deleteComment
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the comment
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /comment/forum/{_id}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of a forum
+      description: Get all comments of a forum
+      operationId: getAllCommentsOfForum
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the forum
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/author/{_authorId}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of an author
+      description: Get all comments of an author
+      operationId: getAllCommentsOfAuthor
+      parameters:
+        - name: _authorId
+          in: path
+          description: ID of the author
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  # -----------------------------------------------------------------------------------
+  /shortlink:
+    get:
+      tags:
+        - Shortlink
+      summary: Get all shortlinks
+      description: Get all shortlinks
+      operationId: getAllShortlinks
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - Shortlink
+      summary: Create a shortlink
+      description: Create a shortlink
+      operationId: createShortlink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/shortlinkEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /shortlink/{shorten}:
+    get:
+      tags:
+        - Shortlink
+      summary: Get a shortlink
+      description: Get a shortlink
+      operationId: getShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+        - name: updateClick
+          in: query
+          description: Update the click count of the shortlink
+          required: false
+          schema:
+            type: number
+            required:
+              - "1"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/shortlink"
+                  message:
+                    type: string
+                    description: A message
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /shortlink/{_id}:
+    put:
+      tags:
+        - Shortlink
+      summary: Update a shortlink
+      description: Update a shortlink
+      operationId: updateShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/shortlinkEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Shortlink
+      summary: Delete a shortlink
+      description: Delete a shortlink
+      operationId: deleteShortlink
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/shortlinkDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /user:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      description: Get all users
+      operationId: getUser
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - User
+      summary: Create a user
+      description: Create a user
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/userEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /user/{_id}:
+    put:
+      tags:
+        - User
+      summary: Update a user
+      description: Update a user
+      operationId: updateUser
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/userEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /user/{username}:
+    get:
+      tags:
+        - User
+      summary: Get a user by username
+      description: Get a user by username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/userPublic"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    delete:
+      tags:
+        - User
+      summary: Delete a user
+      description: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /user/{username}/admin:
+    get:
+      tags:
+        - User
+      summary: Get full details of user by username (admin only)
+      description: Get full details of user by username (admin only)
+      operationId: getUserByUsernameAdmin
+      parameters:
+        - name: username
+          in: path
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/userProtected"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /user/{username}/password:
+    put:
+      tags:
+        - User
+      summary: Update a user's password
+      description: Update a user's password
+      operationId: updateUserPassword
+      parameters:
+        - name: username
+          in: path
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: The new password
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userPasswordEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /group:
+    get:
+      tags:
+        - Group
+      summary: Get all groups
+      description: Get all groups
+      operationId: getAllGroups
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupList"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - Group
+      summary: Create a group
+      description: Create a group
+      operationId: createGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/groupEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /group/{_id}:
+    get:
+      tags:
+        - Group
+      summary: Get a group details along with its member by id
+      description: Get a group details along with its member by id
+      operationId: getGroupById
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/groupPublic"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    put:
+      tags:
+        - Group
+      summary: Update a group
+      description: Update a group
+      operationId: updateGroup
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/groupEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Group
+      summary: Delete a group
+      description: Delete a group
+      operationId: deleteGroup
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/groupDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /group/{_id}/admin:
+    get:
+      tags:
+        - Group
+      summary: Get group details along with its member (admin only) by id
+      description: Get group details along with its member (admin only) by id
+      operationId: getGroupAdmin
+      parameters:
+        - name: _id
+          in: path
+          description: Id of the group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/groupProtected"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
+  /auth:
+    get:
+      tags:
+        - "Auth"
+      summary: Get the current user details
+      description: Get the current user details
+      operationId: getAuth
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: not logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    post:
+      tags:
+        - "Auth"
+      summary: Login
+      description: Login. A cookie will be set on the response. You can login using either username or email.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/authLogin"
+      responses:
+        "200":
+          description: >
+            A successful response
+            The session ID is returned in a cookie named `connect.sid`. You need to include this cookie in subsequent requests.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: connect.sid=abcde12345; Path=/; HttpOnly
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: "Username/Password is required"
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: "Invalid username/email or password"
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+    delete:
+      tags:
+        - "Auth"
+      summary: Logout
+      description: Logout
+      operationId: logout
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: Logout successful
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: true
+        "401":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    default: "null"
+                  message:
+                    type: string
+                    description: A message describing the result of the request
+                    default: not logged in
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+                    default: false
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+
+# -----------------------------------------------------------------------------------
+components:
+  schemas:
+    error_forbidden:
+      type: object
+      properties:
+        message:
+          type: object
+          nullable: true
+          default: null
+        status:
+          type: string
+          description: Error message
+          default: "{Details why the request was forbidden}"
+        success:
+          type: boolean
+          default: false
+    error_notFound:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          default: null
+        message:
+          type: string
+          default: '{params}: "{value}" not found'
+        success:
+          type: boolean
+          default: false
+    error_default:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          default: null
+        message:
+          type: string
+          default: "{err msg}. If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues"
+        success:
+          type: boolean
+          default: false
+    # -----------------------------------------------------------------------------------
+    blog:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: Fkey of the id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    blogList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/blog"
+        length:
+          type: integer
+          description: The number of blogs in this list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+        showAtHome:
+          type: boolean
+    blogEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Blog and {successfully/fail} to moved old blog post to revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Blog created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blog"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted blog post and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    blogRevision:
+      type: object
+      properties:
+        _id:
+          type: string
+        author:
+          type: string
+          description: Fkey of the id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          description: The revision number of this revision
+        blogId:
+          type: string
+          description: Fkey of the id of the blog post this revision is for
+    blogRevisionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/blogRevision"
+        length:
+          type: integer
+          description: The number of revisions for this blog post
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogRevisionEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blogRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Blog revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    blogRevisionDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/blogRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted Blog revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    event:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: Fkey of the id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    eventList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/event"
+        length:
+          type: integer
+          description: The amount of events in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+    eventEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Event and {successfully/fail} to moved old event to revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Event created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/event"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted event and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    eventRevision:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: Fkey of the id of the author of this event
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          description: The revision number of this revision
+        eventId:
+          type: string
+          description: Fkey of the id of the event this revision is for
+    eventRevisionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/eventRevision"
+        length:
+          type: integer
+          description: The amount of events revision in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventRevisionEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/eventRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully updated Event revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    eventRevisionDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/eventRevision"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted Event revision"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    forum:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this forum
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        editedBy:
+          type: string
+          description: FKey of the id of the user who edited this forum
+        locked:
+          type: boolean
+          description: Whether the forum is locked or not
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    forumWithComment:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this forum
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        editedBy:
+          type: string
+          description: FKey of the id of the user who edited this forum
+        locked:
+          type: boolean
+          description: Whether the forum is locked or not
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+    forumList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/forum"
+        length:
+          type: integer
+          description: The amount of forums in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          description: FKey of category id
+        pinned:
+          type: boolean
+          description: Whether the forum is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the forum is shown at the home page or not
+    forumEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum post created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forum"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted forum and {successfully/fail} to delete its revision history"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    forumCategory:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    forumCategoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/forumCategory"
+        length:
+          type: integer
+          description: The amount of forum categories in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryEditCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    forumCategoryEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum category updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Forum category created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    forumCategoryDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/forumCategory"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Successfully deleted forum category and {successfully/fail} to delete its forum posts"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          type: string
+          description: FKey of the id of the author of this comment
+        content:
+          type: string
+        forumId:
+          type: string
+          description: FKey of the id of the forum this comment belongs to
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    commentList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+        length:
+          type: integer
+          description: The amount of comments in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentEditCreateRequest:
+      type: object
+      properties:
+        forumId:
+          type: string
+          description: FKey of the id of the forum this comment belongs to
+        content:
+          type: string
+    commentEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    commentDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/comment"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Comment deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    shortlink:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        url:
+          type: string
+          description: The original url that this shortlink redirects to
+        shorten:
+          type: string
+          description: The shorten url (after last /)
+        clickCount:
+          type: integer
+          description: The amount of clicks this shortlink has received
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    shortlinkList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/shortlink"
+        length:
+          type: integer
+          description: The amount of shortlinks in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkEditCreateRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The original url that this shortlink redirects to
+        shorten:
+          type: string
+          description: The shorten url (after last /)
+    shortlinkEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    shortlinkDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/shortlink"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Shortlink deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    user:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        username:
+          type: string
+          description: The username of the user
+          uniqueItems: true
+        first_name:
+          type: string
+          description: The first name of the user
+        last_name:
+          type: string
+          description: The last name of the user
+        email:
+          type: string
+          description: The email of the user
+          uniqueItems: true
+        group:
+          type: array
+          items:
+            type: string
+            description: FK of The group(s) of the user
+        role:
+          type: array
+          items:
+            type: string
+            description: User role(s)
+            enum:
+              - admin
+              - editor
+              - forum_moderator
+              - shortlink_moderator
+              - user
+        salt:
+          type: string
+        hash:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    userProtected:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        username:
+          type: string
+          description: The username of the user
+          uniqueItems: true
+        first_name:
+          type: string
+          description: The first name of the user
+        last_name:
+          type: string
+          description: The last name of the user
+        email:
+          type: string
+          description: The email of the user
+          uniqueItems: true
+        group:
+          type: array
+          items:
+            type: string
+            description: FK of The group(s) of the user
+        role:
+          type: array
+          items:
+            type: string
+            description: User role(s)
+            enum:
+              - admin
+              - editor
+              - forum_moderator
+              - shortlink_moderator
+              - user
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    userPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        first_name:
+          type: string
+          description: The first name of the user
+        last_name:
+          type: string
+          description: The last name of the user
+        group:
+          type: array
+          items:
+            type: string
+            description: FK of The group(s) of the user
+    userList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/userProtected"
+        length:
+          type: integer
+          description: The amount of users in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    userEditCreateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          uniqueItems: true
+        first_name:
+          type: string
+          description: The first name of the user
+        last_name:
+          type: string
+          description: The last name of the user
+        email:
+          type: string
+          description: The email of the user
+          uniqueItems: true
+        group:
+          type: array
+          items:
+            type: string
+            description: FK of The group(s) of the user
+        role:
+          type: array
+          items:
+            type: string
+            description: User role(s)
+            enum:
+              - admin
+              - editor
+              - forum_moderator
+              - shortlink_moderator
+              - user
+        password:
+          type: string
+          description: The password of the user
+    userPasswordEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/userProtected"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Password updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    userEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/userProtected"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "User updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    userCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/userProtected"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "User created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    userDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/userProtected"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "User deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    # -----------------------------------------------------------------------------------
+    group:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    groupPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/userPublic"
+    groupProtected:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/userProtected"
+    groupList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/group"
+        length:
+          type: integer
+          description: The amount of groups in the list
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupEditCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the group
+          uniqueItems: true
+        description:
+          type: string
+          description: The description of the group
+    groupEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    groupDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/group"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Group deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    authLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username or email of the user
+        password:
+          type: string
+          description: The password of the user
+    authLoginResponse:
+      type: object
+      properties:
+        data:
+          type: string
+          default: "null"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Login successful"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+          default: true
+  # -----------------------------------------------------------------------------------
+  securitySchemes:
+    cookieAuth: # arbitrary name for the security scheme; will be used in the "security" key later
+      type: apiKey
+      in: cookie
+      name: connect.sid # cookie name
+# -----------------------------------------------------------------------------------
+security:
+  - cookieAuth: []
