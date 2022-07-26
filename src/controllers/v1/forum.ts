@@ -7,12 +7,21 @@ import { error_400_id, error_500, colComment, ___issue___ } from "../../utils";
 // --------------------------------------------------------------------------------------------
 // FORUM
 // GET
-export const getAllForums = async (_req: Request, res: Response) => {
-	const forums = await forumModel.find({});
+export const getAllForums = async (req: Request, res: Response) => {
+	const { category } = req.query;
+	let forums;
+	if (category) {
+		forums = await forumModel.find({ category: category });
+
+		if (forums.length === 0) return res.status(422).json({ data: null, message: `Forum posts by category: "${category}" not found`, success: false });
+	} else {
+		forums = await forumModel.find();
+	}
+
 	return res.status(200).json({
 		data: forums,
 		length: forums.length,
-		message: "Forums retrieved successfully",
+		message: category ? `Forum posts  by category: "${name}" retrieved successfully` : "Forums retrieved successfully",
 		success: true,
 	});
 };
@@ -62,25 +71,6 @@ export const getOneForumAndItsComments = async (req: Request, res: Response) => 
 			return error_500(res, error);
 		}
 	}
-};
-
-export const getForumsByCategoryName = async (req: Request, res: Response) => {
-	const { name } = req.params;
-	const forums = await forumModel.find({ category: name });
-
-	if (forums.length === 0)
-		return res.status(422).json({
-			data: null,
-			message: `Forum posts by category: "${name}" not found`,
-			success: false,
-		});
-
-	return res.status(200).json({
-		data: forums,
-		length: forums.length,
-		message: `Forum posts  by category: "${name}" retrieved successfully`,
-		success: true,
-	});
 };
 
 // POST
