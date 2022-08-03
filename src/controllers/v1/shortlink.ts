@@ -1,13 +1,19 @@
 import { Request, Response } from "express";
-import { shortLinkModel } from "../../models/shortlink";
+import { shortLinkModel, IShortLinkModel } from "../../models/shortlink";
 import { error_400_id, error_500, ___issue___ } from "../../../src/utils";
 
 // GET
-export const getAllShortLinks = async (_req: Request, res: Response) => {
-	const shortLinks = await shortLinkModel.find({});
+export const getAllShortLinks = async (req: Request, res: Response) => {
+	const count = await shortLinkModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const shortLinks = (await shortLinkModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IShortLinkModel[];
+
 	return res.status(200).json({
 		data: shortLinks,
-		length: shortLinks.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "All custom shortLink retrieved successfully",
 		success: true,
 	});

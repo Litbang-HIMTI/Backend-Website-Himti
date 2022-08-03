@@ -7,7 +7,7 @@ interface IShortLink {
 	shorten: string;
 	clickCount?: number;
 }
-interface IShortLinkModel extends IShortLink, Document {}
+export interface IShortLinkModel extends IShortLink, Document {}
 
 // ---------------------------------------------
 const shortLinkSchema = new Schema<IShortLinkModel>(

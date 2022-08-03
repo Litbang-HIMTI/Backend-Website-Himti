@@ -26,7 +26,7 @@ interface IUser {
 	setPassword: (password: string) => void;
 	validatePassword: (password: string) => boolean;
 }
-interface IUserModel extends IUser, Document, DocumentResult<IUserModel> {}
+export interface IUserModel extends IUser, Document, DocumentResult<IUserModel> {}
 
 // ---------------------------------------------
 const userSchema = new Schema<IUserModel>(

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userModel, validateQuery } from "../../models/user";
+import { IUserModel, userModel, validateQuery } from "../../models/user";
 import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
@@ -19,11 +19,19 @@ const validatePasswordInputed = (password: string) => {
 };
 
 // GET
-export const getAllUsers = async (_req: Request, res: Response) => {
-	const users = await userModel.find({}).select("-hash -salt");
+export const getAllUsers = async (req: Request, res: Response) => {
+	const count = await userModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const users = (await userModel
+		.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }, { $unset: ["hash", "salt"] }])
+		.exec()) as IUserModel[];
+
 	return res.status(200).json({
 		data: users,
-		length: users.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Users retrieved successfully",
 		success: true,
 	});
