@@ -31,7 +31,7 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 
 export const getOneUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username: username }).select("-hash -salt -role -username -email -createdAt -updatedAt");
+	const user = await userModel.findOne({ username: username }).select("-hash -salt -email -createdAt -updatedAt");
 	if (!user)
 		return res.status(422).json({
 			data: null,

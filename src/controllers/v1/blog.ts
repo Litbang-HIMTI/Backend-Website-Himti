@@ -1,17 +1,32 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { blogModel, blogRevisionModel, IBlogRevisionModel } from "../../models/blog";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { error_400_id, error_500, ___issue___, colUser } from "../../utils";
 const id_type_blog = "Blog _id";
 const id_type_blogRevision = "Blog Revision _id";
 // --------------------------------------------------------------------------------------------
 // BLOG
 // GET
-export const getAllBlogs = async (_req: Request, res: Response) => {
-	const blogs = await blogModel.find({});
+export const getAllBlogs = async (req: Request, res: Response) => {
+	const count = await blogModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const blogs = await blogModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		])
+		.exec();
+
 	return res.status(200).json({
 		data: blogs,
-		length: blogs.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Blogs retrieved successfully",
 		success: true,
 	});
@@ -20,7 +35,13 @@ export const getAllBlogs = async (_req: Request, res: Response) => {
 export const getOneBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blog = await blogModel.findById(_id);
+		const blog = await blogModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			])
+			.exec()[0];
 		return res.status(!!blog ? 200 : 422).json({
 			data: blog,
 			message: !!blog ? "Blog retrieved successfully" : `Blog _id: "${_id}" not found`,
@@ -108,11 +129,26 @@ export const deleteBlog = async (req: Request, res: Response) => {
 // --------------------------------------------------------------------------------------------
 // BLOG REVISION
 // GET
-export const getAllBlogRevisions = async (_req: Request, res: Response) => {
-	const blogRevisions = await blogRevisionModel.find({});
+export const getAllBlogRevisions = async (req: Request, res: Response) => {
+	const count = await blogModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const blogRevisions = await blogRevisionModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		])
+		.exec();
+
 	return res.status(200).json({
 		data: blogRevisions,
-		length: blogRevisions.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Blog revisions retrieved successfully",
 		success: true,
 	});
@@ -121,7 +157,14 @@ export const getAllBlogRevisions = async (_req: Request, res: Response) => {
 export const getOneBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blogRevision = await blogRevisionModel.findById(_id);
+		const blogRevision = await blogRevisionModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			])
+			.exec()[0];
+
 		return res.status(!!blogRevision ? 200 : 422).json({
 			data: blogRevision,
 			message: !!blogRevision ? "Blog revision retrieved successfully" : `Blog revision _id: "${_id}" not found`,
@@ -139,10 +182,24 @@ export const getOneBlogRevision = async (req: Request, res: Response) => {
 export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blogRevisions = await blogRevisionModel.find({ blogId: _id });
+		const count = await blogModel.countDocuments({ blogId: Types.ObjectId(_id) }).exec();
+		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const page = parseInt(req.query.page as string) - 1 || 0;
+		const blogRevisions = await blogRevisionModel
+			.aggregate([
+				{ $match: { blogId: Types.ObjectId(_id) } },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: perPage * page },
+				{ $limit: perPage },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			])
+			.exec();
+
 		return res.status(200).json({
 			data: blogRevisions,
-			length: blogRevisions.length,
+			page: page + 1,
+			pages: Math.ceil(count / perPage),
 			message: "Blog post revisions retrieved successfully",
 			success: true,
 		});
