@@ -1,27 +1,52 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { forumModel, forumCategoryModel } from "../../models/forum";
+import { forumModel, forumCategoryModel, IForumModel, IForumCategoryModel } from "../../models/forum";
 import { commentModel } from "../../models/comment";
-import { error_400_id, error_500, colComment, ___issue___ } from "../../utils";
+import { error_400_id, error_500, colComment, ___issue___, colUser, unsetAuthorFields, colForumCategory } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // FORUM
 // GET
 export const getAllForums = async (req: Request, res: Response) => {
 	const { category } = req.query;
+	const count = await forumModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
 	let forums;
 	if (category) {
-		forums = await forumModel.find({ category: category });
+		forums = (await forumModel
+			.aggregate([
+				{ $match: { category: category } },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: perPage * page },
+				{ $limit: perPage },
+				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+			])
+			.exec()) as IForumModel[];
 
 		if (forums.length === 0) return res.status(422).json({ data: null, message: `Forum posts by category: "${category}" not found`, success: false });
 	} else {
-		forums = await forumModel.find();
+		forums = (await forumModel
+			.aggregate([
+				{ $match: {} },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: perPage * page },
+				{ $limit: perPage },
+				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+			])
+			.exec()) as IForumModel[];
 	}
 
 	return res.status(200).json({
 		data: forums,
-		length: forums.length,
-		message: category ? `Forum posts  by category: "${name}" retrieved successfully` : "Forums retrieved successfully",
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
+		message: category ? `Forum posts  by category: "${category}" retrieved successfully` : "Forums retrieved successfully",
 		success: true,
 	});
 };
@@ -29,7 +54,16 @@ export const getAllForums = async (req: Request, res: Response) => {
 export const getOneForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const forum = await forumModel.findById(_id);
+		const forum = (
+			await forumModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: unsetAuthorFields("author") },
+				])
+				.exec()
+		)[0] as IForumModel;
 
 		return res.status(!!forum ? 200 : 422).json({
 			data: forum,
@@ -48,9 +82,16 @@ export const getOneForum = async (req: Request, res: Response) => {
 export const getOneForumAndItsComments = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const forum = await forumModel
-			.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } }, { $unset: ["comments.forumId"] }])
-			.exec();
+		const forum = (await forumModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
+				{ $unset: ["comments.forumId"] },
+			])
+			.exec()) as IForumModel[];
 
 		if (forum.length === 0)
 			return res.status(422).json({
@@ -129,11 +170,17 @@ export const deleteForum = async (req: Request, res: Response) => {
 // --------------------------------------------------------------------------------------------
 // FORUM CATEGORY
 // GET
-export const getAllForumCategories = async (_req: Request, res: Response) => {
-	const categories = await forumCategoryModel.find({});
+export const getAllForumCategories = async (req: Request, res: Response) => {
+	const count = await forumModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const categories = (await forumCategoryModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IForumCategoryModel[];
+
 	return res.status(200).json({
 		data: categories,
-		length: categories.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Forum categories retrieved successfully",
 		success: true,
 	});

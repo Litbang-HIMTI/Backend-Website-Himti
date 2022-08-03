@@ -15,8 +15,8 @@ interface IForumCategory {
 	name: string;
 	description: string;
 }
-interface IForumModel extends IForum, Document {}
-interface IForumCategoryModel extends IForumCategory, Document {}
+export interface IForumModel extends IForum, Document {}
+export interface IForumCategoryModel extends IForumCategory, Document {}
 
 const forumSchema = new Schema<IForumModel>(
 	{

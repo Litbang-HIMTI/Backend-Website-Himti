@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { eventModel, eventRevisionModel, IEventModel, IEventRevisionModel } from "../../models/event";
-import { error_400_id, error_500, ___issue___, colUser, colEvent } from "../../utils";
+import { error_400_id, error_500, ___issue___, colUser, colEvent, unsetAuthorFields } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // EVENT
 // GET
 export const getAllEvents = async (req: Request, res: Response) => {
 	const count = await eventModel.countDocuments().exec();
-	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
 	const events = (await eventModel
@@ -18,7 +18,7 @@ export const getAllEvents = async (req: Request, res: Response) => {
 			{ $skip: perPage * page },
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			{ $unset: unsetAuthorFields("author") },
 		])
 		.exec()) as IEventModel[];
 
@@ -39,7 +39,7 @@ export const getOneEvent = async (req: Request, res: Response) => {
 				.aggregate([
 					{ $match: { _id: Types.ObjectId(_id) } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+					{ $unset: unsetAuthorFields("author") },
 				])
 				.exec()
 		)[0] as IEventModel;
@@ -134,7 +134,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
 // GET
 export const getAllEventRevisions = async (req: Request, res: Response) => {
 	const count = await eventRevisionModel.countDocuments().exec();
-	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
 	const eventRevisions = (await eventRevisionModel.aggregate([
@@ -143,7 +143,7 @@ export const getAllEventRevisions = async (req: Request, res: Response) => {
 		{ $skip: page * perPage },
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-		{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		{ $unset: unsetAuthorFields("author") },
 		{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
 	])) as IEventRevisionModel[];
 
@@ -160,7 +160,7 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 	const { _id } = req.params;
 	try {
 		const count = await eventRevisionModel.countDocuments({ eventId: Types.ObjectId(_id) }).exec();
-		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
 
 		const eventRevisions = (await eventRevisionModel
@@ -170,7 +170,7 @@ export const getEventRevisionsByEventId = async (req: Request, res: Response) =>
 				{ $skip: page * perPage },
 				{ $limit: perPage },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				{ $unset: unsetAuthorFields("author") },
 				{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
 			])
 			.exec()) as IEventRevisionModel[];
@@ -199,7 +199,7 @@ export const getOneEventRevision = async (req: Request, res: Response) => {
 				.aggregate([
 					{ $match: { _id: Types.ObjectId(_id) } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+					{ $unset: unsetAuthorFields("author") },
 				])
 				.exec()
 		)[0] as IEventRevisionModel;

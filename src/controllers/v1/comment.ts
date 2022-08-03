@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { commentModel, ICommentModel } from "../../models/comment";
 import { forumModel } from "../../models/forum";
-import { error_400_id, error_500, ___issue___, colUser } from "../../utils";
+import { error_400_id, error_500, ___issue___, colUser, unsetAuthorFields } from "../../utils";
 
 // GET
 export const getAllComments = async (req: Request, res: Response) => {
 	const count = await commentModel.countDocuments().exec();
-	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
 	const comments = (await commentModel
@@ -17,7 +17,7 @@ export const getAllComments = async (req: Request, res: Response) => {
 			{ $skip: perPage * page },
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			{ $unset: unsetAuthorFields("author") },
 		])
 		.exec()) as ICommentModel[];
 
@@ -34,7 +34,7 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 	const { authorId } = req.params;
 	try {
 		const count = await commentModel.countDocuments({ author: Types.ObjectId(authorId) }).exec();
-		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
 		const comments = (await commentModel
 			.aggregate([
@@ -66,7 +66,7 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const count = await commentModel.countDocuments({ forumId: Types.ObjectId(_id) }).exec();
-		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
 		const comments = (await commentModel
 			.aggregate([
@@ -75,7 +75,7 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 				{ $skip: perPage * page },
 				{ $limit: perPage },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				{ $unset: unsetAuthorFields("author") },
 			])
 			.exec()) as ICommentModel[];
 
