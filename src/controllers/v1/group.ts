@@ -56,7 +56,7 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 			await groupModel
 				.aggregate([
 					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+					{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
 					{ $unset: ["users.hash", "users.salt"] },
 				])
 				.exec()
@@ -109,7 +109,7 @@ export const updateGroup = async (req: Request, res: Response) => {
 export const deleteGroup = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const group = await groupModel.findByIdAndRemove({ name: _id });
+		const group = await groupModel.findByIdAndRemove(_id);
 		return res.status(!!group ? 200 : 422).json({
 			data: group,
 			message: !!group ? "Group deleted successfully" : `Fail to delete group. Group _id: "${_id}" not found`,

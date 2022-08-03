@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import { userModel } from "../../models/user";
+const validStaff = ["admin", "editor", "forum_moderator", "shortlink_moderator"];
 
 export const validateLoggedIn = async (req: Request, res: Response, next: NextFunction) => {
 	if (req.session && req.session.user) {
@@ -15,6 +16,14 @@ export const validateAdmin = async (req: Request, res: Response, next: NextFunct
 		next();
 	} else {
 		res.status(403).json({ data: null, message: "Need to be admin", success: false });
+	}
+};
+
+export const validateStaff = async (req: Request, res: Response, next: NextFunction) => {
+	if (req.session && req.session.user && validStaff.some((subString) => req.session.role?.includes(subString))) {
+		next();
+	} else {
+		res.status(403).json({ data: null, message: "Need to be staff", success: false });
 	}
 };
 

@@ -26,6 +26,7 @@ import { eventRouterV1 } from "./api/v1/event";
 import { blogRouterV1 } from "./api/v1/blog";
 import { forumRouterV1 } from "./api/v1/forum";
 import { commentRouterV1 } from "./api/v1/comment";
+import { noteRouterV1 } from "./api/v1/note";
 
 // --------------------------------------------------
 dotenv.config(); // load env
@@ -68,6 +69,7 @@ app.use("/v1/event", eventRouterV1);
 app.use("/v1/blog", blogRouterV1);
 app.use("/v1/forum", forumRouterV1);
 app.use("/v1/comment", commentRouterV1);
+app.use("/v1/note", noteRouterV1);
 
 // --------------------------------------------------
 // ! Not found page error
