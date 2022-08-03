@@ -29,6 +29,7 @@ tags:
   - name: Forum
   - name: Comment
   - name: Shortlink
+  - name: Note
   - name: User
   - name: Group
   - name: Auth
@@ -1594,62 +1595,6 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security: []
   /comment/{_id}:
-    get:
-      tags:
-        - Comment
-      summary: Get a comment
-      description: Get a comment
-      operationId: getComment
-      parameters:
-        - name: _id
-          in: path
-          description: ID of the comment
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    $ref: "#/components/schemas/comment"
-                  length:
-                    type: integer
-                    description: Number of comments
-                  message:
-                    type: string
-                    description: Message of the response
-                  success:
-                    type: boolean
-                    description: Success of the response
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
-        "422":
-          description: Validation error such as Id not found
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_notFound"
-        "500":
-          description: A server error
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_default"
-      security:
-        - cookieAuth: []
     put:
       tags:
         - Comment
@@ -2955,8 +2900,7 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: Fkey of the id of the author of this event
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         visibility:
@@ -2994,9 +2938,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/blog"
-        length:
+        page:
           type: integer
-          description: The number of blogs in this list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3074,8 +3021,7 @@ components:
         _id:
           type: string
         author:
-          type: string
-          description: Fkey of the id of the author of this event
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         visibility:
@@ -3110,8 +3056,7 @@ components:
           type: integer
           description: The revision number of this revision
         blogId:
-          type: string
-          description: Fkey of the id of the blog post this revision is for
+          $ref: "#/components/schemas/blog"
     blogRevisionList:
       type: object
       properties:
@@ -3119,9 +3064,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/blogRevision"
-        length:
+        page:
           type: integer
-          description: The number of revisions for this blog post
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3162,8 +3110,7 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: Fkey of the id of the author of this event
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         visibility:
@@ -3201,9 +3148,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/event"
-        length:
+        page:
           type: integer
-          description: The amount of events in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3283,8 +3233,7 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: Fkey of the id of the author of this event
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         visibility:
@@ -3319,8 +3268,7 @@ components:
           type: integer
           description: The revision number of this revision
         eventId:
-          type: string
-          description: Fkey of the id of the event this revision is for
+          $ref: "#/components/schemas/event"
     eventRevisionList:
       type: object
       properties:
@@ -3328,9 +3276,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/eventRevision"
-        length:
+        page:
           type: integer
-          description: The amount of events revision in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3371,15 +3322,13 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: FKey of the id of the author of this forum
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         content:
           type: string
         category:
-          type: string
-          description: FKey of category id
+          $ref: "#/components/schemas/forumCategory"
         editedBy:
           type: string
           description: FKey of the id of the user who edited this forum
@@ -3405,15 +3354,13 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: FKey of the id of the author of this forum
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
         content:
           type: string
         category:
-          type: string
-          description: FKey of category id
+          $ref: "#/components/schemas/forumCategory"
         editedBy:
           type: string
           description: FKey of the id of the user who edited this forum
@@ -3443,9 +3390,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/forum"
-        length:
+        page:
           type: integer
-          description: The amount of forums in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3460,8 +3410,7 @@ components:
         content:
           type: string
         category:
-          type: string
-          description: FKey of category id
+          $ref: "#/components/schemas/forumCategory"
         pinned:
           type: boolean
           description: Whether the forum is pinned or not
@@ -3531,9 +3480,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/forumCategory"
-        length:
+        page:
           type: integer
-          description: The amount of forum categories in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3594,8 +3546,7 @@ components:
           type: string
           uniqueItems: true
         author:
-          type: string
-          description: FKey of the id of the author of this comment
+          $ref: "#/components/schemas/userPublic"
         content:
           type: string
         forumId:
@@ -3614,9 +3565,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/comment"
-        length:
+        page:
           type: integer
-          description: The amount of comments in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3699,9 +3653,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/shortlink"
-        length:
+        page:
           type: integer
-          description: The amount of shortlinks in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -3851,12 +3808,27 @@ components:
         _id:
           type: string
           uniqueItems: true
+        username:
+          type: string
+          description: The username of the user
+          uniqueItems: true
         first_name:
           type: string
           description: The first name of the user
         last_name:
           type: string
           description: The last name of the user
+        role:
+          type: array
+          items:
+            type: string
+            description: User role(s)
+            enum:
+              - admin
+              - editor
+              - forum_moderator
+              - shortlink_moderator
+              - user
         group:
           type: array
           items:
@@ -3869,9 +3841,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/userProtected"
-        length:
+        page:
           type: integer
-          description: The amount of users in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
@@ -4039,9 +4014,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/group"
-        length:
+        page:
           type: integer
-          description: The amount of groups in the list
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
         message:
           type: string
           description: A message to be displayed to the user
