@@ -1,15 +1,30 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { commentModel } from "../../models/comment";
+import { commentModel, ICommentModel } from "../../models/comment";
 import { forumModel } from "../../models/forum";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { error_400_id, error_500, ___issue___, colUser } from "../../utils";
 
 // GET
-export const getAllComments = async (_req: Request, res: Response) => {
-	const comments = await commentModel.find({});
+export const getAllComments = async (req: Request, res: Response) => {
+	const count = await commentModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const comments = (await commentModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		])
+		.exec()) as ICommentModel[];
+
 	return res.status(200).json({
 		data: comments,
-		length: comments.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Comments retrieved successfully",
 		success: true,
 	});
@@ -18,10 +33,23 @@ export const getAllComments = async (_req: Request, res: Response) => {
 export const getCommentByAuthor = async (req: Request, res: Response) => {
 	const { authorId } = req.params;
 	try {
-		const comments = await commentModel.find({ author: Types.ObjectId(authorId) });
+		const count = await commentModel.countDocuments({ author: Types.ObjectId(authorId) }).exec();
+		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const page = parseInt(req.query.page as string) - 1 || 0;
+		const comments = (await commentModel
+			.aggregate([
+				{ $match: { author: Types.ObjectId(authorId) } },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: perPage * page },
+				{ $limit: perPage },
+				// no need to lookup user since we search by author
+			])
+			.exec()) as ICommentModel[];
+
 		return res.status(200).json({
 			data: comments,
-			length: comments.length,
+			page: page + 1,
+			pages: Math.ceil(count / perPage),
 			message: "Comments retrieved successfully",
 			success: true,
 		});
@@ -37,10 +65,24 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 export const getCommentByForumId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const comments = await commentModel.find({ forumId: Types.ObjectId(_id) });
+		const count = await commentModel.countDocuments({ forumId: Types.ObjectId(_id) }).exec();
+		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const page = parseInt(req.query.page as string) - 1 || 0;
+		const comments = (await commentModel
+			.aggregate([
+				{ $match: { forumId: Types.ObjectId(_id) } },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: perPage * page },
+				{ $limit: perPage },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			])
+			.exec()) as ICommentModel[];
+
 		return res.status(200).json({
 			data: comments,
-			length: comments.length,
+			page: page + 1,
+			pages: Math.ceil(count / perPage),
 			message: "Comments retrieved successfully",
 			success: true,
 		});

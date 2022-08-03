@@ -1,15 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { ___prod___ } from "../constants";
+import { getDataStatus } from "./templateError";
 
-const badRequestName = ["ValidationError", "CastError"];
-const badRequestMessage = ["Argument passed", "Expected a positive"];
 const ExpressErrorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
-	const statusCode = res.statusCode !== 200 ? res.statusCode : badRequestName.includes(err.name) || badRequestMessage.some((subString) => err.message.includes(subString)) ? 400 : 500;
-	const dataErr: any = {
-		message: `${err.name}: ${err.message}!` + " If you think that this is a bug, please submit an issue at https://github.com/Litbang-HIMTI/Backend-Website-Himti/issues",
-		success: false,
-		stack: ___prod___ ? undefined : err.stack,
-	};
+	const { statusCode, dataErr } = getDataStatus(res, err);
 	return res.status(statusCode).json(dataErr);
 };
 

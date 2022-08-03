@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { blogModel, blogRevisionModel, IBlogRevisionModel } from "../../models/blog";
-import { error_400_id, error_500, ___issue___, colUser } from "../../utils";
+import { blogModel, blogRevisionModel, IBlogModel, IBlogRevisionModel } from "../../models/blog";
+import { error_400_id, error_500, ___issue___, colUser, colBlog } from "../../utils";
 const id_type_blog = "Blog _id";
 const id_type_blogRevision = "Blog Revision _id";
 // --------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
-	const blogs = await blogModel
+	const blogs = (await blogModel
 		.aggregate([
 			{ $match: {} },
 			{ $sort: { createdAt: -1 } },
@@ -21,7 +21,7 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
 		])
-		.exec();
+		.exec()) as IBlogModel[];
 
 	return res.status(200).json({
 		data: blogs,
@@ -35,13 +35,16 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 export const getOneBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blog = await blogModel
-			.aggregate([
-				{ $match: { _id: Types.ObjectId(_id) } },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
-			])
-			.exec()[0];
+		const blog = (
+			await blogModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				])
+				.exec()
+		)[0] as IBlogModel;
+
 		return res.status(!!blog ? 200 : 422).json({
 			data: blog,
 			message: !!blog ? "Blog retrieved successfully" : `Blog _id: "${_id}" not found`,
@@ -134,7 +137,7 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
-	const blogRevisions = await blogRevisionModel
+	const blogRevisions = (await blogRevisionModel
 		.aggregate([
 			{ $match: {} },
 			{ $sort: { createdAt: -1 } },
@@ -142,8 +145,9 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+			{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
 		])
-		.exec();
+		.exec()) as IBlogRevisionModel[];
 
 	return res.status(200).json({
 		data: blogRevisions,
@@ -157,13 +161,16 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 export const getOneBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blogRevision = await blogRevisionModel
-			.aggregate([
-				{ $match: { _id: Types.ObjectId(_id) } },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
-			])
-			.exec()[0];
+		const blogRevision = (
+			await blogRevisionModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+					{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
+				])
+				.exec()
+		)[0] as IBlogRevisionModel;
 
 		return res.status(!!blogRevision ? 200 : 422).json({
 			data: blogRevision,
@@ -185,7 +192,7 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 		const count = await blogModel.countDocuments({ blogId: Types.ObjectId(_id) }).exec();
 		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
-		const blogRevisions = await blogRevisionModel
+		const blogRevisions = (await blogRevisionModel
 			.aggregate([
 				{ $match: { blogId: Types.ObjectId(_id) } },
 				{ $sort: { createdAt: -1 } },
@@ -193,8 +200,9 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 				{ $limit: perPage },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
 			])
-			.exec();
+			.exec()) as IBlogRevisionModel[];
 
 		return res.status(200).json({
 			data: blogRevisions,

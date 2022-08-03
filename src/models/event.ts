@@ -25,11 +25,11 @@ interface IEventRevision extends Ievent {
 	revision: number;
 	eventId: Schema.Types.ObjectId;
 }
-export interface IeventModel extends Ievent, Document, DocumentResult<IeventModel> {}
+export interface IEventModel extends Ievent, Document, DocumentResult<IEventModel> {}
 export interface IEventRevisionModel extends IEventRevision, Document, DocumentResult<IEventRevisionModel> {}
 
 // ---------------------------------------------
-const eventSchema = new Schema<IeventModel>(
+const eventSchema = new Schema<IEventModel>(
 	{
 		author: { type: Schema.Types.ObjectId, ref: colUser, required: true },
 		title: {
@@ -129,5 +129,5 @@ const eventRevisionSchema = new Schema<IEventRevisionModel>(
 	{ collection: colEventRevision, timestamps: true }
 );
 
-export const eventModel = model<IeventModel>(colEvent, eventSchema);
+export const eventModel = model<IEventModel>(colEvent, eventSchema);
 export const eventRevisionModel = model<IEventRevisionModel>(colEventRevision, eventRevisionSchema);

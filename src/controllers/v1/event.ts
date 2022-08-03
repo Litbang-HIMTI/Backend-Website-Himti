@@ -1,16 +1,31 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { eventModel, eventRevisionModel, IEventRevisionModel } from "../../models/event";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { eventModel, eventRevisionModel, IEventModel, IEventRevisionModel } from "../../models/event";
+import { error_400_id, error_500, ___issue___, colUser, colEvent } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // EVENT
 // GET
-export const getAllEvents = async (_req: Request, res: Response) => {
-	const events = await eventModel.find({});
+export const getAllEvents = async (req: Request, res: Response) => {
+	const count = await eventModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const events = (await eventModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		])
+		.exec()) as IEventModel[];
+
 	return res.status(200).json({
 		data: events,
-		length: events.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Events retrieved successfully",
 		success: true,
 	});
@@ -19,7 +34,17 @@ export const getAllEvents = async (_req: Request, res: Response) => {
 export const getOneEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const event = await eventModel.findById(_id);
+		const event = (
+			await eventModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				])
+				.exec()
+		)[0] as IEventModel;
+		console.log(event);
+
 		return res.status(!!event ? 200 : 422).json({
 			data: event,
 			message: !!event ? "Event retrieved successfully" : `Event _id: "${_id}" not found`,
@@ -107,20 +132,78 @@ export const deleteEvent = async (req: Request, res: Response) => {
 // --------------------------------------------------------------------------------------------
 // EVENT REVISION
 // GET
-export const getAllEventRevisions = async (_req: Request, res: Response) => {
-	const eventRevisions = await eventRevisionModel.find({});
+export const getAllEventRevisions = async (req: Request, res: Response) => {
+	const count = await eventRevisionModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const eventRevisions = (await eventRevisionModel.aggregate([
+		{ $match: {} },
+		{ $sort: { createdAt: -1 } },
+		{ $skip: page * perPage },
+		{ $limit: perPage },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+		{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
+	])) as IEventRevisionModel[];
+
 	return res.status(200).json({
 		data: eventRevisions,
-		length: eventRevisions.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Event revisions retrieved successfully",
 		success: true,
 	});
 };
 
+export const getEventRevisionsByEventId = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	try {
+		const count = await eventRevisionModel.countDocuments({ eventId: Types.ObjectId(_id) }).exec();
+		const perPage = parseInt(req.query.perPage as string) || count; // no perPage means get all
+		const page = parseInt(req.query.page as string) - 1 || 0;
+
+		const eventRevisions = (await eventRevisionModel
+			.aggregate([
+				{ $match: { eventId: Types.ObjectId(_id) } },
+				{ $sort: { createdAt: -1 } },
+				{ $skip: page * perPage },
+				{ $limit: perPage },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
+			])
+			.exec()) as IEventRevisionModel[];
+
+		return res.status(200).json({
+			data: eventRevisions,
+			page: page + 1,
+			pages: Math.ceil(count / perPage),
+			message: "Event revisions retrieved successfully",
+			success: true,
+		});
+	} catch (error) {
+		if (error.name === "CastError") {
+			return error_400_id(res, _id, "eventId");
+		} else {
+			return error_500(res, error);
+		}
+	}
+};
+
 export const getOneEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const eventRevision = await eventRevisionModel.findById(_id);
+		const eventRevision = (
+			await eventRevisionModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: ["author.hash", "author.salt", "author.email", "author.createdAt", "author.updatedAt", "author.__v"] },
+				])
+				.exec()
+		)[0] as IEventRevisionModel;
+
 		return res.status(!!eventRevision ? 200 : 422).json({
 			data: eventRevision,
 			message: !!eventRevision ? "Event revision retrieved successfully" : `Event revision _id: "${_id}" not found`,
@@ -129,25 +212,6 @@ export const getOneEventRevision = async (req: Request, res: Response) => {
 	} catch (error) {
 		if (error.name === "CastError") {
 			return error_400_id(res, _id, "Event revision _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
-};
-
-export const getEventRevisionsByEventId = async (req: Request, res: Response) => {
-	const { _id } = req.params;
-	try {
-		const eventRevisions = await eventRevisionModel.find({ eventId: _id });
-		return res.status(200).json({
-			data: eventRevisions,
-			length: eventRevisions.length,
-			message: "Event revisions retrieved successfully",
-			success: true,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "eventId");
 		} else {
 			return error_500(res, error);
 		}

@@ -6,7 +6,7 @@ interface IComment {
 	content: string;
 	forumId: Schema.Types.ObjectId;
 }
-interface ICommentModel extends IComment, Document {}
+export interface ICommentModel extends IComment, Document {}
 
 // ---------------------------------------------
 const commentSchema = new Schema<ICommentModel>(
