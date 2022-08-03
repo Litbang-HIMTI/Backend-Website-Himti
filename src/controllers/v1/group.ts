@@ -1,14 +1,20 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { GroupModel } from "../../models/group";
-import { error_400_id, error_500, colUser, ___issue___ } from "../../utils";
+import { groupModel, IGroupModel } from "../../models/group";
+import { error_400_id, error_500, colUser, ___issue___, unsetAuthorFields } from "../../utils";
 
 // GET
-export const getAllGroups = async (_req: Request, res: Response) => {
-	const groups = await GroupModel.find({});
+export const getAllGroups = async (req: Request, res: Response) => {
+	const count = await groupModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+
+	const groups = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
+
 	return res.status(200).json({
 		data: groups,
-		length: groups.length,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
 		message: "Groups retrieved successfully",
 		success: true,
 	});
@@ -18,23 +24,20 @@ export const getOneGroup_public = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		// get a group and its users using mongoose
-		const group = await GroupModel.aggregate([
-			{ $match: { _id: Types.ObjectId(_id) } },
-			{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
-			{ $unset: ["users.hash", "users.salt", "users.role", "users.username", "users.email", "users.createdAt", "users.updatedAt"] },
-		]).exec();
+		const group = (
+			await groupModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
+					{ $unset: unsetAuthorFields("author") },
+				])
+				.exec()
+		)[0] as IGroupModel;
 
-		if (group.length === 0)
-			return res.status(422).json({
-				data: null,
-				message: `Group "${_id}" not found`,
-				success: false,
-			});
-
-		return res.status(200).json({
+		return res.status(!!group ? 200 : 422).json({
 			data: group,
-			message: `Group "${_id}" retrieved successfully`,
-			success: true,
+			message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
+			success: !!group,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
@@ -49,23 +52,20 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	// get a group and its users using mongoose
 	try {
-		const group = await GroupModel.aggregate([
-			{ $match: { _id: Types.ObjectId(_id) } },
-			{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
-			{ $unset: ["users.hash", "users.salt"] },
-		]).exec();
+		const group = (
+			await groupModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: "users", localField: "name", foreignField: "group", as: "users" } },
+					{ $unset: ["users.hash", "users.salt"] },
+				])
+				.exec()
+		)[0] as IGroupModel;
 
-		if (group.length === 0)
-			return res.status(422).json({
-				data: null,
-				message: `Group "${_id}" not found`,
-				success: false,
-			});
-
-		return res.status(200).json({
+		return res.status(!!group ? 200 : 422).json({
 			data: group,
-			message: `Group "${_id}" retrieved successfully`,
-			success: true,
+			message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
+			success: !!group,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
@@ -78,7 +78,7 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 
 // POST
 export const createGroup = async (req: Request, res: Response) => {
-	const group = GroupModel.create(req.body);
+	const group = groupModel.create(req.body);
 	return res.status(!!group ? 201 : 500).json({
 		data: group,
 		message: !!group ? "Group created successfully" : `Unable to create group. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -90,7 +90,7 @@ export const createGroup = async (req: Request, res: Response) => {
 export const updateGroup = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const group = await GroupModel.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+		const group = await groupModel.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
 		return res.status(!!group ? 200 : 422).json({
 			data: group,
 			message: !!group ? "Group updated successfully" : `Fail to update. Group _id: "${_id}" not found`,
@@ -109,7 +109,7 @@ export const updateGroup = async (req: Request, res: Response) => {
 export const deleteGroup = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const group = await GroupModel.findByIdAndRemove({ name: _id });
+		const group = await groupModel.findByIdAndRemove({ name: _id });
 		return res.status(!!group ? 200 : 422).json({
 			data: group,
 			message: !!group ? "Group deleted successfully" : `Fail to delete group. Group _id: "${_id}" not found`,

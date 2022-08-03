@@ -5,7 +5,7 @@ interface IGroup {
 	name: string;
 	description: string;
 }
-interface IGroupModel extends IGroup, Document {}
+export interface IGroupModel extends IGroup, Document {}
 
 // ---------------------------------------------
 const groupSchema = new Schema<IGroupModel>(
@@ -27,4 +27,4 @@ const groupSchema = new Schema<IGroupModel>(
 	{ collection: colGroup, timestamps: true }
 );
 
-export const GroupModel = model<IGroupModel>(colGroup, groupSchema);
+export const groupModel = model<IGroupModel>(colGroup, groupSchema);

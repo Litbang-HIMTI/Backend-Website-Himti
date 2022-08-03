@@ -82,28 +82,23 @@ export const getOneForum = async (req: Request, res: Response) => {
 export const getOneForumAndItsComments = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const forum = (await forumModel
-			.aggregate([
-				{ $match: { _id: Types.ObjectId(_id) } },
-				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
-				{ $unset: ["comments.forumId"] },
-			])
-			.exec()) as IForumModel[];
+		const forum = (
+			await forumModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
+					{ $unset: ["comments.forumId"] },
+				])
+				.exec()
+		)[0] as IForumModel;
 
-		if (forum.length === 0)
-			return res.status(422).json({
-				data: null,
-				message: `Forum _id: "${_id}" not found`,
-				success: false,
-			});
-
-		return res.status(200).json({
-			data: forum[0],
-			message: `Forum _id: "${_id}" retrieved successfully`,
-			success: true,
+		return res.status(!!forum ? 200 : 422).json({
+			data: forum,
+			message: !!forum ? `Forum _id: "${_id}" retrieved successfully` : `Forum _id: "${_id}" not found`,
+			success: !!forum,
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
