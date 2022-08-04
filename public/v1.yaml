@@ -42,7 +42,21 @@ paths:
       summary: Get all blog posts
       description: Get all blog posts
       operationId: getAllBlogs
-      parameters: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -274,6 +288,20 @@ paths:
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -313,7 +341,21 @@ paths:
       summary: Get all blog post revisions
       description: Get all blog post revisions
       operationId: getAllBlogRevisions
-      parameters: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -512,7 +554,21 @@ paths:
       summary: Get all events
       description: Get all events
       operationId: getAllEvents
-      parameters: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -752,6 +808,20 @@ paths:
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -797,6 +867,21 @@ paths:
       summary: Get all event revisions
       description: Get all event revisions
       operationId: getEventRevisions
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1009,6 +1094,21 @@ paths:
       summary: Get all forums
       description: Get all forums
       operationId: getForums
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1286,6 +1386,21 @@ paths:
       summary: Get all forum categories
       description: Get all forum categories
       operationId: getForumCategories
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1535,6 +1650,21 @@ paths:
       summary: Get all comments
       description: Get all comments
       operationId: getAllComments
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1696,7 +1826,7 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
-  /comment/forum/{_id}:
+  /comment/forum/{forumId}:
     get:
       tags:
         - Comment
@@ -1704,12 +1834,26 @@ paths:
       description: Get all comments of a forum
       operationId: getAllCommentsOfForum
       parameters:
-        - name: _id
+        - name: forumId
           in: path
           description: ID of the forum
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1733,7 +1877,7 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security: []
-  /comment/author/{_authorId}:
+  /comment/author/{authorId}:
     get:
       tags:
         - Comment
@@ -1741,12 +1885,26 @@ paths:
       description: Get all comments of an author
       operationId: getAllCommentsOfAuthor
       parameters:
-        - name: _authorId
+        - name: authorId
           in: path
           description: ID of the author
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -1778,6 +1936,21 @@ paths:
       summary: Get all shortlinks
       description: Get all shortlinks
       operationId: getAllShortlinks
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -2016,6 +2189,21 @@ paths:
       summary: Get all notes
       description: Get all notes
       operationId: getNoteList
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -2244,6 +2432,21 @@ paths:
       summary: Get all users
       description: Get all users
       operationId: getUser
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response
@@ -2604,6 +2807,21 @@ paths:
       summary: Get all groups
       description: Get all groups
       operationId: getAllGroups
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: A successful response

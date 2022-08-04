@@ -5,7 +5,7 @@ import { getAllComments, getCommentByAuthor, getCommentByForumId, createComment,
 const r = Router();
 
 // * public
-r.get("/forum/:_id", getCommentByForumId);
+r.get("/forum/:forumId", getCommentByForumId);
 r.get("/author/:authorId", getCommentByAuthor);
 r.post("/", createComment);
 

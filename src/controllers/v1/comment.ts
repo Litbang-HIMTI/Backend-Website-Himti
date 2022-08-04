@@ -63,14 +63,14 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 };
 
 export const getCommentByForumId = async (req: Request, res: Response) => {
-	const { _id } = req.params;
+	const { forumId } = req.params;
 	try {
-		const count = await commentModel.countDocuments({ forumId: Types.ObjectId(_id) }).exec();
+		const count = await commentModel.countDocuments({ forumId: Types.ObjectId(forumId) }).exec();
 		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
 		const comments = (await commentModel
 			.aggregate([
-				{ $match: { forumId: Types.ObjectId(_id) } },
+				{ $match: { forumId: Types.ObjectId(forumId) } },
 				{ $sort: { createdAt: -1 } },
 				{ $skip: perPage * page },
 				{ $limit: perPage },
@@ -88,7 +88,7 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		if (error.name === "CastError") {
-			return error_400_id(res, _id, "forumId");
+			return error_400_id(res, forumId, "forumId");
 		} else {
 			return error_500(res, error);
 		}

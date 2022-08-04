@@ -27,11 +27,7 @@ export const getOneGroup_public = async (req: Request, res: Response) => {
 		// get a group and its users using mongoose
 		const group = (
 			await groupModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
-					{ $unset: unsetAuthorFields("author") },
-				])
+				.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } }, { $unset: unsetAuthorFields("users") }])
 				.exec()
 		)[0] as IGroupModel;
 
