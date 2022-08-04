@@ -2009,6 +2009,234 @@ paths:
       security:
         - cookieAuth: []
   # -----------------------------------------------------------------------------------
+  /note:
+    get:
+      tags:
+        - Note
+      summary: Get all notes
+      description: Get all notes
+      operationId: getNoteList
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/noteList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - Note
+      summary: Create a note
+      description: Create a note
+      operationId: createNote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/noteEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/noteCreateResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /note/{_id}:
+    get:
+      tags:
+        - Note
+      summary: Get a note
+      description: Get a note
+      operationId: getNote
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the note
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/note"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - Note
+      summary: Update a note
+      description: Update a note
+      operationId: updateNote
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the note
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/noteEditCreateRequest"
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/noteEditResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+    delete:
+      tags:
+        - Note
+      summary: Delete a note
+      description: Delete a note
+      operationId: deleteNote
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the note
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/noteDeleteResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  # -----------------------------------------------------------------------------------
   /user:
     get:
       tags:
@@ -2925,6 +3153,8 @@ components:
         showAtHome:
           type: boolean
           description: Whether the blog post is shown at the home page or not
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
         created_at:
           type: string
           format: date-time
@@ -3136,6 +3366,8 @@ components:
         showAtHome:
           type: boolean
           description: Whether the blog post is shown at the home page or not
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
         created_at:
           type: string
           format: date-time
@@ -3331,9 +3563,6 @@ components:
           type: string
         category:
           $ref: "#/components/schemas/forumCategory"
-        editedBy:
-          type: string
-          description: FKey of the id of the user who edited this forum
         locked:
           type: boolean
           description: Whether the forum is locked or not
@@ -3343,6 +3572,8 @@ components:
         showAtHome:
           type: boolean
           description: Whether the forum is shown at the home page or not
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
         created_at:
           type: string
           format: date-time
@@ -3363,9 +3594,6 @@ components:
           type: string
         category:
           $ref: "#/components/schemas/forumCategory"
-        editedBy:
-          type: string
-          description: FKey of the id of the user who edited this forum
         locked:
           type: boolean
           description: Whether the forum is locked or not
@@ -3375,16 +3603,18 @@ components:
         showAtHome:
           type: boolean
           description: Whether the forum is shown at the home page or not
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        comments:
-          type: array
-          items:
-            $ref: "#/components/schemas/comment"
     forumList:
       type: object
       properties:
@@ -3723,7 +3953,7 @@ components:
           type: string
           uniqueItems: true
         author:
-          $ref: "#/components/schemas/userPublic"  
+          $ref: "#/components/schemas/userPublic"
         title:
           type: string
           description: The title of the note
@@ -3736,9 +3966,87 @@ components:
         color_bg:
           type: string
           description: The color of the background in the note
-        edited
-
-
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    noteList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/note"
+        page:
+          type: integer
+          description: The page of the list/query
+        pages:
+          type: integer
+          description: The number of pages available
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    noteEditCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the note
+        content:
+          type: string
+          description: The content of the note
+        color_text:
+          type: string
+          description: The color of the text in the note
+        color_bg:
+          type: string
+          description: The color of the background in the note
+    noteEditResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/note"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Note updated successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    noteCreateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/note"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Note created successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
+    noteDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          $ref: "#/components/schemas/note"
+        message:
+          type: string
+          description: A message to be displayed to the user
+          default: "Note deleted successfully"
+        success:
+          type: boolean
+          description: Whether the request was successful or not
     # -----------------------------------------------------------------------------------
     user:
       type: object
