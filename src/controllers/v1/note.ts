@@ -9,7 +9,18 @@ export const getAllNotes = async (req: Request, res: Response) => {
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
-	const notes = (await noteModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as INoteModel[];
+	const notes = (await noteModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: unsetAuthorFields("author") },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
+		])
+		.exec()) as INoteModel[];
 
 	return res.status(200).json({
 		data: notes,
@@ -30,6 +41,8 @@ export const getOneNote = async (req: Request, res: Response) => {
 					{ $match: { _id: Types.ObjectId(_id) } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+					{ $unset: unsetAuthorFields("editedBy") },
 				])
 				.exec()
 		)[0] as INoteModel;
@@ -62,7 +75,7 @@ export const createNote = async (req: Request, res: Response) => {
 export const updateNote = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, edited_by: req.session.userId }, { new: true, runValidators: true });
+		const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { new: true, runValidators: true });
 		return res.status(!!note ? 200 : 422).json({
 			data: note,
 			message: !!note ? "Note updated successfully" : `Fail to update. Note _id: "${_id}" not found`,

@@ -7,7 +7,7 @@ interface INote {
 	content: string;
 	color_text?: string;
 	color_bg?: string;
-	edited_by?: Schema.Types.ObjectId;
+	editedBy?: Schema.Types.ObjectId;
 }
 export interface INoteModel extends INote, Document {}
 
@@ -39,7 +39,7 @@ const noteSchema = new Schema<INoteModel>(
 			type: String,
 			default: "#ffffff",
 		},
-		edited_by: {
+		editedBy: {
 			type: Schema.Types.ObjectId,
 			ref: "User",
 			default: undefined,

@@ -6,10 +6,10 @@ interface IForum {
 	title: string;
 	content: string;
 	category: Schema.Types.ObjectId;
-	editedBy?: Schema.Types.ObjectId;
 	locked?: boolean;
 	pinned?: boolean;
 	showAtHome?: boolean;
+	editedBy?: Schema.Types.ObjectId;
 }
 interface IForumCategory {
 	name: string;
@@ -42,11 +42,6 @@ const forumSchema = new Schema<IForumModel>(
 			ref: colForumCategory,
 			required: true,
 		},
-		editedBy: {
-			type: Schema.Types.ObjectId,
-			ref: colUser,
-			default: undefined,
-		},
 		locked: {
 			type: Boolean,
 			default: false,
@@ -58,6 +53,11 @@ const forumSchema = new Schema<IForumModel>(
 		showAtHome: {
 			type: Boolean,
 			default: false,
+		},
+		editedBy: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
+			default: undefined,
 		},
 	},
 	{ collection: colForum, timestamps: true }

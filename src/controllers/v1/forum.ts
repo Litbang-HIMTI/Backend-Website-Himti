@@ -24,6 +24,8 @@ export const getAllForums = async (req: Request, res: Response) => {
 				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
 			])
 			.exec()) as IForumModel[];
 
@@ -38,6 +40,8 @@ export const getAllForums = async (req: Request, res: Response) => {
 				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
 			])
 			.exec()) as IForumModel[];
 	}
@@ -61,6 +65,8 @@ export const getOneForum = async (req: Request, res: Response) => {
 					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+					{ $unset: unsetAuthorFields("editedBy") },
 				])
 				.exec()
 		)[0] as IForumModel;
@@ -89,6 +95,8 @@ export const getOneForumAndItsComments = async (req: Request, res: Response) => 
 					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+					{ $unset: unsetAuthorFields("editedBy") },
 					{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
 					{ $unset: ["comments.forumId"] },
 				])

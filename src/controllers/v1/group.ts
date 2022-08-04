@@ -9,6 +9,7 @@ export const getAllGroups = async (req: Request, res: Response) => {
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
+	// no need to project user for group list
 	const groups = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
 
 	return res.status(200).json({

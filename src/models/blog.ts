@@ -12,6 +12,7 @@ interface IBlog {
 	tags?: string[];
 	pinned?: boolean;
 	showAtHome?: boolean;
+	editedBy?: Schema.Types.ObjectId;
 }
 interface IBlogRevision extends IBlog {
 	revision: number;
@@ -72,6 +73,11 @@ const blogSchema = new Schema<IBlogModel>(
 		showAtHome: {
 			type: Boolean,
 			default: false,
+		},
+		editedBy: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
+			default: undefined,
 		},
 	},
 	{ collection: colBlog, timestamps: true }

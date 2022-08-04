@@ -3057,6 +3057,7 @@ components:
           description: The revision number of this revision
         blogId:
           $ref: "#/components/schemas/blog"
+          description: The event this revision belongs to. Will show full blog data for get one, but will only show the fk _id for lists.
     blogRevisionList:
       type: object
       properties:
@@ -3269,6 +3270,7 @@ components:
           description: The revision number of this revision
         eventId:
           $ref: "#/components/schemas/event"
+          description: The event this revision belongs to. Will show full event data for get one, but will only show the fk _id for lists.
     eventRevisionList:
       type: object
       properties:
@@ -3714,6 +3716,30 @@ components:
           type: boolean
           description: Whether the request was successful or not
     # -----------------------------------------------------------------------------------
+    note:
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          $ref: "#/components/schemas/userPublic"  
+        title:
+          type: string
+          description: The title of the note
+        content:
+          type: string
+          description: The content of the note
+        color_text:
+          type: string
+          description: The color of the text in the note
+        color_bg:
+          type: string
+          description: The color of the background in the note
+        edited
+
+
+    # -----------------------------------------------------------------------------------
     user:
       type: object
       properties:
@@ -3984,6 +4010,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/userPublic"
+            description: The user fk object. Will show user data for get one but will only show the fk if get all (list).
     groupProtected:
       type: object
       properties:
@@ -4007,6 +4034,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/userProtected"
+            description: The user fk object. Will show user data for get one but will only show the fk if get all (list).
     groupList:
       type: object
       properties:

@@ -20,6 +20,7 @@ interface Ievent {
 	email?: string;
 	pinned?: boolean;
 	showAtHome?: boolean;
+	editedBy?: Schema.Types.ObjectId;
 }
 interface IEventRevision extends Ievent {
 	revision: number;
@@ -108,6 +109,11 @@ const eventSchema = new Schema<IEventModel>(
 		showAtHome: {
 			type: Boolean,
 			default: false,
+		},
+		editedBy: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
+			default: undefined,
 		},
 	},
 	{ collection: colEvent, timestamps: true }

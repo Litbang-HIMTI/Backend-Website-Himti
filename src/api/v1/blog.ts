@@ -6,7 +6,7 @@ const r = Router();
 
 // * revision protected
 // * revision is automatically created when a blog post is updated
-r.get("/revision", validateEditor, cBlog.getAllBlogRevisions);
+r.get("/revision", validateEditor, cBlog.getAllBlogRevisions); // query blogId to get by eventId
 r.get("/revision/:_id", validateEditor, cBlog.getOneBlogRevision);
 r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
 r.delete("/revision/:_id", validateEditor, cBlog.deleteBlogRevision);

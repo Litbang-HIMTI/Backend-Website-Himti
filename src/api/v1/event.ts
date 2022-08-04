@@ -5,7 +5,7 @@ import * as cEvent from "../../controllers/v1/event";
 const r = Router();
 // * revision protected
 // * revision is automatically created when an event is updated
-r.get("/revision", validateEditor, cEvent.getAllEventRevisions);
+r.get("/revision", validateEditor, cEvent.getAllEventRevisions); // query eventId to get by eventId
 r.get("/revision/:_id", validateEditor, cEvent.getOneEventRevision);
 r.put("/revision/:_id", validateEditor, cEvent.updateEventRevision);
 r.delete("/revision/:_id", validateEditor, cEvent.deleteEventRevision);

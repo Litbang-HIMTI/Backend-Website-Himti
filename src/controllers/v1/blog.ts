@@ -20,6 +20,8 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: unsetAuthorFields("author") },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
 		])
 		.exec()) as IBlogModel[];
 
@@ -41,6 +43,8 @@ export const getOneBlog = async (req: Request, res: Response) => {
 					{ $match: { _id: Types.ObjectId(_id) } },
 					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+					{ $unset: unsetAuthorFields("editedBy") },
 				])
 				.exec()
 		)[0] as IBlogModel;
@@ -74,20 +78,20 @@ export const updateBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	let revisionPost;
 	try {
-		const blog = await blogModel.findByIdAndUpdate(_id, { ...req.body, author: req.session.userId! }, { runValidators: true, new: true });
+		const blog = await blogModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
 		if (blog) {
 			const revision = await blogRevisionModel.find({ blogId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 			if (revision.length > 0) {
 				// update revision by spread and save new revision with incremented revision number
 				revisionPost = await blogRevisionModel.create({
 					...(blog._doc as IBlogRevisionModel),
-					author: Types.ObjectId(req.session.userId!),
+					editedBy: Types.ObjectId(req.session.userId),
 					revision: revision[0].revision + 1,
 					blogId: Types.ObjectId(_id!),
 				});
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), author: Types.ObjectId(req.session.userId!), revision: 1, blogId: Types.ObjectId(_id!) });
+				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), editedBy: Types.ObjectId(req.session.userId), revision: 1, blogId: Types.ObjectId(_id) });
 			}
 		}
 
@@ -145,7 +149,8 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: unsetAuthorFields("author") },
-			{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
 		])
 		.exec()) as IBlogRevisionModel[];
 
@@ -158,40 +163,13 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 	});
 };
 
-export const getOneBlogRevision = async (req: Request, res: Response) => {
-	const { _id } = req.params;
-	try {
-		const blogRevision = (
-			await blogRevisionModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
-				])
-				.exec()
-		)[0] as IBlogRevisionModel;
-
-		return res.status(!!blogRevision ? 200 : 422).json({
-			data: blogRevision,
-			message: !!blogRevision ? "Blog revision retrieved successfully" : `Blog revision _id: "${_id}" not found`,
-			success: !!blogRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blogRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
-};
-
 export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
 		const count = await blogModel.countDocuments({ blogId: Types.ObjectId(_id) }).exec();
 		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 		const page = parseInt(req.query.page as string) - 1 || 0;
+
 		const blogRevisions = (await blogRevisionModel
 			.aggregate([
 				{ $match: { blogId: Types.ObjectId(_id) } },
@@ -200,7 +178,8 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 				{ $limit: perPage },
 				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
 			])
 			.exec()) as IBlogRevisionModel[];
 
@@ -214,6 +193,36 @@ export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 	} catch (error) {
 		if (error.name === "CastError") {
 			return error_400_id(res, _id, id_type_blog);
+		} else {
+			return error_500(res, error);
+		}
+	}
+};
+
+export const getOneBlogRevision = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	try {
+		const blogRevision = (
+			await blogRevisionModel
+				.aggregate([
+					{ $match: { _id: Types.ObjectId(_id) } },
+					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+					{ $unset: unsetAuthorFields("author") },
+					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+					{ $unset: unsetAuthorFields("editedBy") },
+					{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
+				])
+				.exec()
+		)[0] as IBlogRevisionModel;
+
+		return res.status(!!blogRevision ? 200 : 422).json({
+			data: blogRevision,
+			message: !!blogRevision ? "Blog revision retrieved successfully" : `Blog revision _id: "${_id}" not found`,
+			success: !!blogRevision,
+		});
+	} catch (error) {
+		if (error.name === "CastError") {
+			return error_400_id(res, _id, id_type_blogRevision);
 		} else {
 			return error_500(res, error);
 		}
@@ -234,7 +243,7 @@ export const createBlogRevision = async (req: Request, res: Response) => {
 export const updateBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	try {
-		const blogRevision = await blogRevisionModel.findByIdAndUpdate(_id, { ...req.body, author: req.session.userId! }, { runValidators: true, new: true });
+		const blogRevision = await blogRevisionModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true });
 		return res.status(!!blogRevision ? 200 : 422).json({
 			data: blogRevision,
 			message: !!blogRevision ? "Blog revision updated successfully" : `Fail to update. Blog revision _id: "${_id}" not found`,
