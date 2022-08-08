@@ -664,13 +664,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -1197,13 +1190,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -1356,13 +1342,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -1417,13 +1396,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "500":
           description: A server error
           content:
@@ -1511,13 +1483,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -1709,13 +1674,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "500":
           description: A server error
           content:
@@ -1966,6 +1924,13 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
         "500":
           description: A server error
           content:
@@ -2057,13 +2022,6 @@ paths:
                   success:
                     type: boolean
                     description: Whether the request was successful or not
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -2610,13 +2568,6 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
@@ -2929,13 +2880,6 @@ paths:
                   success:
                     type: boolean
                     description: Whether the request was successful or not
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
         "422":
           description: Validation error such as Id not found
           content:
