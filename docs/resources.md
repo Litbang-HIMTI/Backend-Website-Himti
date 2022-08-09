@@ -21,6 +21,7 @@
 - [GitHub Desktop](https://desktop.github.com/)
 - [Postman](https://www.postman.com/downloads/)
 - [Github Copilot](https://github.com/features/copilot)
+- [Better Comments (VsCode Extension)](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)
 
 # Learning Resource
 
@@ -30,7 +31,6 @@
 - [Mongoose](https://mongoosejs.com/docs/)
 - [Express](https://expressjs.com/en/api.html)
 - [Typescript](https://www.typescriptlang.org/docs/)
-- [Better Comments (VsCode Extension)](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)
 - [Swagger.io](https://swagger.io/docs/)
 
 ## Text/Article
