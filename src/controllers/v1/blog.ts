@@ -11,19 +11,22 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 	const count = await blogModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
 
-	const blogs = (await blogModel
-		.aggregate([
-			{ $match: {} },
-			{ $sort: { createdAt: -1 } },
-			{ $skip: perPage * page },
-			{ $limit: perPage },
-			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-			{ $unset: unsetAuthorFields("author") },
-			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-			{ $unset: unsetAuthorFields("editedBy") },
-		])
-		.exec()) as IBlogModel[];
+	const aggregations = [
+		{ $match: {} },
+		{ $sort: { createdAt: -1 } },
+		{ $skip: perPage * page },
+		{ $limit: perPage },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+		{ $unset: unsetAuthorFields("editedBy") },
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
+
+	const blogs = (await blogModel.aggregate(aggregations).exec()) as IBlogModel[];
 
 	return res.status(200).json({
 		data: blogs,
@@ -140,19 +143,22 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 	const count = await blogModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
 
-	const blogRevisions = (await blogRevisionModel
-		.aggregate([
-			{ $match: {} },
-			{ $sort: { createdAt: -1 } },
-			{ $skip: perPage * page },
-			{ $limit: perPage },
-			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-			{ $unset: unsetAuthorFields("author") },
-			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-			{ $unset: unsetAuthorFields("editedBy") },
-		])
-		.exec()) as IBlogRevisionModel[];
+	const aggregations = [
+		{ $match: {} },
+		{ $sort: { createdAt: -1 } },
+		{ $skip: perPage * page },
+		{ $limit: perPage },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+		{ $unset: unsetAuthorFields("editedBy") },
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
+
+	const blogRevisions = (await blogRevisionModel.aggregate(aggregations).exec()) as IBlogRevisionModel[];
 
 	return res.status(200).json({
 		data: blogRevisions,

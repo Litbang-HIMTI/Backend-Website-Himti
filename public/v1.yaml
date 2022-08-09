@@ -52,11 +52,20 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -297,7 +306,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -351,11 +360,20 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -564,11 +582,20 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -810,7 +837,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -870,11 +897,20 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -1097,11 +1133,26 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: category
+          in: query
+          description: Category name of the forum. If not provided, all forums are returned. If provided will return only forums in that category.
+          required: false
+          schema:
+            type: string
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -1375,7 +1426,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -1625,11 +1676,20 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
             format: int32
+        - name: content
+          in: query
+          description: Content of the forum. If provided, data will be returned with its content. Else data will be returned without its content.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            enum:
+              - 1
       responses:
         "200":
           description: A successful response
@@ -1807,7 +1867,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -1858,7 +1918,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -1904,7 +1964,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -2157,7 +2217,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -2400,7 +2460,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer
@@ -2768,7 +2828,7 @@ paths:
             format: int32
         - name: perPage
           in: query
-          description: Limit per page
+          description: Limit per page. If not provided will returns all the data
           required: false
           schema:
             type: integer

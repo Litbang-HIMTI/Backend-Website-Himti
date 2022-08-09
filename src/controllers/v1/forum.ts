@@ -12,38 +12,34 @@ export const getAllForums = async (req: Request, res: Response) => {
 	const count = await forumModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
+
+	const aggregations: any[] = [
+		{ $sort: { createdAt: -1 } },
+		{ $skip: perPage * page },
+		{ $limit: perPage },
+		{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+		{ $unset: unsetAuthorFields("editedBy") },
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
 
 	let forums;
 	if (category) {
-		forums = (await forumModel
-			.aggregate([
-				{ $match: { category: category } },
-				{ $sort: { createdAt: -1 } },
-				{ $skip: perPage * page },
-				{ $limit: perPage },
-				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-				{ $unset: unsetAuthorFields("editedBy") },
-			])
-			.exec()) as IForumModel[];
+		// first fetch category to get the id from the name
+		const categoryId = (await forumCategoryModel.findOne({ name: category }).exec()) as IForumCategoryModel;
+		if (!categoryId) return res.status(422).json({ message: `Category "${category}" not found`, success: false });
+
+		aggregations.unshift({ $match: { category: categoryId._id } });
+		forums = (await forumModel.aggregate(aggregations).exec()) as IForumModel[];
 
 		if (forums.length === 0) return res.status(422).json({ data: null, message: `Forum posts by category: "${category}" not found`, success: false });
 	} else {
-		forums = (await forumModel
-			.aggregate([
-				{ $match: {} },
-				{ $sort: { createdAt: -1 } },
-				{ $skip: perPage * page },
-				{ $limit: perPage },
-				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-				{ $unset: unsetAuthorFields("editedBy") },
-			])
-			.exec()) as IForumModel[];
+		aggregations.unshift({ $match: {} });
+		forums = (await forumModel.aggregate(aggregations).exec()) as IForumModel[];
 	}
 
 	return res.status(200).json({

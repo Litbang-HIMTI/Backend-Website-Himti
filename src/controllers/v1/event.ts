@@ -11,19 +11,22 @@ export const getAllEvents = async (req: Request, res: Response) => {
 	const count = await eventModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
 
-	const events = (await eventModel
-		.aggregate([
-			{ $match: {} },
-			{ $sort: { createdAt: -1 } },
-			{ $skip: perPage * page },
-			{ $limit: perPage },
-			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-			{ $unset: unsetAuthorFields("author") },
-			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-			{ $unset: unsetAuthorFields("editedBy") },
-		])
-		.exec()) as IEventModel[];
+	const aggregations = [
+		{ $match: {} },
+		{ $sort: { createdAt: -1 } },
+		{ $skip: perPage * page },
+		{ $limit: perPage },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+		{ $unset: unsetAuthorFields("editedBy") },
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
+
+	const events = (await eventModel.aggregate(aggregations).exec()) as IEventModel[];
 
 	return res.status(200).json({
 		data: events,
@@ -141,8 +144,9 @@ export const getAllEventRevisions = async (req: Request, res: Response) => {
 	const count = await eventRevisionModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
 
-	const eventRevisions = (await eventRevisionModel.aggregate([
+	const aggregations = [
 		{ $match: {} },
 		{ $sort: { createdAt: -1 } },
 		{ $skip: page * perPage },
@@ -151,7 +155,11 @@ export const getAllEventRevisions = async (req: Request, res: Response) => {
 		{ $unset: unsetAuthorFields("author") },
 		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
 		{ $unset: unsetAuthorFields("editedBy") },
-	])) as IEventRevisionModel[];
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
+
+	const eventRevisions = (await eventRevisionModel.aggregate(aggregations)) as IEventRevisionModel[];
 
 	return res.status(200).json({
 		data: eventRevisions,
