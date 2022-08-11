@@ -178,12 +178,26 @@ export const deleteForum = async (req: Request, res: Response) => {
 // --------------------------------------------------------------------------------------------
 // FORUM CATEGORY
 // GET
+interface IcategoriesCount {
+	_id: string;
+	count: number;
+}
+
 export const getAllForumCategories = async (req: Request, res: Response) => {
 	const count = await forumModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
-	const categories = (await forumCategoryModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IForumCategoryModel[];
+	const categoriesData = (await forumCategoryModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IForumCategoryModel[];
+
+	// get all categories and sum up the number of forums in each category
+	const categoriesCount = (await forumModel.aggregate([{ $match: {} }, { $group: { _id: "$category", count: { $sum: 1 } } }]).exec()) as IcategoriesCount[];
+
+	// combine
+	const categories = categoriesData.map((category) => {
+		const count = categoriesCount.find((c) => c._id.toString() === category._id.toString())!;
+		return { ...category, count: count.count ? count.count : 0 };
+	});
 
 	return res.status(200).json({
 		data: categories,

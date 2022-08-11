@@ -67,18 +67,22 @@ export const getOneEvent = async (req: Request, res: Response) => {
 };
 
 export const getTagsOnly = async (_req: Request, res: Response) => {
-	const tags = await eventModel.distinct("tags").exec();
+	// get distinct tags and count how many blogs each tag has
+	const tagCounts = (await eventModel.aggregate([{ $match: {} }, { $unwind: "$tags" }, { $group: { _id: "$tags", count: { $sum: 1 } } }]).exec()) as any[];
+
 	return res.status(200).json({
-		data: tags,
+		data: tagCounts,
 		message: "Tags retrieved successfully",
 		success: true,
 	});
 };
 
 export const getOrganizerOnly = async (_req: Request, res: Response) => {
-	const tags = await eventModel.distinct("organizer").exec();
+	// get distinct tags and count how many blogs each tag has
+	const organizerCounts = (await eventModel.aggregate([{ $match: {} }, { $unwind: "$organizer" }, { $group: { _id: "$organizer", count: { $sum: 1 } } }]).exec()) as any[];
+
 	return res.status(200).json({
-		data: tags,
+		data: organizerCounts,
 		message: "Organizer retrieved successfully",
 		success: true,
 	});

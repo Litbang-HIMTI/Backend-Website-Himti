@@ -63,7 +63,7 @@ export const getOneNote = async (req: Request, res: Response) => {
 
 // POST
 export const createNote = async (req: Request, res: Response) => {
-	const note = noteModel.create({ ...req.body, author: req.session.userId });
+	const note = await noteModel.create({ ...req.body, author: req.session.userId });
 	return res.status(!!note ? 201 : 500).json({
 		data: note,
 		message: !!note ? "Note created successfully" : `Unable to create note. If you think that this is a bug, please submit an issue at ${___issue___}`,

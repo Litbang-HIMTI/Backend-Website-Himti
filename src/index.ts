@@ -1,4 +1,4 @@
-import "express-async-errors";
+import "express-async-errors"; // this is very important to make sure that async error is handled by the ExpressErrorHandler
 import mongoose from "mongoose";
 import http from "http";
 import app from "./app";

@@ -67,9 +67,11 @@ export const getOneBlog = async (req: Request, res: Response) => {
 };
 
 export const getTagsOnly = async (_req: Request, res: Response) => {
-	const tags = await blogModel.distinct("tags").exec();
+	// get distinct tags and count how many blogs each tag has
+	const tagCounts = (await blogModel.aggregate([{ $match: {} }, { $unwind: "$tags" }, { $group: { _id: "$tags", count: { $sum: 1 } } }]).exec()) as any[];
+
 	return res.status(200).json({
-		data: tags,
+		data: tagCounts,
 		message: "Tags retrieved successfully",
 		success: true,
 	});

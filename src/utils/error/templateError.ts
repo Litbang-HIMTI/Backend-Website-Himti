@@ -15,11 +15,11 @@ export const getDataStatus = (res: Response, err: Error) => {
 
 export const error_500 = (res: Response, err: Error) => {
 	const { statusCode, dataErr } = getDataStatus(res, err);
-	return res.status(statusCode).json(dataErr);
+	res.status(statusCode).json(dataErr);
 };
 
 export const error_400_id = (res: Response, _id: string, id_type: string) => {
-	return res.status(400).json({
+	res.status(400).json({
 		message: `${id_type}: "${_id}" is invalid`,
 		success: false,
 	});

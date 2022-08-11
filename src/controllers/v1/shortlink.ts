@@ -68,7 +68,7 @@ export const getShortlinkStats = async (_req: Request, res: Response) => {
 // POST
 export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;
-	const shortLink = shortLinkModel.create({ url, shorten });
+	const shortLink = await shortLinkModel.create({ url, shorten });
 	return res.status(!!shortLink ? 201 : 500).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink created successfully" : `Unable to create shortlink. If you think that this is a bug, please submit an issue at ${___issue___}`,

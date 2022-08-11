@@ -1,16 +1,32 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { groupModel, IGroupModel } from "../../models/group";
+import { userModel } from "../../models/user";
 import { error_400_id, error_500, colUser, ___issue___, unsetAuthorFields } from "../../utils";
 
 // GET
+interface IGroupCount {
+	_id: string;
+	count: number;
+}
+
 export const getAllGroups = async (req: Request, res: Response) => {
 	const count = await groupModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
 	// no need to project user for group list
-	const groups = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
+	const groupsData = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
+	console.log(groupsData);
+
+	// get the count of each user's groups
+	const userGroups = (await userModel.aggregate([{ $unwind: "$groups" }, { $group: { _id: "$groups", count: { $sum: 1 } } }]).exec()) as IGroupCount[];
+	console.log(userGroups);
+
+	const groups = groupsData.map((group) => {
+		const userGroup = userGroups.find((userGroup) => userGroup._id.toString() === group._id.toString())!;
+		return { ...group, count: userGroup.count ? userGroup.count : 0 };
+	});
 
 	return res.status(200).json({
 		data: groups,
@@ -75,7 +91,7 @@ export const getOneGroup_protected = async (req: Request, res: Response) => {
 
 // POST
 export const createGroup = async (req: Request, res: Response) => {
-	const group = groupModel.create(req.body);
+	const group = await groupModel.create(req.body);
 	return res.status(!!group ? 201 : 500).json({
 		data: group,
 		message: !!group ? "Group created successfully" : `Unable to create group. If you think that this is a bug, please submit an issue at ${___issue___}`,
