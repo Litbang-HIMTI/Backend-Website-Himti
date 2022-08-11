@@ -61,6 +61,11 @@
 
 ## Mongoose & MongoDB
 
+[About mongoDB limit](https://stackoverflow.com/questions/70750845/size-limit-for-mongo-db-collection-documents-and-database).
+Currently, that is until V5.0 of MongoDB, 16MB is the size limit of a single bson document in MongoDB.
+
+The number of documents per collection is unlimited but if needed a limit can be manually set. If larger documents or files need to be stored, MongoDB offers the GridFS mechanism that can support larger files. [As far as the database size goes, there is technically no limit for how big an individual database can be. If you’re using MongoDB Atlas, you won’t ever have to worry about database size as it will scale as you grow](https://www.mongodb.com/community/forums/t/maximum-size-of-database-or-collection/99576/2).
+
 - [Validate on update](https://stackoverflow.com/questions/15627967/why-mongoose-doesnt-validate-on-update)
 - [mongoose-find-vs-exec-how-to-return-values](https://stackoverflow.com/questions/50932847/mongoose-find-vs-exec-how-to-return-values)
 - [Express session with mongodb](https://stackoverflow.com/questions/23260676/express-4-sessions-not-persisting-when-restarting-server)
