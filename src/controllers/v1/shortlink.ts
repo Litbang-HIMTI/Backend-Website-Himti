@@ -25,7 +25,7 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 	const { updateClick } = req.query;
 	if (!shorten) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
 
-	if (parseInt(updateClick as any) === 1) {
+	if (parseInt(updateClick as string) === 1) {
 		const shortLink = await shortLinkModel.findOneAndUpdate({ shorten }, { $inc: { clickCount: 1 } }, { new: true });
 		if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink "${shorten}" not found`, success: false });
 

@@ -12,10 +12,10 @@
 		"build": "tsc",
 		"tsc": "./node_modules/typescript/bin/tsc",
 		"postinstall": "npm run tsc",
-		"format:check": "prettier --check .",
-		"format:write": "prettier --write .",
-		"lint:check": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"format:check": "prettier --check .gitignore \"**/*.+(js|ts|json)\"",
+		"format:write": "prettier --write .gitignore \"**/*.+(js|ts|json)\"",
+		"lint:check": "eslint .eslintignore --ext .js,.ts .",
+		"lint:fix": "eslint --fix .eslintignore --ext .js,.ts ."
 	},
 	"repository": {
 		"type": "git",
@@ -41,9 +41,9 @@
 		"@types/morgan": "^1.9.3",
 		"@types/node": "^17.0.5",
 		"@types/validator": "^13.7.4",
+		"@typescript-eslint/eslint-plugin": "^5.33.0",
+		"@typescript-eslint/parser": "^5.33.0",
 		"eslint": "^8.21.0",
-		"eslint-config-airbnb-base": "^15.0.0",
-		"eslint-config-prettier": "^8.5.0",
 		"nodemon": "^2.0.15",
 		"prettier": "^2.7.1",
 		"ts-node": "^10.4.0",

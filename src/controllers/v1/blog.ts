@@ -66,9 +66,14 @@ export const getOneBlog = async (req: Request, res: Response) => {
 	}
 };
 
+interface ITagsCategoryCount {
+	_id: string;
+	count: number;
+}
+
 export const getTagsOnly = async (_req: Request, res: Response) => {
 	// get distinct tags and count how many blogs each tag has
-	const tagCounts = (await blogModel.aggregate([{ $match: {} }, { $unwind: "$tags" }, { $group: { _id: "$tags", count: { $sum: 1 } } }]).exec()) as any[];
+	const tagCounts = (await blogModel.aggregate([{ $match: {} }, { $unwind: "$tags" }, { $group: { _id: "$tags", count: { $sum: 1 } } }]).exec()) as ITagsCategoryCount[];
 
 	return res.status(200).json({
 		data: tagCounts,

@@ -15,6 +15,7 @@ export const getAllForums = async (req: Request, res: Response) => {
 	const page = parseInt(req.query.page as string) - 1 || 0;
 	const content = req.query.content === "1";
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const aggregations: any[] = [
 		{ $sort: { createdAt: -1 } },
 		{ $skip: perPage * page },

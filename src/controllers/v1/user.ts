@@ -3,7 +3,6 @@ import { IUserModel, userModel, validateQuery } from "../../models/user";
 import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
-	let success = true;
 	// validate password manually //
 	if (!password) return { data: null, message: "Password is required", success: false };
 	if (password.length < 8) return { data: null, message: "Password must be at least 8 characters long", success: false };
@@ -15,7 +14,7 @@ const validatePasswordInputed = (password: string) => {
 			success: false,
 		};
 
-	return { data: null, message: "", success };
+	return { data: null, message: "", success: true };
 };
 
 // GET
@@ -84,6 +83,7 @@ export const createUser = async (req: Request, res: Response) => {
 	const dataSaved = await user.save({ validateBeforeSave: true });
 
 	// return response //
+	// eslint-disable-next-line
 	const { hash, salt, ...dataReturn } = dataSaved._doc;
 	return res.status(!!dataSaved ? 201 : 500).json({
 		data: dataReturn,
@@ -135,6 +135,7 @@ export const changePassword = async (req: Request, res: Response) => {
 	user.setPassword(password);
 	const dataSaved = await user.save({ validateBeforeSave: true });
 
+	// eslint-disable-next-line
 	const { hash, salt, ...dataReturn } = dataSaved._doc;
 	return res.status(!!dataSaved ? 200 : 500).json({
 		data: dataReturn,

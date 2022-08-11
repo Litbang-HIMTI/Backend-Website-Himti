@@ -82,10 +82,12 @@ const userSchema = new Schema<IUserModel>(
 
 userSchema.methods.setPassword = function (password) {
 	this.salt = crypto.randomBytes(16).toString("hex");
+	// eslint-disable-next-line
 	this.hash = crypto.pbkdf2Sync(password, this.salt, parseInt(process.env.P_ITERATION!), parseInt(process.env.P_LENGTH!), process.env.P_HASH!).toString("hex");
 };
 
 userSchema.methods.validatePassword = function (password) {
+	// eslint-disable-next-line
 	const hash = crypto.pbkdf2Sync(password, this.salt, parseInt(process.env.P_ITERATION!), parseInt(process.env.P_LENGTH!), process.env.P_HASH!).toString("hex");
 	return this.hash === hash;
 };

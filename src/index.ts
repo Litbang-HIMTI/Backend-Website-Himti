@@ -6,16 +6,18 @@ import { ___prod___ } from "./utils/constants";
 
 const onError = (error: NodeJS.ErrnoException, port: string | number) => {
 	if (error.syscall !== "listen") throw error;
-	let bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+	const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
 	// handle specific listen errors with friendly messages
 	switch (error.code) {
 		case "EACCES":
 			console.error(bind + " requires elevated privileges");
 			process.exit(1);
+			break;
 		case "EADDRINUSE":
 			console.error(bind + " is already in use");
 			process.exit(1);
+			break;
 		default:
 			throw error;
 	}
@@ -40,6 +42,7 @@ const onError = (error: NodeJS.ErrnoException, port: string | number) => {
 			dbName: ___prod___ ? process.env.DB_NAME : process.env.DB_NAME + "_dev",
 		});
 		mongoose.set("debug", ___prod___);
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		mongoose.pluralize(null); // disable pluralize
 
