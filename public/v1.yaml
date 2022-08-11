@@ -3358,7 +3358,7 @@ paths:
       tags:
         - "Auth"
       summary: Login
-      description: Login. A cookie will be set on the response. You can login using either username or email.
+      description: Login. A cookie will be returned on the response. You need to set it in your client. You can login using either username or email.
       operationId: login
       requestBody:
         content:
