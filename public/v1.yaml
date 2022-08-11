@@ -27,6 +27,7 @@ tags:
   - name: Blog
   - name: Event
   - name: Forum
+  - name: Forum_Category
   - name: Comment
   - name: Shortlink
   - name: Note
@@ -1409,10 +1410,10 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security: []
   # -----------------------------------------------------------------------------------
-  /forum/category:
+  /forum_category:
     get:
       tags:
-        - Forum
+        - Forum_Category
       summary: Get all forum categories
       description: Get all forum categories
       operationId: getForumCategories
@@ -1505,10 +1506,10 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
-  /forum/category/{name}:
+  /forum_category/{name}:
     get:
       tags:
-        - Forum
+        - Forum_Category
       summary: Get a forum category by its name
       description: Get a forum category by its name
       operationId: getForumCategoryById
@@ -1549,10 +1550,10 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security: []
-  /forum/category/{_id}:
+  /forum_category/{_id}:
     put:
       tags:
-        - Forum
+        - Forum_Category
       summary: Update a forum category
       description: Update a forum category
       operationId: updateForumCategory
@@ -1609,7 +1610,7 @@ paths:
         - cookieAuth: []
     delete:
       tags:
-        - Forum
+        - Forum_Category
       summary: Delete a forum category
       description: Delete a forum category
       operationId: deleteForumCategory

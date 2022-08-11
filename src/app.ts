@@ -25,6 +25,7 @@ import { shortlinkRouterV1 } from "./api/v1/shortlink";
 import { eventRouterV1 } from "./api/v1/event";
 import { blogRouterV1 } from "./api/v1/blog";
 import { forumRouterV1 } from "./api/v1/forum";
+import { forumCategoryRouterV1 } from "./api/v1/forum_category";
 import { commentRouterV1 } from "./api/v1/comment";
 import { noteRouterV1 } from "./api/v1/note";
 
@@ -68,6 +69,7 @@ app.use("/v1/shortlink", shortlinkRouterV1);
 app.use("/v1/event", eventRouterV1);
 app.use("/v1/blog", blogRouterV1);
 app.use("/v1/forum", forumRouterV1);
+app.use("/v1/forum_category", forumCategoryRouterV1);
 app.use("/v1/comment", commentRouterV1);
 app.use("/v1/note", noteRouterV1);
 

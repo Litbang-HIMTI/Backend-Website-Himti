@@ -11,12 +11,7 @@ interface IForum {
 	showAtHome?: boolean;
 	editedBy?: Schema.Types.ObjectId;
 }
-interface IForumCategory {
-	name: string;
-	description: string;
-}
 export interface IForumModel extends IForum, Document {}
-export interface IForumCategoryModel extends IForumCategory, Document {}
 
 const forumSchema = new Schema<IForumModel>(
 	{
@@ -63,24 +58,4 @@ const forumSchema = new Schema<IForumModel>(
 	{ collection: colForum, timestamps: true }
 );
 
-const forumCategorySchema = new Schema<IForumCategoryModel>(
-	{
-		name: {
-			type: String,
-			required: true,
-			unique: true,
-			validate: {
-				validator: (v: string) => urlSafeRegex.test(v),
-				message: "Forum category name must be alphanumeric or these allowed characters: underscore, hyphen, space, ', \", comma, and @",
-			},
-		},
-		description: {
-			type: String,
-			required: true,
-		},
-	},
-	{ collection: colForumCategory, timestamps: true }
-);
-
 export const forumModel = model<IForumModel>(colForum, forumSchema);
-export const forumCategoryModel = model<IForumCategoryModel>(colForumCategory, forumCategorySchema);
