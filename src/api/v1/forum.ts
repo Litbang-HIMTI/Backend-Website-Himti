@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateForumMod } from "../../controllers/v1/auth";
+import { validateForumMod, validateStaff } from "../../controllers/v1/auth";
 import * as cForum from "../../controllers/v1/forum";
 
 const r = Router();
@@ -8,6 +8,9 @@ const r = Router();
 r.post("/category", validateForumMod, cForum.createForumCategory);
 r.put("/category/:_id", validateForumMod, cForum.updateForumCategory);
 r.delete("/category/:_id", validateForumMod, cForum.deleteForumCategory);
+
+// * staff dashboard
+r.get("/stats", validateStaff, cForum.getForumStats);
 
 // * public
 r.get("/category", cForum.getAllForumCategories);

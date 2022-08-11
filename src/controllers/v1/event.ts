@@ -66,6 +66,34 @@ export const getOneEvent = async (req: Request, res: Response) => {
 	}
 };
 
+export const getTagsOnly = async (_req: Request, res: Response) => {
+	const tags = await eventModel.distinct("tags").exec();
+	return res.status(200).json({
+		data: tags,
+		message: "Tags retrieved successfully",
+		success: true,
+	});
+};
+
+export const getOrganizerOnly = async (_req: Request, res: Response) => {
+	const tags = await eventModel.distinct("organizer").exec();
+	return res.status(200).json({
+		data: tags,
+		message: "Organizer retrieved successfully",
+		success: true,
+	});
+};
+
+export const getEventStats = async (_req: Request, res: Response) => {
+	const statsEvent = await eventModel.collection.stats();
+	const statsRevision = await eventRevisionModel.collection.stats();
+	return res.status(200).json({
+		data: [statsEvent, statsRevision],
+		message: "Event & event revision stats retrieved successfully",
+		success: true,
+	});
+};
+
 // POST
 export const createEvent = async (req: Request, res: Response) => {
 	const event = await eventModel.create({ ...req.body, author: req.session.userId });

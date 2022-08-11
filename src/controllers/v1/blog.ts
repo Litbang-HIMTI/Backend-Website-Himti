@@ -75,11 +75,12 @@ export const getTagsOnly = async (_req: Request, res: Response) => {
 	});
 };
 
-export const getDbStats = async (_req: Request, res: Response) => {
-	const count = await blogModel.collection.stats();
+export const getPostStats = async (_req: Request, res: Response) => {
+	const statsPost = await blogModel.collection.stats();
+	const statsRevision = await blogRevisionModel.collection.stats();
 	return res.status(200).json({
-		data: count,
-		message: "Post count retrieved successfully",
+		data: [statsPost, statsRevision],
+		message: "Post & post revision stats retrieved successfully",
 		success: true,
 	});
 };

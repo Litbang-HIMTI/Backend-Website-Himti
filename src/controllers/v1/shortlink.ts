@@ -46,6 +46,25 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 	}
 };
 
+export const clickCountsOnly = async (_req: Request, res: Response) => {
+	// sum all clickCounts
+	const clickCounts = await shortLinkModel.aggregate([{ $match: {} }, { $group: { _id: null, clickCount: { $sum: "$clickCount" } } }]).exec();
+	return res.status(200).json({
+		data: clickCounts[0],
+		message: "Click counts sum retrieved successfully",
+		success: true,
+	});
+};
+
+export const getShortlinkStats = async (_req: Request, res: Response) => {
+	const stats = await shortLinkModel.collection.stats();
+	return res.status(200).json({
+		data: stats,
+		message: "Shortlink stats retrieved successfully",
+		success: true,
+	});
+};
+
 // POST
 export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;

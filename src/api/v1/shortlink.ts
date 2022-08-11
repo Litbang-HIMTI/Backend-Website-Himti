@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { validateShortlinkMod } from "../../controllers/v1/auth";
-import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortLink, deleteShortLink } from "../../controllers/v1/shortlink";
+import { validateShortlinkMod, validateStaff } from "../../controllers/v1/auth";
+import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortLink, deleteShortLink, getShortlinkStats, clickCountsOnly } from "../../controllers/v1/shortlink";
 
 const r = Router();
+
+// * staff dashboard
+r.get("/stats", validateStaff, getShortlinkStats);
+r.get("/clickCounts", validateStaff, clickCountsOnly);
 
 // * Public
 r.get("/:shorten", getOneShortLink_public); // ? query option: ?updateClick=1

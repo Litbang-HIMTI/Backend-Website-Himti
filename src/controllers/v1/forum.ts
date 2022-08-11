@@ -113,6 +113,15 @@ export const getOneForumAndItsComments = async (req: Request, res: Response) => 
 	}
 };
 
+export const getForumStats = async (_req: Request, res: Response) => {
+	const stats = await forumModel.collection.stats();
+	return res.status(200).json({
+		data: stats,
+		message: "Forum stats retrieved successfully",
+		success: true,
+	});
+};
+
 // POST
 export const createForum = async (req: Request, res: Response) => {
 	const forum = await forumModel.create({ ...req.body, author: req.session.userId });

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateEditor } from "../../controllers/v1/auth";
+import { validateEditor, validateStaff } from "../../controllers/v1/auth";
 import * as cEvent from "../../controllers/v1/event";
 
 const r = Router();
@@ -10,7 +10,12 @@ r.get("/revision/:_id", validateEditor, cEvent.getOneEventRevision);
 r.put("/revision/:_id", validateEditor, cEvent.updateEventRevision);
 r.delete("/revision/:_id", validateEditor, cEvent.deleteEventRevision);
 
+// * staff dashboard
+r.get("/stats", validateStaff, cEvent.getEventStats);
+
 // * Public
+r.get("/tags", cEvent.getTagsOnly);
+r.get("/organizer", cEvent.getOrganizerOnly);
 r.get("/", cEvent.getAllEvents);
 r.get("/:_id", cEvent.getOneEvent);
 

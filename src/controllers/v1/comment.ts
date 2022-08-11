@@ -106,6 +106,15 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 	}
 };
 
+export const getCommentStats = async (_req: Request, res: Response) => {
+	const stats = await commentModel.collection.stats();
+	return res.status(200).json({
+		data: stats,
+		message: "Comment stats retrieved successfully",
+		success: true,
+	});
+};
+
 // POST
 export const createComment = async (req: Request, res: Response) => {
 	const { forumId, content } = req.body;

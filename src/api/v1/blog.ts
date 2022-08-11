@@ -12,7 +12,7 @@ r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
 r.delete("/revision/:_id", validateEditor, cBlog.deleteBlogRevision);
 
 // * staff dashboard
-r.get("/stats", validateStaff, cBlog.getDbStats);
+r.get("/stats", validateStaff, cBlog.getPostStats);
 
 // * public get blog
 r.get("/tags", cBlog.getTagsOnly);

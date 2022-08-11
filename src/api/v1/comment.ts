@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { validateForumMod } from "../../controllers/v1/auth";
-import { getAllComments, getCommentByAuthor, getCommentByForumId, createComment, updateComment, deleteComment } from "../../controllers/v1/comment";
+import { validateForumMod, validateStaff } from "../../controllers/v1/auth";
+import { getAllComments, getCommentByAuthor, getCommentByForumId, createComment, updateComment, deleteComment, getCommentStats } from "../../controllers/v1/comment";
 
 const r = Router();
+
+// * staff dashboard
+r.get("/stats", validateStaff, getCommentStats);
 
 // * public
 r.get("/forum/:forumId", getCommentByForumId);
