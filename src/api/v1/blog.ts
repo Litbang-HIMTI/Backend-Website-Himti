@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateEditor } from "../../controllers/v1/auth";
+import { validateEditor, validateStaff } from "../../controllers/v1/auth";
 import * as cBlog from "../../controllers/v1/blog";
 
 const r = Router();
@@ -11,7 +11,11 @@ r.get("/revision/:_id", validateEditor, cBlog.getOneBlogRevision);
 r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
 r.delete("/revision/:_id", validateEditor, cBlog.deleteBlogRevision);
 
+// * staff dashboard
+r.get("/stats", validateStaff, cBlog.getDbStats);
+
 // * public get blog
+r.get("/tags", cBlog.getTagsOnly);
 r.get("/", cBlog.getAllBlogs);
 r.get("/:_id", cBlog.getOneBlog);
 

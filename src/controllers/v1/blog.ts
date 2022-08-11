@@ -66,6 +66,24 @@ export const getOneBlog = async (req: Request, res: Response) => {
 	}
 };
 
+export const getTagsOnly = async (_req: Request, res: Response) => {
+	const tags = await blogModel.distinct("tags").exec();
+	return res.status(200).json({
+		data: tags,
+		message: "Tags retrieved successfully",
+		success: true,
+	});
+};
+
+export const getDbStats = async (_req: Request, res: Response) => {
+	const count = await blogModel.collection.stats();
+	return res.status(200).json({
+		data: count,
+		message: "Post count retrieved successfully",
+		success: true,
+	});
+};
+
 // POST
 export const createBlog = async (req: Request, res: Response) => {
 	const blog = await blogModel.create({ ...req.body, author: req.session.userId });
