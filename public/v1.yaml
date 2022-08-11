@@ -126,6 +126,53 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+  /blog/tags:
+    get:
+      tags:
+        - Blog
+      summary: Get all tags of blog
+      description: Get all tagsof blog
+      operationId: getAllTagsBlog
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/tagsData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /blog/stats:
+    get:
+      tags:
+        - Blog
+      summary: Get blog stats
+      description: Get blog stats
+      operationId: getBlogStats
+      responses:
+        "200":
+          description: A successful response. Data is an array of blog stats (first index) and blog revision (second index) stats.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/statsData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /blog/{_id}:
     get:
       tags:
@@ -648,6 +695,76 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /event/tags:
+    get:
+      tags:
+        - Event
+      summary: Get all tags of event
+      description: Get all tags of event
+      operationId: getAllTagsEvent
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/tagsData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /event/organizer:
+    get:
+      tags:
+        - Event
+      summary: Get all organizer of event
+      description: Get all organizer of event
+      operationId: getAllOrganizerEvent
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/organizerData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /event/stats:
+    get:
+      tags:
+        - Event
+      summary: Get event stats
+      description: Get event stats
+      operationId: getEventStats
+      responses:
+        "200":
+          description: A successful response. Data is an array of event stats (first index) and event revision (second index) stats.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/statsData"
         "500":
           description: A server error
           content:
@@ -1213,6 +1330,30 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+  /forum/stats:
+    get:
+      tags:
+        - Forum
+      summary: Get forum stats
+      description: Get forum stats
+      operationId: getForumStats
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/statsData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /forum/{_id}:
     get:
       tags:
@@ -1743,6 +1884,30 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security: []
+  /comment/stats:
+    get:
+      tags:
+        - Comment
+      summary: Get comment stats
+      description: Get comment stats
+      operationId: getCommentStats
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/statsData"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /comment/{_id}:
     put:
       tags:
@@ -2035,6 +2200,30 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
+  /shortlink/stats:
+    get:
+      tags:
+        - Shortlink
+      summary: Get shortlink stats
+      description: Get shortlink stats
+      operationId: getShortlinkStats
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/statsData"
         "500":
           description: A server error
           content:
@@ -3130,8 +3319,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: string
-                    default: "null"
+                    $ref: "#/components/schemas/userPublic"
                   message:
                     type: string
                     description: A message describing the result of the request
@@ -3344,11 +3532,130 @@ components:
           type: boolean
           default: false
     # -----------------------------------------------------------------------------------
+    statsData:
+      type: object
+      properties:
+        data:
+          description: The data to be displayed in the stats page. Blog and events return as array because of its revision history.
+          properties:
+            ns:
+              type: string
+              description: Namespace
+            count:
+              type: number
+              description: Number of documents
+            size:
+              type: number
+              description: Size of documents in bytes
+            avgObjSize:
+              type: number
+              description: Average object size in bytes
+            storageSize:
+              type: number
+              description: (Pre)allocated space for the collection in bytes
+            numExtents:
+              type: number
+              description: Number of extents (contiguously allocated chunks of datafile space)
+            ninDexes:
+              type: number
+              description: Number of indexes
+            lastExtendSize:
+              type: number
+              description: Size of the most recently created extent in bytes
+            paddingFactor:
+              type: number
+              description: Padding can speed up updates if documents grow
+            userFlags:
+              type: number
+              description: User defined flags for the collection
+              nullable: true
+            totalIndexSize:
+              type: number
+              description: Total index size in bytes
+            indexSizes:
+              type: object
+              description: Size of specific indexes in bytes
+              properties:
+                _id_:
+                  type: number
+                index_string:
+                  type: number
+            capped:
+              type: boolean
+              description: Whether the collection is capped
+            max:
+              type: number
+              description: Max number of documents in a capped collection
+            maxSize:
+              type: number
+              description: Max size of a capped collection
+            indexDetails:
+              type: string
+              description: Details of the indexes (TYPE IS ANY)
+            ok:
+              type: number
+              description: The command result
+            indexBuilds:
+              type: number
+              description: An array that contains the names of the indexes that are currently being built on the collection
+            totalSize:
+              type: number
+              description: The sum of the storageSize and totalIndexSize. The scale argument affects this value
+            scaleFactor:
+              type: number
+              description: The scale factor of the collection
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          default: false
+    tagsData:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: Tag name
+              count:
+                type: number
+                description: Number of documents with this tag
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          default: false
+    organizerData:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: Organizer name
+              count:
+                type: number
+                description: Number of documents with this organizer
+        message:
+          type: string
+          description: A message to be displayed to the user
+        success:
+          type: boolean
+          default: false
+    # -----------------------------------------------------------------------------------
     blog:
       type: object
       properties:
         _id:
-          type: string
+          type: object
           uniqueItems: true
         author:
           $ref: "#/components/schemas/userPublic"
@@ -3928,6 +4235,9 @@ components:
         updated_at:
           type: string
           format: date-time
+        count:
+          type: number
+          description: The amount of forums with this category
     forumCategoryList:
       type: object
       properties:
