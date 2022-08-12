@@ -52,7 +52,13 @@ const sessionCfg = {
 app.set("trust proxy", true);
 app.use(morgan("dev")); // logger, use preset dev
 app.use(helmet()); // security
-app.use(cors()); // cors (cross-origin resource sharing)
+app.use(
+	cors({
+		origin: true,
+		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+		credentials: true,
+	})
+); // cors (cross-origin resource sharing)
 app.use(express.json()); // json parser / body parser for post request except html post form
 app.use(express.urlencoded({ extended: false })); // urlencoded parser / body parser for html post form.
 app.use(cookieparser()); // cookie parser
