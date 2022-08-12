@@ -11,6 +11,7 @@
   - [Mongoose & MongoDB](#mongoose--mongodb)
   - [Auth reference](#auth-reference)
   - [Security](#security)
+  - [CORS](#cors)
   - [Usefull Sites](#usefull-sites)
   - [Status Codes](#status-codes)
   - [URL](#url)
@@ -81,6 +82,13 @@ The number of documents per collection is unlimited but if needed a limit can be
 ## Security
 
 - [Prevent Brute Force Attacks in Node.JS](https://levelup.gitconnected.com/prevent-brute-force-attacks-in-node-js-419367ae35e6)
+
+## CORS
+
+- [CORS with Postman](https://stackoverflow.com/questions/36250615/cors-with-postman)
+- [Express Session Cookie Not Being Set when using React Axios POST Request](https://stackoverflow.com/questions/63251837/express-session-cookie-not-being-set-when-using-react-axios-post-request)
+- [Using CORS in Express](https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b)
+- [Why doesn't adding CORS headers to an OPTIONS route allow browsers to access my API?](https://stackoverflow.com/questions/7067966/why-doesnt-adding-cors-headers-to-an-options-route-allow-browsers-to-access-my)
 
 ## Usefull Sites
 
