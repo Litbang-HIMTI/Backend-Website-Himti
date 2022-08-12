@@ -10,7 +10,10 @@ info:
 
     Authentication might not work when using swagger authorization, but you can still login using the login API located [here](#operations-Auth-login).
 
-    For staff, please do not try the secured api here when in production.
+    When in production, authentication from another websites will only work if the domain is whitelisted. It is set in the **CORS** option to only allow requests from our domain. 
+    If you want to use our API with authentication from another website please contact us. [Tools might not be affected by this](https://stackoverflow.com/questions/36250615/cors-with-postman).
+
+    **For staff**, please do not try the secured api here when in production.
   contact:
     email: litbanghimtiuinjkt@gmail.com
   license:
@@ -3358,7 +3361,7 @@ paths:
       tags:
         - "Auth"
       summary: Login
-      description: Login. A cookie will be returned on the response. You need to set it in your client. You can login using either username or email.
+      description: Login. A cookie will be returned on the response. You need to set it in your client. You can login using either username or email. As explained at the [top](#) of the page, when in production authentication from another websites will only work if the domain is whitelisted.
       operationId: login
       requestBody:
         content:

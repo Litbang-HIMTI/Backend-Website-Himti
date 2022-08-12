@@ -46,6 +46,7 @@ const sessionCfg = {
 		ttl,
 	}),
 };
+const whiteLists = ["https://himtiuinjkt.or.id"];
 
 // --------------------------------------------------
 // middleware
@@ -54,7 +55,7 @@ app.use(morgan("dev")); // logger, use preset dev
 app.use(helmet()); // security
 app.use(
 	cors({
-		origin: true,
+		origin: ___prod___ ? whiteLists : true, // only allow whitelisted origin in production
 		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
 		credentials: true,
 	})
