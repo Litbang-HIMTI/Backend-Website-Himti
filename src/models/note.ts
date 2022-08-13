@@ -5,9 +5,8 @@ interface INote {
 	author: Schema.Types.ObjectId;
 	title: string;
 	content: string;
-	color_text?: string;
-	color_bg?: string;
 	editedBy?: Schema.Types.ObjectId;
+	position: number;
 }
 export interface INoteModel extends INote, Document {}
 
@@ -30,14 +29,6 @@ const noteSchema = new Schema<INoteModel>(
 		content: {
 			type: String,
 			required: true,
-		},
-		color_text: {
-			type: String,
-			default: "#000000",
-		},
-		color_bg: {
-			type: String,
-			default: "#ffffff",
 		},
 		editedBy: {
 			type: Schema.Types.ObjectId,
