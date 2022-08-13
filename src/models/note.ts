@@ -44,6 +44,10 @@ const noteSchema = new Schema<INoteModel>(
 			ref: "User",
 			default: undefined,
 		},
+		position: {
+			type: Number,
+			default: 0,
+		},
 	},
 	{ collection: colNote, timestamps: true }
 );
