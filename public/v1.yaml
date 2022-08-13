@@ -2236,6 +2236,37 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+  /shortlink/clickCounts:
+    get:
+      tags:
+        - Shortlink
+      summary: Get shortlink click counts
+      description: Get shortlink click counts
+      operationId: getShortlinkClickCounts
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/tagsData"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /shortlink/{shorten}:
     get:
       tags:
@@ -2415,6 +2446,12 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: byPosition
+          in: query
+          description: Sort by position
+          required: false
+          schema:
+            type: boolean
       responses:
         "200":
           description: A successful response
@@ -4496,12 +4533,9 @@ components:
         content:
           type: string
           description: The content of the note
-        color_text:
-          type: string
-          description: The color of the text in the note
-        color_bg:
-          type: string
-          description: The color of the background in the note
+        position:
+          type: number
+          description: The position of the note
         editedBy:
           $ref: "#/components/schemas/userPublic"
         created_at:
