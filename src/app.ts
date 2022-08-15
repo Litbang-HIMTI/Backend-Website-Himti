@@ -56,7 +56,7 @@ app.use(helmet()); // security
 app.use(
 	cors({
 		origin: ___prod___ ? whiteLists : true, // only allow whitelisted origin in production
-		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
 		credentials: true,
 	})
 ); // cors (cross-origin resource sharing)
