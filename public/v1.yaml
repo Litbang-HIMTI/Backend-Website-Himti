@@ -4572,12 +4572,6 @@ components:
         content:
           type: string
           description: The content of the note
-        color_text:
-          type: string
-          description: The color of the text in the note
-        color_bg:
-          type: string
-          description: The color of the background in the note
     noteEditResponse:
       type: object
       properties:
