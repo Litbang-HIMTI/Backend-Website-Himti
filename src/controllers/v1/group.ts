@@ -17,15 +17,13 @@ export const getAllGroups = async (req: Request, res: Response) => {
 
 	// no need to project user for group list
 	const groupsData = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
-	console.log(groupsData);
 
 	// get the count of each user's groups
 	const userGroups = (await userModel.aggregate([{ $unwind: "$groups" }, { $group: { _id: "$groups", count: { $sum: 1 } } }]).exec()) as IGroupCount[];
-	console.log(userGroups);
 
 	const groups = groupsData.map((group) => {
 		const userGroup = userGroups.find((userGroup) => userGroup._id.toString() === group._id.toString())!;
-		return { ...group, count: userGroup.count ? userGroup.count : 0 };
+		return { ...group, count: userGroup && userGroup.count ? userGroup.count : 0 };
 	});
 
 	return res.status(200).json({
