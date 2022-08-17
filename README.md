@@ -16,6 +16,10 @@ MongoDB + Express.js + Node.js (typescript)
 
 Docs made using swagger.
 
+<p align="center">
+  <img src="./preview.png">
+</p>
+
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
