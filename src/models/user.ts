@@ -93,10 +93,3 @@ userSchema.methods.validatePassword = function (password) {
 };
 
 export const userModel = model<IUserModel>(colUser, userSchema);
-
-export const validateQuery = (data: IUser) => {
-	const valid = data.username && data.first_name && data.last_name && data.email && data.role && data.role.length > 0;
-	const queryData = (({ username, first_name, last_name, email, role }: IUser) => ({ username, first_name, last_name, email, role }))(data);
-
-	return { valid, queryData };
-};

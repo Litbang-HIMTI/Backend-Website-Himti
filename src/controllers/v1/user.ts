@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IUserModel, userModel, validateQuery } from "../../models/user";
+import { IUserModel, userModel } from "../../models/user";
 import { colGroup, error_400_id, error_500, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
@@ -116,15 +116,9 @@ export const createUser = async (req: Request, res: Response) => {
 // PUT
 export const updateUserData = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	const { valid, queryData } = validateQuery(req.body); // extra validation (optional for more security) //
-	if (!valid)
-		return res.status(400).json({
-			data: "Invalid or missing data",
-			success: false,
-		});
 
 	try {
-		const user = await userModel.findByIdAndUpdate(_id, queryData, { new: true }).select("-hash -salt");
+		const user = await userModel.findByIdAndUpdate(_id, req.body, { new: true }).select("-hash -salt");
 		return res.status(!!user ? 200 : 422).json({
 			data: user,
 			message: !!user ? `User ${user.username} _id "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
