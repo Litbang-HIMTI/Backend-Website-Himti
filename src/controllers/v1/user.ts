@@ -70,23 +70,21 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 };
 
 export const getOneUser_protected = async (req: Request, res: Response) => {
-	const { username } = req.params;
+	const { _id } = req.params;
 	const user = (
-		await userModel
-			.aggregate([{ $match: { username: username } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }])
-			.exec()
+		await userModel.aggregate([{ $match: { _id: _id } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }]).exec()
 	)[0] as IUserModel;
 
 	if (!user)
 		return res.status(422).json({
 			data: null,
-			message: `User "${username}" not found`,
+			message: `User "${_id}" not found`,
 			success: false,
 		});
 
 	return res.status(200).json({
 		data: user,
-		message: `User "${username}" retrieved successfully`,
+		message: `User "${_id}" retrieved successfully`,
 		success: true,
 	});
 };
@@ -121,7 +119,7 @@ export const updateUserData = async (req: Request, res: Response) => {
 		const user = await userModel.findByIdAndUpdate(_id, req.body, { new: true }).select("-hash -salt");
 		return res.status(!!user ? 200 : 422).json({
 			data: user,
-			message: !!user ? `User ${user.username} _id "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
+			message: !!user ? `User ${user.username} _id: "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
 			success: !!user,
 		});
 	} catch (error) {
@@ -134,16 +132,16 @@ export const updateUserData = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response) => {
-	const { username } = req.params;
+	const { _id } = req.params;
 	const { password } = req.body;
 	const checkPass = validatePasswordInputed(password);
 	if (!checkPass.success) return res.status(400).json(checkPass);
 
-	const user = await userModel.findOne({ username: username });
+	const user = await userModel.findOne({ _id: _id });
 	if (!user)
 		return res.status(422).json({
 			data: null,
-			message: "User not found",
+			message: `User _id: "${_id} not found`,
 			success: false,
 		});
 
