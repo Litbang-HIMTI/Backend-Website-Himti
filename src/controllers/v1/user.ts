@@ -45,13 +45,15 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getOneUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel
-		.aggregate([
-			{ $match: { username: username } },
-			{ $unset: ["hash", "salt", "createdAt", "updatedAt"] },
-			{ $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } },
-		])
-		.exec();
+	const user = (
+		await userModel
+			.aggregate([
+				{ $match: { username: username } },
+				{ $unset: ["hash", "salt", "createdAt", "updatedAt"] },
+				{ $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } },
+			])
+			.exec()
+	)[0] as IUserModel;
 
 	if (!user)
 		return res.status(422).json({
@@ -69,9 +71,11 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 
 export const getOneUser_protected = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel
-		.aggregate([{ $match: { username: username } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }])
-		.exec();
+	const user = (
+		await userModel
+			.aggregate([{ $match: { username: username } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }])
+			.exec()
+	)[0] as IUserModel;
 
 	if (!user)
 		return res.status(422).json({
@@ -123,7 +127,7 @@ export const updateUserData = async (req: Request, res: Response) => {
 		const user = await userModel.findByIdAndUpdate(_id, queryData, { new: true }).select("-hash -salt");
 		return res.status(!!user ? 200 : 422).json({
 			data: user,
-			message: !!user ? `User "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
+			message: !!user ? `User ${user.username} _id "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
 			success: !!user,
 		});
 	} catch (error) {
@@ -163,11 +167,11 @@ export const changePassword = async (req: Request, res: Response) => {
 
 // DELETE
 export const deleteUser = async (req: Request, res: Response) => {
-	const { username } = req.params;
-	const user = await userModel.findOneAndDelete({ username: username }).select("-hash -salt");
+	const { _id } = req.params;
+	const user = await userModel.findOneAndDelete({ _id: _id }).select("-hash -salt");
 	return res.status(!!user ? 200 : 422).json({
 		data: user,
-		message: !!user ? "User deleted successfully" : `Fail to delete user. User username: "${username}" not found`,
+		message: !!user ? "User deleted successfully" : `Fail to delete user. User _id: "${_id}" not found`,
 		success: !!user,
 	});
 };
