@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { shortLinkModel, IShortLinkModel } from "../../models/shortlink";
-import { error_400_id, error_500, ___issue___ } from "../../../src/utils";
+import { error_400_id, error_500, ___issue___ } from "../../utils";
 
 // GET
 export const getAllShortLinks = async (req: Request, res: Response) => {
