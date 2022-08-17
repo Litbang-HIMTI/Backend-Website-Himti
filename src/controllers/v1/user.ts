@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUserModel, userModel, validateQuery } from "../../models/user";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { colGroup, error_400_id, error_500, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
 	// validate password manually //
@@ -24,7 +24,14 @@ export const getAllUsers = async (req: Request, res: Response) => {
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
 	const users = (await userModel
-		.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }, { $unset: ["hash", "salt"] }])
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $unset: ["hash", "salt"] },
+			{ $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } },
+		])
 		.exec()) as IUserModel[];
 
 	return res.status(200).json({
@@ -38,7 +45,14 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getOneUser_public = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username: username }).select("-hash -salt -email -createdAt -updatedAt");
+	const user = await userModel
+		.aggregate([
+			{ $match: { username: username } },
+			{ $unset: ["hash", "salt", "createdAt", "updatedAt"] },
+			{ $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } },
+		])
+		.exec();
+
 	if (!user)
 		return res.status(422).json({
 			data: null,
@@ -55,7 +69,10 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 
 export const getOneUser_protected = async (req: Request, res: Response) => {
 	const { username } = req.params;
-	const user = await userModel.findOne({ username: username }).select("-hash -salt");
+	const user = await userModel
+		.aggregate([{ $match: { username: username } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }])
+		.exec();
+
 	if (!user)
 		return res.status(422).json({
 			data: null,

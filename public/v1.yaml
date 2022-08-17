@@ -4635,8 +4635,7 @@ components:
         group:
           type: array
           items:
-            type: string
-            description: FK of The group(s) of the user
+            $ref: "#/components/schemas/group"
         role:
           type: array
           items:
@@ -4681,8 +4680,7 @@ components:
         group:
           type: array
           items:
-            type: string
-            description: FK of The group(s) of the user
+            $ref: "#/components/schemas/group"
         role:
           type: array
           items:
@@ -4716,6 +4714,10 @@ components:
         last_name:
           type: string
           description: The last name of the user
+        email:
+          type: string
+          description: The email of the user
+          uniqueItems: true
         role:
           type: array
           items:
