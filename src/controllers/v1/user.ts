@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { IUserModel, userModel } from "../../models/user";
 import { colGroup, error_400_id, error_500, ___issue___ } from "../../utils";
 
@@ -72,7 +73,9 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 export const getOneUser_protected = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	const user = (
-		await userModel.aggregate([{ $match: { _id: _id } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }]).exec()
+		await userModel
+			.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $unset: ["hash", "salt"] }, { $lookup: { from: colGroup, localField: "group", foreignField: "_id", as: "group" } }])
+			.exec()
 	)[0] as IUserModel;
 
 	if (!user)
