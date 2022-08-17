@@ -99,7 +99,7 @@ paths:
               $ref: "#/components/schemas/blogEditCreateRequest"
         description: Blog to create
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -677,7 +677,7 @@ paths:
               $ref: "#/components/schemas/eventEditCreateRequest"
         description: Event to create
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -1303,7 +1303,7 @@ paths:
               type: object
               $ref: "#/components/schemas/forumEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -1613,7 +1613,7 @@ paths:
               type: object
               $ref: "#/components/schemas/forumCategoryEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -1865,7 +1865,7 @@ paths:
               type: object
               $ref: "#/components/schemas/commentEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -2182,7 +2182,7 @@ paths:
               type: object
               $ref: "#/components/schemas/shortlinkEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -2489,7 +2489,7 @@ paths:
               type: object
               $ref: "#/components/schemas/noteEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -2732,7 +2732,7 @@ paths:
               type: object
               $ref: "#/components/schemas/userEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
@@ -3100,7 +3100,7 @@ paths:
               type: object
               $ref: "#/components/schemas/groupEditCreateRequest"
       responses:
-        "200":
+        "201":
           description: A successful response
           content:
             application/json:
