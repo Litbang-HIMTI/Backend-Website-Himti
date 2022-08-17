@@ -51,8 +51,9 @@ const onError = (error: NodeJS.ErrnoException, port: string | number) => {
 		const port = process.env.PORT || 42069;
 		server.listen(port, () => {
 			console.log(`~~~~ Server Started ~~~~`);
+			console.log(`Mode: ${___prod___ ? "Production" : "Development"}`);
 			if (!___prod___) {
-				console.log(`**** VISIT: http://localhost:${port} ****`);
+				console.log(`VISIT: http://localhost:${port}`);
 			}
 		});
 		server.on("error", (error: NodeJS.ErrnoException) => onError(error, port));
