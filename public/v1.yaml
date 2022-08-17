@@ -2820,6 +2820,57 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+    delete:
+      tags:
+        - User
+      summary: Delete a user
+      description: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/userDeleteResponse"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_forbidden"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /user/{username}:
     get:
       tags:
@@ -2873,57 +2924,6 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security: []
-    delete:
-      tags:
-        - User
-      summary: Delete a user
-      description: Delete a user
-      operationId: deleteUser
-      parameters:
-        - name: username
-          in: path
-          description: Username of the user
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/userDeleteResponse"
-        "400":
-          description: A bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_default"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_forbidden"
-        "422":
-          description: Validation error such as Id not found
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_notFound"
-        "500":
-          description: A server error
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/error_default"
-      security:
-        - cookieAuth: []
   /user/{username}/admin:
     get:
       tags:
