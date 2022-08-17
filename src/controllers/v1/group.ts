@@ -19,7 +19,7 @@ export const getAllGroups = async (req: Request, res: Response) => {
 	const groupsData = (await groupModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IGroupModel[];
 
 	// get the count of each user's groups
-	const userGroups = (await userModel.aggregate([{ $unwind: "$groups" }, { $group: { _id: "$groups", count: { $sum: 1 } } }]).exec()) as IGroupCount[];
+	const userGroups = (await userModel.aggregate([{ $match: {} }, { $unwind: "$group" }, { $group: { _id: "$group", count: { $sum: 1 } } }]).exec()) as IGroupCount[];
 
 	const groups = groupsData.map((group) => {
 		const userGroup = userGroups.find((userGroup) => userGroup._id.toString() === group._id.toString())!;

@@ -1602,7 +1602,7 @@ paths:
       security: []
     post:
       tags:
-        - Forum
+        - Forum_Category
       summary: Create a new forum category
       description: Create a new forum category
       operationId: createForumCategory
