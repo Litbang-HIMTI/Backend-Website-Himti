@@ -87,6 +87,7 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: unsetAuthorFields("author") },
 			{ $unset: ["content"] },
+			{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
 		];
 		if (content) aggregations.pop(); // remove unset content so we can get the content
 

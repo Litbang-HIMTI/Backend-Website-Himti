@@ -4356,7 +4356,6 @@ components:
           type: string
         forumId:
           type: object
-          description: FKey of the id of the forum this comment belongs to. Get from forum will only show fKey, other route will return forum data
           $ref: "#/components/schemas/forum"
         created_at:
           type: string
