@@ -68,7 +68,7 @@ export const getShortlinkStats = async (_req: Request, res: Response) => {
 // POST
 export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;
-	const shortLink = await shortLinkModel.create({ url, shorten });
+	const shortLink = await shortLinkModel.create({ author: req.session.userId!, url, shorten });
 	return res.status(!!shortLink ? 201 : 500).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink created successfully" : `Unable to create shortlink. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -81,7 +81,7 @@ export const updateShortLink = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	const { url } = req.body;
 	try {
-		const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url }, { runValidators: true, new: true });
+		const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url, editedBy: req.session.userId }, { runValidators: true, new: true });
 		return res.status(!!shortLink ? 200 : 422).json({
 			data: shortLink,
 			message: !!shortLink ? "ShortLink updated successfully" : `Fail to update. ShortLink _id: "${_id}" not found`,

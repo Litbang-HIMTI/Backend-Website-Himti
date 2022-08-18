@@ -1,17 +1,24 @@
 import { Schema, model, Document } from "mongoose";
 import isURL from "validator/lib/isURL";
-import { colShortLink, urlSaferRegex } from "../utils";
+import { colShortLink, colUser, urlSaferRegex } from "../utils";
 
 interface IShortLink {
+	author: Schema.Types.ObjectId;
 	url: string;
 	shorten: string;
 	clickCount?: number;
+	editedBy?: Schema.Types.ObjectId;
 }
 export interface IShortLinkModel extends IShortLink, Document {}
 
 // ---------------------------------------------
 const shortLinkSchema = new Schema<IShortLinkModel>(
 	{
+		author: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
+			required: true,
+		},
 		url: {
 			type: String,
 			required: true,
@@ -33,6 +40,10 @@ const shortLinkSchema = new Schema<IShortLinkModel>(
 		clickCount: {
 			type: Number,
 			default: 0,
+		},
+		editedBy: {
+			type: Schema.Types.ObjectId,
+			ref: colUser,
 		},
 	},
 	{ collection: colShortLink, timestamps: true }
