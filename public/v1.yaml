@@ -4436,6 +4436,9 @@ components:
         _id:
           type: string
           uniqueItems: true
+        author:
+          type: object
+          $ref: "#/components/schemas/userPublic"
         url:
           type: string
           description: The original url that this shortlink redirects to

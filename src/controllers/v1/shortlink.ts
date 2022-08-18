@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { shortLinkModel, IShortLinkModel } from "../../models/shortlink";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { colUser, error_400_id, error_500, unsetAuthorFields, ___issue___ } from "../../utils";
 
 // GET
 export const getAllShortLinks = async (req: Request, res: Response) => {
@@ -8,7 +8,18 @@ export const getAllShortLinks = async (req: Request, res: Response) => {
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 
-	const shortLinks = (await shortLinkModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IShortLinkModel[];
+	const shortLinks = (await shortLinkModel
+		.aggregate([
+			{ $match: {} },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: unsetAuthorFields("author") },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
+		])
+		.exec()) as IShortLinkModel[];
 
 	return res.status(200).json({
 		data: shortLinks,
