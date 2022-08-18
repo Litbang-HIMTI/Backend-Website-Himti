@@ -105,7 +105,7 @@ export const getEventStats = async (_req: Request, res: Response) => {
 
 // POST
 export const createEvent = async (req: Request, res: Response) => {
-	const event = await eventModel.create({ ...req.body, author: req.session.userId });
+	const event = await eventModel.create({ ...req.body, author: req.session.userId! });
 	return res.status(!!event ? 201 : 500).json({
 		data: event,
 		message: !!event ? "Event created successfully" : `Unable to create event. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -126,13 +126,13 @@ export const updateEvent = async (req: Request, res: Response) => {
 				// update revision by spread and save new revision with incremented revision number
 				revisionPost = await eventRevisionModel.create({
 					...(event._doc as IEventRevisionModel),
-					editedBy: Types.ObjectId(req.session.userId),
+					editedBy: req.session.userId,
 					revision: revision[0].revision + 1,
 					eventId: Types.ObjectId(_id),
 				});
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: Types.ObjectId(req.session.userId), revision: 1, eventId: Types.ObjectId(_id) });
+				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: req.session.userId, revision: 1, eventId: Types.ObjectId(_id) });
 			}
 		}
 

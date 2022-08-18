@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
-import { userModel } from "../../models/user";
-const validStaff = ["admin", "editor", "forum_moderator", "shortlink_moderator"];
+import { IUserModel, TRoles, userModel } from "../../models/user";
+const validStaff: TRoles[] = ["admin", "editor", "forum_moderator", "shortlink_moderator"];
 
 export const validateLoggedIn = async (req: Request, res: Response, next: NextFunction) => {
 	if (req.session && req.session.user) {
@@ -76,12 +76,12 @@ export const login = async (req: Request, res: Response) => {
 	// check if already logged in
 	if (req.session && req.session.user) return res.status(400).json({ data: null, message: "Already logged in", success: false });
 
-	const { user, valid } = await credentialCheck(username, password);
+	const { user, valid }: { user: IUserModel | null; valid: boolean } = await credentialCheck(username, password);
 	if (!user) return res.status(401).json({ data: null, message: "Invalid username/email or password", success: false });
 	if (!valid) return res.status(401).json({ data: null, message: "Invalid username/email or password", success: false });
 
 	// save session
-	req.session.userId = user._id;
+	req.session.userId = Types.ObjectId(user._id);
 	req.session.user = username;
 	req.session.role = user.role;
 
@@ -109,7 +109,7 @@ export const logout = async (req: Request, res: Response) => {
 export const check = async (req: Request, res: Response) => {
 	if (req.session && req.session.user) {
 		// get user data
-		const user = await userModel.findById(Types.ObjectId(req.session.userId)).select("-salt -hash");
+		const user = await userModel.findById(req.session.userId).select("-salt -hash");
 		return res.status(200).json({
 			data: user,
 			message: "Logged in",

@@ -10,9 +10,9 @@ import MongoStore from "connect-mongo";
 import "express-session";
 declare module "express-session" {
 	interface SessionData {
-		userId: string;
+		userId: Schema.Types.ObjectId;
 		user: string;
-		role: string[];
+		role: TRoles[];
 	}
 }
 import { ___prod___ } from "./utils/constants";
@@ -28,6 +28,8 @@ import { forumRouterV1 } from "./api/v1/forum";
 import { forumCategoryRouterV1 } from "./api/v1/forum_category";
 import { commentRouterV1 } from "./api/v1/comment";
 import { noteRouterV1 } from "./api/v1/note";
+import { TRoles } from "./models/user";
+import { Schema } from "mongoose";
 
 // --------------------------------------------------
 dotenv.config(); // load env

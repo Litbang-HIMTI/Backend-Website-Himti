@@ -12,7 +12,7 @@ import { DocumentResult, colGroup, colUser, urlSaferRegex } from "../utils";
  * @shortlink_moderator = "Shortlink moderator. Limited access to dashboard that includes shortlink"
  * @user = "Site user. Not implemented."
  */
-type TRoles = "admin" | "editor" | "forum_moderator" | "shortlink_moderator" | "user";
+export type TRoles = "admin" | "editor" | "forum_moderator" | "shortlink_moderator" | "user";
 const validRoles: TRoles[] = ["admin", "editor", "forum_moderator", "shortlink_moderator", "user"];
 interface IUser {
 	username: string;

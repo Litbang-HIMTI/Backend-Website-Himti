@@ -94,7 +94,7 @@ export const getPostStats = async (_req: Request, res: Response) => {
 
 // POST
 export const createBlog = async (req: Request, res: Response) => {
-	const blog = await blogModel.create({ ...req.body, author: req.session.userId });
+	const blog = await blogModel.create({ ...req.body, author: req.session.userId! });
 	return res.status(!!blog ? 201 : 500).json({
 		data: blog,
 		message: !!blog ? "Blog created successfully" : `Unable to create blog post. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -114,13 +114,13 @@ export const updateBlog = async (req: Request, res: Response) => {
 				// update revision by spread and save new revision with incremented revision number
 				revisionPost = await blogRevisionModel.create({
 					...(blog._doc as IBlogRevisionModel),
-					editedBy: Types.ObjectId(req.session.userId),
+					editedBy: req.session.userId,
 					revision: revision[0].revision + 1,
 					blogId: Types.ObjectId(_id!),
 				});
 			} else {
 				// create new revision with revision number 1
-				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), editedBy: Types.ObjectId(req.session.userId), revision: 1, blogId: Types.ObjectId(_id) });
+				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), editedBy: req.session.userId, revision: 1, blogId: Types.ObjectId(_id) });
 			}
 		}
 

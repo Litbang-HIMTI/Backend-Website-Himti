@@ -140,7 +140,7 @@ export const createComment = async (req: Request, res: Response) => {
 				return res.status(403).json({ data: null, message: "Forum is locked", success: false });
 		}
 
-		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, forumId: Types.ObjectId(forumId), content });
+		const comment = await commentModel.create({ author: req.session.userId ? req.session.userId : undefined, forumId: Types.ObjectId(forumId), content });
 		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
 			message: !!comment ? "Comment created successfully" : `Unable to create comment. If you think that this is a bug, please submit an issue at ${___issue___}`,

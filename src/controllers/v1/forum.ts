@@ -126,7 +126,7 @@ export const getForumStats = async (_req: Request, res: Response) => {
 
 // POST
 export const createForum = async (req: Request, res: Response) => {
-	const forum = await forumModel.create({ ...req.body, author: req.session.userId });
+	const forum = await forumModel.create({ ...req.body, author: req.session.userId! });
 	return res.status(!!forum ? 201 : 500).json({
 		data: forum,
 		message: !!forum ? "Forum post created successfully" : `Unable to create forum post. If you think that this is a bug, please submit an issue at ${___issue___}`,
