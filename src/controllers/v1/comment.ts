@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { commentModel, ICommentModel } from "../../models/comment";
 import { forumModel } from "../../models/forum";
-import { error_400_id, error_500, ___issue___, colUser, unsetAuthorFields } from "../../utils";
+import { error_400_id, error_500, ___issue___, colUser, unsetAuthorFields, colForum } from "../../utils";
 
 // GET
 export const getAllComments = async (req: Request, res: Response) => {
@@ -19,6 +19,7 @@ export const getAllComments = async (req: Request, res: Response) => {
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
 		{ $unset: ["content"] },
+		{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
 	];
 	if (content) aggregations.pop(); // remove unset content so we can get the content
 
@@ -48,6 +49,7 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 			{ $limit: perPage },
 			// no need to lookup user since we search by author
 			{ $unset: ["content"] },
+			{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
 		];
 		if (content) aggregations.pop(); // remove unset content so we can get the content
 
