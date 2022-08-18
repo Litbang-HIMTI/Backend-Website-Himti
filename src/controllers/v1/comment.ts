@@ -18,8 +18,8 @@ export const getAllComments = async (req: Request, res: Response) => {
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
-		{ $unset: ["content"] },
 		{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
+		{ $unset: ["content"] },
 	];
 	if (content) aggregations.pop(); // remove unset content so we can get the content
 
@@ -47,9 +47,10 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 			{ $sort: { createdAt: -1 } },
 			{ $skip: perPage * page },
 			{ $limit: perPage },
-			// no need to lookup user since we search by author
-			{ $unset: ["content"] },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: unsetAuthorFields("author") },
 			{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
+			{ $unset: ["content"] },
 		];
 		if (content) aggregations.pop(); // remove unset content so we can get the content
 
@@ -86,8 +87,8 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 			{ $limit: perPage },
 			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 			{ $unset: unsetAuthorFields("author") },
-			{ $unset: ["content"] },
 			{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
+			{ $unset: ["content"] },
 		];
 		if (content) aggregations.pop(); // remove unset content so we can get the content
 
