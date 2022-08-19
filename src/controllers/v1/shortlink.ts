@@ -57,11 +57,26 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 	}
 };
 
+export const getOneShortLink_admin = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	// get GET parameter
+	if (!_id) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
+
+	const shortLink = await shortLinkModel.findOne({ _id });
+	if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink _id: "${_id}" not found`, success: false });
+
+	return res.status(200).json({
+		data: shortLink,
+		message: "ShortLink found and retrieved successfully",
+		success: true,
+	});
+};
+
 export const clickCountsOnly = async (_req: Request, res: Response) => {
 	// sum all clickCounts
 	const clickCounts = await shortLinkModel.aggregate([{ $match: {} }, { $group: { _id: null, clickCount: { $sum: "$clickCount" } } }]).exec();
 	return res.status(200).json({
-		data: clickCounts[0],
+		data: clickCounts[0] ? clickCounts[0] : 0,
 		message: "Click counts sum retrieved successfully",
 		success: true,
 	});

@@ -2275,9 +2275,9 @@ paths:
       description: Get a shortlink
       operationId: getShortlink
       parameters:
-        - name: _id
+        - name: shorten
           in: path
-          description: ID of the shortlink
+          description: shorten link/keywords of the shortlink
           required: true
           schema:
             type: string
@@ -2321,6 +2321,53 @@ paths:
                 type: object
                 $ref: "#/components/schemas/error_default"
       security: []
+  /shortlink/{_id}/admin:
+    get:
+      tags:
+        - Shortlink
+      summary: Get a shortlink by id (staff only)
+      description: Get a shortlink by id (staff only)
+      operationId: getShortlinkAdmin
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the shortlink
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/shortlink"
+                  message:
+                    type: string
+                    description: A message
+                  success:
+                    type: boolean
+                    description: Whether the request was successful or not
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security:
+        - cookieAuth: []
   /shortlink/{_id}:
     put:
       tags:

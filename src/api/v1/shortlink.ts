@@ -1,6 +1,15 @@
 import { Router } from "express";
 import { validateShortlinkMod, validateStaff } from "../../controllers/v1/auth";
-import { getAllShortLinks, getOneShortLink_public, createShortLink, updateShortLink, deleteShortLink, getShortlinkStats, clickCountsOnly } from "../../controllers/v1/shortlink";
+import {
+	getAllShortLinks,
+	getOneShortLink_public,
+	createShortLink,
+	updateShortLink,
+	deleteShortLink,
+	getShortlinkStats,
+	clickCountsOnly,
+	getOneShortLink_admin,
+} from "../../controllers/v1/shortlink";
 
 const r = Router();
 
@@ -16,6 +25,7 @@ r.use(validateShortlinkMod);
 
 r.get("/", getAllShortLinks);
 r.post("/", createShortLink);
+r.get("/:_id/admin", getOneShortLink_admin);
 r.put("/:_id", updateShortLink);
 r.delete("/:_id", deleteShortLink);
 
