@@ -1656,6 +1656,50 @@ paths:
         - Forum_Category
       summary: Get a forum category by its name
       description: Get a forum category by its name
+      operationId: getForumCategoryByName
+      parameters:
+        - name: name
+          in: path
+          description: name of the forum category
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/forumCategory"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /forum_category/{_id}/admin:
+    get:
+      tags:
+        - Forum_Category
+      summary: Get a forum category by its name
+      description: Get a forum category by its name
       operationId: getForumCategoryById
       parameters:
         - name: _id
@@ -1693,7 +1737,8 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/error_default"
-      security: []
+      security:
+        - cookieAuth: []
   /forum_category/{_id}:
     put:
       tags:

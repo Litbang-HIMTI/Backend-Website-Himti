@@ -12,9 +12,10 @@ interface IcategoriesCount {
 }
 
 export const getAllForumCategories = async (req: Request, res: Response) => {
-	const count = await forumModel.countDocuments().exec();
+	const count = await forumCategoryModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
+	console.log(perPage);
 
 	const categoriesData = (await forumCategoryModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IForumCategoryModel[];
 
@@ -24,7 +25,7 @@ export const getAllForumCategories = async (req: Request, res: Response) => {
 	// combine
 	const categories = categoriesData.map((category) => {
 		const count = categoriesCount.find((c) => c._id.toString() === category._id.toString())!;
-		return { ...category, count: count.count ? count.count : 0 };
+		return { ...category, count: count && count.count ? count.count : 0 };
 	});
 
 	return res.status(200).json({
@@ -43,6 +44,20 @@ export const getOneForumCategory = async (req: Request, res: Response) => {
 	return res.status(!!category ? 200 : 422).json({
 		data: category,
 		message: !!category ? "Forum category retrieved successfully" : `Forum category name: "${name}" not found`,
+		success: !!category,
+	});
+};
+
+export const getOneForumCategory_admin = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	// get GET parameter
+	if (!_id) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
+
+	const category = await forumCategoryModel.findOne({ _id });
+
+	return res.status(!!category ? 200 : 422).json({
+		data: category,
+		message: !!category ? "Forum category retrieved successfully" : `Forum category name: _id: "${_id}" not found`,
 		success: !!category,
 	});
 };

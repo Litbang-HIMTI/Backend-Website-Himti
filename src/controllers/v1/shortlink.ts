@@ -38,21 +38,19 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 
 	if (parseInt(updateClick as string) === 1) {
 		const shortLink = await shortLinkModel.findOneAndUpdate({ shorten }, { $inc: { clickCount: 1 } }, { new: true });
-		if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink "${shorten}" not found`, success: false });
 
-		return res.status(200).json({
+		return res.status(!!shortLink ? 200 : 422).json({
 			data: shortLink,
-			message: "ShortLink found and updated successfully",
-			success: true,
+			message: !!shortLink ? "ShortLink found and updated successfully" : `ShortLink "${shorten}" not found`,
+			success: !!shortLink,
 		});
 	} else {
 		const shortLink = await shortLinkModel.findOne({ shorten });
-		if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink "${shorten}" not found`, success: false });
 
-		return res.status(200).json({
+		return res.status(!!shortLink ? 200 : 422).json({
 			data: shortLink,
-			message: "ShortLink found and retrieved successfully",
-			success: true,
+			message: !!shortLink ? "ShortLink found and retrieved successfully" : `ShortLink "${shorten}" not found`,
+			success: !!shortLink,
 		});
 	}
 };
@@ -65,10 +63,10 @@ export const getOneShortLink_admin = async (req: Request, res: Response) => {
 	const shortLink = await shortLinkModel.findOne({ _id });
 	if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink _id: "${_id}" not found`, success: false });
 
-	return res.status(200).json({
+	return res.status(!!shortLink ? 200 : 422).json({
 		data: shortLink,
-		message: "ShortLink found and retrieved successfully",
-		success: true,
+		message: !!shortLink ? "ShortLink found and retrieved successfully" : `ShortLink _id: "${_id}" not found`,
+		success: !!shortLink,
 	});
 };
 
