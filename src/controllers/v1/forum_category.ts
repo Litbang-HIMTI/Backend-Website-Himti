@@ -15,7 +15,6 @@ export const getAllForumCategories = async (req: Request, res: Response) => {
 	const count = await forumCategoryModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
-	console.log(perPage);
 
 	const categoriesData = (await forumCategoryModel.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $skip: perPage * page }, { $limit: perPage }]).exec()) as IForumCategoryModel[];
 
