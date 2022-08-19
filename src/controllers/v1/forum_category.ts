@@ -77,7 +77,7 @@ export const updateForumCategory = async (req: Request, res: Response) => {
 
 	try {
 		const category = await forumCategoryModel.findByIdAndUpdate(_id, { ...req.body }, { new: true, runValidators: true });
-		return res.status(!!category ? 201 : 422).json({
+		return res.status(!!category ? 200 : 422).json({
 			data: category,
 			message: !!category ? "Forum category updated successfully" : `Fail to update. Forum category _id: "${_id}" not found`,
 			success: !!category,
@@ -97,7 +97,7 @@ export const deleteForumCategory = async (req: Request, res: Response) => {
 	try {
 		const category = await forumCategoryModel.findByIdAndRemove(_id);
 
-		return res.status(!!category ? 201 : 422).json({
+		return res.status(!!category ? 200 : 422).json({
 			data: category,
 			message: !!category ? "Forum category deleted successfully" : `Fail to delete. Forum category _id: "${_id}" not found`,
 			success: !!category,
