@@ -16,7 +16,7 @@ interface Ievent {
 	tags?: string[];
 	location?: string;
 	link?: string;
-	organizer?: string;
+	organizer?: string[];
 	email?: string;
 	pinned?: boolean;
 	showAtHome?: boolean;
@@ -92,7 +92,7 @@ const eventSchema = new Schema<IEventModel>(
 		},
 		organizer: {
 			type: String,
-			default: undefined,
+			default: [],
 		},
 		email: {
 			type: String,
