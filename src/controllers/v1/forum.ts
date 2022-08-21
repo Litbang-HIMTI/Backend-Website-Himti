@@ -29,6 +29,11 @@ export const getAllForums = async (req: Request, res: Response) => {
 	];
 	if (content) aggregations.pop(); // remove unset content so we can get the content
 
+	// add aggregations for comment counts
+	aggregations.push({ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } });
+	aggregations.push({ $addFields: { commentCount: { $size: "$comments" } } });
+	aggregations.push({ $unset: ["comments"] });
+
 	let forums;
 	if (category) {
 		// first fetch category to get the id from the name
@@ -65,6 +70,9 @@ export const getOneForum = async (req: Request, res: Response) => {
 					{ $unset: unsetAuthorFields("author") },
 					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
 					{ $unset: unsetAuthorFields("editedBy") },
+					{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
+					{ $addFields: { commentCount: { $size: "$comments" } } },
+					{ $unset: ["comments"] },
 				])
 				.exec()
 		)[0] as IForumModel;
