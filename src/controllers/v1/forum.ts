@@ -169,7 +169,7 @@ export const deleteForum = async (req: Request, res: Response) => {
 		// delete its comments
 		const { deletedCount, ok } = await commentModel.deleteMany({ forumId: _id });
 
-		return res.status(!forum ? 200 : 422).json({
+		return res.status(!!forum ? 200 : 422).json({
 			data: forum,
 			message: !!forum
 				? `Successfully deleted forum post ${ok ? ` and its comments (Got ${deletedCount} deleted)` : " and fail to delete its comments (Operations failed)"}`
