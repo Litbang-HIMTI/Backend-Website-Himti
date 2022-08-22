@@ -91,7 +91,7 @@ const eventSchema = new Schema<IEventModel>(
 			},
 		},
 		organizer: {
-			type: String,
+			type: Array,
 			default: [],
 		},
 		email: {
