@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { noteModel, INoteModel } from "../../models/note";
-import { error_400_id, error_500, colUser, ___issue___, unsetAuthorFields } from "../../utils";
+import { colUser, ___issue___, unsetAuthorFields } from "../../utils";
 
 // GET
 export const getAllNotes = async (req: Request, res: Response) => {
@@ -37,31 +37,23 @@ export const getAllNotes = async (req: Request, res: Response) => {
 export const getOneNote = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	// get a note and its users using mongoose
-	try {
-		const note = (
-			await noteModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-				])
-				.exec()
-		)[0] as INoteModel;
+	const note = (
+		await noteModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+			])
+			.exec()
+	)[0] as INoteModel;
 
-		return res.status(!!note ? 200 : 422).json({
-			data: note,
-			message: !!note ? `Note "${_id}" retrieved successfully` : `Note "${_id}" not found`,
-			success: !!note,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Note _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!note ? 200 : 422).json({
+		data: note,
+		message: !!note ? `Note "${_id}" retrieved successfully` : `Note "${_id}" not found`,
+		success: !!note,
+	});
 };
 
 // POST
@@ -81,37 +73,21 @@ export const createNote = async (req: Request, res: Response) => {
 // PUT
 export const updateNote = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { new: true, runValidators: true });
-		return res.status(!!note ? 200 : 422).json({
-			data: note,
-			message: !!note ? "Note updated successfully" : `Fail to update. Note _id: "${_id}" not found`,
-			success: !!note,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Note _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { new: true, runValidators: true });
+	return res.status(!!note ? 200 : 422).json({
+		data: note,
+		message: !!note ? "Note updated successfully" : `Fail to update. Note _id: "${_id}" not found`,
+		success: !!note,
+	});
 };
 
 // DELETE
 export const deleteNote = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const note = await noteModel.findByIdAndRemove(_id);
-		return res.status(!!note ? 200 : 422).json({
-			data: note,
-			message: !!note ? "Note deleted successfully" : `Fail to delete note. Note _id: "${_id}" not found`,
-			success: !!note,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Note _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const note = await noteModel.findByIdAndRemove(_id);
+	return res.status(!!note ? 200 : 422).json({
+		data: note,
+		message: !!note ? "Note deleted successfully" : `Fail to delete note. Note _id: "${_id}" not found`,
+		success: !!note,
+	});
 };

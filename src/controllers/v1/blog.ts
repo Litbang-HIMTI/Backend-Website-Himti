@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { blogModel, blogRevisionModel, IBlogModel, IBlogRevisionModel } from "../../models/blog";
-import { error_400_id, error_500, ___issue___, colUser, colBlog, unsetAuthorFields } from "../../utils";
-const id_type_blog = "Blog _id";
-const id_type_blogRevision = "Blog Revision _id";
+import { ___issue___, colUser, colBlog, unsetAuthorFields } from "../../utils";
 // --------------------------------------------------------------------------------------------
 // BLOG
 // GET
@@ -39,31 +37,23 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 
 export const getOneBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const blog = (
-			await blogModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-				])
-				.exec()
-		)[0] as IBlogModel;
+	const blog = (
+		await blogModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+			])
+			.exec()
+	)[0] as IBlogModel;
 
-		return res.status(!!blog ? 200 : 422).json({
-			data: blog,
-			message: !!blog ? "Blog retrieved successfully" : `Blog _id: "${_id}" not found`,
-			success: !!blog,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blog);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!blog ? 200 : 422).json({
+		data: blog,
+		message: !!blog ? "Blog retrieved successfully" : `Blog _id: "${_id}" not found`,
+		success: !!blog,
+	});
 };
 
 interface ITagsCategoryCount {
@@ -74,7 +64,6 @@ interface ITagsCategoryCount {
 export const getTagsOnly = async (_req: Request, res: Response) => {
 	// get distinct tags and count how many blogs each tag has
 	const tagCounts = (await blogModel.aggregate([{ $match: {} }, { $unwind: "$tags" }, { $group: { _id: "$tags", count: { $sum: 1 } } }]).exec()) as ITagsCategoryCount[];
-
 	return res.status(200).json({
 		data: tagCounts,
 		message: "Tags retrieved successfully",
@@ -106,60 +95,44 @@ export const createBlog = async (req: Request, res: Response) => {
 export const updateBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	let revisionPost;
-	try {
-		const blog = await blogModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
-		if (blog) {
-			const revision = await blogRevisionModel.find({ blogId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
-			if (revision.length > 0) {
-				// update revision by spread and save new revision with incremented revision number
-				revisionPost = await blogRevisionModel.create({
-					...(blog._doc as IBlogRevisionModel),
-					editedBy: req.session.userId,
-					revision: revision[0].revision + 1,
-					blogId: Types.ObjectId(_id!),
-				});
-			} else {
-				// create new revision with revision number 1
-				revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), editedBy: req.session.userId, revision: 1, blogId: Types.ObjectId(_id) });
-			}
-		}
-
-		return res.status(!!blog ? 200 : 422).json({
-			data: blog,
-			message: !!blog
-				? `Successfully updated Blog${!!revisionPost ? ` and successfully moved old blog post to revision history` : ` fail to move old blog post to revision history`}`
-				: `Blog _id: "${_id}" not found`,
-			success: !!blog,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blog);
+	const blog = await blogModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
+	if (blog) {
+		const revision = await blogRevisionModel.find({ blogId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
+		if (revision.length > 0) {
+			// update revision by spread and save new revision with incremented revision number
+			revisionPost = await blogRevisionModel.create({
+				...(blog._doc as IBlogRevisionModel),
+				editedBy: req.session.userId,
+				revision: revision[0].revision + 1,
+				blogId: Types.ObjectId(_id!),
+			});
 		} else {
-			return error_500(res, error);
+			// create new revision with revision number 1
+			revisionPost = await blogRevisionModel.create({ ...(blog._doc as IBlogRevisionModel), editedBy: req.session.userId, revision: 1, blogId: Types.ObjectId(_id) });
 		}
 	}
+
+	return res.status(!!blog ? 200 : 422).json({
+		data: blog,
+		message: !!blog
+			? `Successfully updated Blog${!!revisionPost ? ` and successfully moved old blog post to revision history` : ` fail to move old blog post to revision history`}`
+			: `Blog _id: "${_id}" not found`,
+		success: !!blog,
+	});
 };
 
 // DELETE
 export const deleteBlog = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const blog = await blogModel.findByIdAndDelete(_id);
-		const { deletedCount, ok } = await blogRevisionModel.deleteMany({ blogId: _id });
-		return res.status(!!blog ? 200 : 422).json({
-			data: blog,
-			message: !!blog
-				? `Successfully deleted blog post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
-				: `Blog _id: "${_id}" not found`,
-			success: !!blog,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blog);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const blog = await blogModel.findByIdAndDelete(_id);
+	const { deletedCount, ok } = await blogRevisionModel.deleteMany({ blogId: _id });
+	return res.status(!!blog ? 200 : 422).json({
+		data: blog,
+		message: !!blog
+			? `Successfully deleted blog post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
+			: `Blog _id: "${_id}" not found`,
+		success: !!blog,
+	});
 };
 
 // --------------------------------------------------------------------------------------------
@@ -197,68 +170,52 @@ export const getAllBlogRevisions = async (req: Request, res: Response) => {
 
 export const getBlogRevisionsByBlogId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const count = await blogModel.countDocuments({ blogId: Types.ObjectId(_id) }).exec();
-		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
-		const page = parseInt(req.query.page as string) - 1 || 0;
+	const count = await blogModel.countDocuments({ blogId: Types.ObjectId(_id) }).exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
 
-		const blogRevisions = (await blogRevisionModel
-			.aggregate([
-				{ $match: { blogId: Types.ObjectId(_id) } },
-				{ $sort: { createdAt: -1 } },
-				{ $skip: perPage * page },
-				{ $limit: perPage },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-				{ $unset: unsetAuthorFields("editedBy") },
-			])
-			.exec()) as IBlogRevisionModel[];
+	const blogRevisions = (await blogRevisionModel
+		.aggregate([
+			{ $match: { blogId: Types.ObjectId(_id) } },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: perPage * page },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: unsetAuthorFields("author") },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
+		])
+		.exec()) as IBlogRevisionModel[];
 
-		return res.status(200).json({
-			data: blogRevisions,
-			page: page + 1,
-			pages: Math.ceil(count / perPage),
-			message: "Blog post revisions retrieved successfully",
-			success: true,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blog);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(200).json({
+		data: blogRevisions,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
+		message: "Blog post revisions retrieved successfully",
+		success: true,
+	});
 };
 
 export const getOneBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const blogRevision = (
-			await blogRevisionModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-					{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
-				])
-				.exec()
-		)[0] as IBlogRevisionModel;
+	const blogRevision = (
+		await blogRevisionModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blog" } },
+			])
+			.exec()
+	)[0] as IBlogRevisionModel;
 
-		return res.status(!!blogRevision ? 200 : 422).json({
-			data: blogRevision,
-			message: !!blogRevision ? "Blog revision retrieved successfully" : `Blog revision _id: "${_id}" not found`,
-			success: !!blogRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blogRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!blogRevision ? 200 : 422).json({
+		data: blogRevision,
+		message: !!blogRevision ? "Blog revision retrieved successfully" : `Blog revision _id: "${_id}" not found`,
+		success: !!blogRevision,
+	});
 };
 
 // POST
@@ -274,37 +231,21 @@ export const createBlogRevision = async (req: Request, res: Response) => {
 // PUT
 export const updateBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const blogRevision = await blogRevisionModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true });
-		return res.status(!!blogRevision ? 200 : 422).json({
-			data: blogRevision,
-			message: !!blogRevision ? "Blog revision updated successfully" : `Fail to update. Blog revision _id: "${_id}" not found`,
-			success: !!blogRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blogRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const blogRevision = await blogRevisionModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true });
+	return res.status(!!blogRevision ? 200 : 422).json({
+		data: blogRevision,
+		message: !!blogRevision ? "Blog revision updated successfully" : `Fail to update. Blog revision _id: "${_id}" not found`,
+		success: !!blogRevision,
+	});
 };
 
 // DELETE
 export const deleteBlogRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const blogRevision = await blogRevisionModel.findByIdAndDelete(_id);
-		return res.status(!!blogRevision ? 200 : 422).json({
-			data: blogRevision,
-			message: !!blogRevision ? "Blog revision deleted successfully" : `Blog revision _id: "${_id}" not found`,
-			success: !!blogRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_blogRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const blogRevision = await blogRevisionModel.findByIdAndDelete(_id);
+	return res.status(!!blogRevision ? 200 : 422).json({
+		data: blogRevision,
+		message: !!blogRevision ? "Blog revision deleted successfully" : `Blog revision _id: "${_id}" not found`,
+		success: !!blogRevision,
+	});
 };

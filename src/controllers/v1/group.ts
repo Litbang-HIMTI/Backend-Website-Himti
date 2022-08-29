@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { groupModel, IGroupModel } from "../../models/group";
 import { userModel } from "../../models/user";
-import { error_400_id, error_500, colUser, ___issue___, unsetAuthorFields } from "../../utils";
+import { colUser, ___issue___, unsetAuthorFields } from "../../utils";
 
 // GET
 interface IGroupCount {
@@ -37,54 +37,34 @@ export const getAllGroups = async (req: Request, res: Response) => {
 
 export const getOneGroup_public = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		// get a group and its users using mongoose
-		const group = (
-			await groupModel
-				.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } }, { $unset: unsetAuthorFields("users") }])
-				.exec()
-		)[0] as IGroupModel;
+	// get a group and its users using mongoose
+	const group = (
+		await groupModel
+			.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } }, { $unset: unsetAuthorFields("users") }])
+			.exec()
+	)[0] as IGroupModel;
 
-		return res.status(!!group ? 200 : 422).json({
-			data: group,
-			message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
-			success: !!group,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Group _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!group ? 200 : 422).json({
+		data: group,
+		message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
+		success: !!group,
+	});
 };
 
 export const getOneGroup_protected = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	// get a group and its users using mongoose
-	try {
-		const group = (
-			await groupModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } },
-					{ $unset: ["users.hash", "users.salt"] },
-				])
-				.exec()
-		)[0] as IGroupModel;
+	const group = (
+		await groupModel
+			.aggregate([{ $match: { _id: Types.ObjectId(_id) } }, { $lookup: { from: colUser, localField: "name", foreignField: "group", as: "users" } }, { $unset: ["users.hash", "users.salt"] }])
+			.exec()
+	)[0] as IGroupModel;
 
-		return res.status(!!group ? 200 : 422).json({
-			data: group,
-			message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
-			success: !!group,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Group _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!group ? 200 : 422).json({
+		data: group,
+		message: !!group ? `Group "${_id}" retrieved successfully` : `Group "${_id}" not found`,
+		success: !!group,
+	});
 };
 
 // POST
@@ -100,37 +80,21 @@ export const createGroup = async (req: Request, res: Response) => {
 // PUT
 export const updateGroup = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const group = await groupModel.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
-		return res.status(!!group ? 200 : 422).json({
-			data: group,
-			message: !!group ? "Group updated successfully" : `Fail to update. Group _id: "${_id}" not found`,
-			success: !!group,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Group _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const group = await groupModel.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+	return res.status(!!group ? 200 : 422).json({
+		data: group,
+		message: !!group ? "Group updated successfully" : `Fail to update. Group _id: "${_id}" not found`,
+		success: !!group,
+	});
 };
 
 // DELETE
 export const deleteGroup = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const group = await groupModel.findByIdAndRemove(_id);
-		return res.status(!!group ? 200 : 422).json({
-			data: group,
-			message: !!group ? "Group deleted successfully" : `Fail to delete group. Group _id: "${_id}" not found`,
-			success: !!group,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Group _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const group = await groupModel.findByIdAndRemove(_id);
+	return res.status(!!group ? 200 : 422).json({
+		data: group,
+		message: !!group ? "Group deleted successfully" : `Fail to delete group. Group _id: "${_id}" not found`,
+		success: !!group,
+	});
 };

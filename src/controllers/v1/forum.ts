@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { forumModel, IForumModel } from "../../models/forum";
 import { forumCategoryModel, IForumCategoryModel } from "../../models/forum_category";
 import { commentModel } from "../../models/comment";
-import { error_400_id, error_500, colComment, ___issue___, colUser, unsetAuthorFields, colForumCategory } from "../../utils";
+import { colComment, ___issue___, colUser, unsetAuthorFields, colForumCategory } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // FORUM
@@ -60,67 +60,51 @@ export const getAllForums = async (req: Request, res: Response) => {
 
 export const getOneForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const forum = (
-			await forumModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-					{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
-					{ $addFields: { commentCount: { $size: "$comments" } } },
-					{ $unset: ["comments"] },
-				])
-				.exec()
-		)[0] as IForumModel;
+	const forum = (
+		await forumModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
+				{ $addFields: { commentCount: { $size: "$comments" } } },
+				{ $unset: ["comments"] },
+			])
+			.exec()
+	)[0] as IForumModel;
 
-		return res.status(!!forum ? 200 : 422).json({
-			data: forum,
-			message: !!forum ? "Forum retrieved successfully" : `Forum _id: "${_id}" not found`,
-			success: !!forum,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!forum ? 200 : 422).json({
+		data: forum,
+		message: !!forum ? "Forum retrieved successfully" : `Forum _id: "${_id}" not found`,
+		success: !!forum,
+	});
 };
 
 export const getOneForumAndItsComments = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const forum = (
-			await forumModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-					{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
-					{ $unset: ["comments.forumId"] },
-				])
-				.exec()
-		)[0] as IForumModel;
+	const forum = (
+		await forumModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colForumCategory, localField: "category", foreignField: "_id", as: "category" } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colComment, localField: "_id", foreignField: "forumId", as: "comments" } },
+				{ $unset: ["comments.forumId"] },
+			])
+			.exec()
+	)[0] as IForumModel;
 
-		return res.status(!!forum ? 200 : 422).json({
-			data: forum,
-			message: !!forum ? `Forum _id: "${_id}" retrieved successfully` : `Forum _id: "${_id}" not found`,
-			success: !!forum,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!forum ? 200 : 422).json({
+		data: forum,
+		message: !!forum ? `Forum _id: "${_id}" retrieved successfully` : `Forum _id: "${_id}" not found`,
+		success: !!forum,
+	});
 };
 
 export const getForumStats = async (_req: Request, res: Response) => {
@@ -145,42 +129,26 @@ export const createForum = async (req: Request, res: Response) => {
 // PUT
 export const updateForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, updatedBy: req.session.userId }, { new: true, runValidators: true });
-		return res.status(!!forum ? 200 : 422).json({
-			data: forum,
-			message: !!forum ? "Forum updated successfully" : `Fail to update. Forum _id: "${_id}" not found`,
-			success: !!forum,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, updatedBy: req.session.userId }, { new: true, runValidators: true });
+	return res.status(!!forum ? 200 : 422).json({
+		data: forum,
+		message: !!forum ? "Forum updated successfully" : `Fail to update. Forum _id: "${_id}" not found`,
+		success: !!forum,
+	});
 };
 
 // DELETE
 export const deleteForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const forum = await forumModel.findByIdAndDelete(_id);
-		// delete its comments
-		const { deletedCount, ok } = await commentModel.deleteMany({ forumId: _id });
+	const forum = await forumModel.findByIdAndDelete(_id);
+	// delete its comments
+	const { deletedCount, ok } = await commentModel.deleteMany({ forumId: _id });
 
-		return res.status(!!forum ? 200 : 422).json({
-			data: forum,
-			message: !!forum
-				? `Successfully deleted forum post ${ok ? ` and its comments (Got ${deletedCount} deleted)` : " and fail to delete its comments (Operations failed)"}`
-				: `Fail to delete forum _id: "${_id}" not found`,
-			success: !!forum,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!forum ? 200 : 422).json({
+		data: forum,
+		message: !!forum
+			? `Successfully deleted forum post ${ok ? ` and its comments (Got ${deletedCount} deleted)` : " and fail to delete its comments (Operations failed)"}`
+			: `Fail to delete forum _id: "${_id}" not found`,
+		success: !!forum,
+	});
 };

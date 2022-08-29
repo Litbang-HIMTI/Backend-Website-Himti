@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { eventModel, eventRevisionModel, IEventModel, IEventRevisionModel } from "../../models/event";
-import { error_400_id, error_500, ___issue___, colUser, colEvent, unsetAuthorFields } from "../../utils";
+import { ___issue___, colUser, colEvent, unsetAuthorFields } from "../../utils";
 const id_type_event = "Event _id";
 const id_type_eventRevision = "Event Revision _id";
 // --------------------------------------------------------------------------------------------
@@ -39,31 +39,23 @@ export const getAllEvents = async (req: Request, res: Response) => {
 
 export const getOneEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const event = (
-			await eventModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-				])
-				.exec()
-		)[0] as IEventModel;
+	const event = (
+		await eventModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+			])
+			.exec()
+	)[0] as IEventModel;
 
-		return res.status(!!event ? 200 : 422).json({
-			data: event,
-			message: !!event ? "Event retrieved successfully" : `${id_type_event}: "${_id}" not found`,
-			success: !!event,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_event);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!event ? 200 : 422).json({
+		data: event,
+		message: !!event ? "Event retrieved successfully" : `${id_type_event}: "${_id}" not found`,
+		success: !!event,
+	});
 };
 
 interface ITagsCategoryCount {
@@ -117,61 +109,45 @@ export const createEvent = async (req: Request, res: Response) => {
 export const updateEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	let revisionPost;
-	try {
-		const event = await eventModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
-		if (event) {
-			const revision = await eventRevisionModel.find({ eventId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
+	const event = await eventModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
+	if (event) {
+		const revision = await eventRevisionModel.find({ eventId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 
-			if (revision.length > 0) {
-				// update revision by spread and save new revision with incremented revision number
-				revisionPost = await eventRevisionModel.create({
-					...(event._doc as IEventRevisionModel),
-					editedBy: req.session.userId,
-					revision: revision[0].revision + 1,
-					eventId: Types.ObjectId(_id),
-				});
-			} else {
-				// create new revision with revision number 1
-				revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: req.session.userId, revision: 1, eventId: Types.ObjectId(_id) });
-			}
-		}
-
-		return res.status(!!event ? 200 : 422).json({
-			data: event,
-			message: !!event
-				? `Successfully updated event${!!revisionPost ? ` and successfully moved old event post to revision history` : ` fail to move old event post to revision history`}`
-				: `${id_type_event}: "${_id}" not found`,
-			success: !!event,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_event);
+		if (revision.length > 0) {
+			// update revision by spread and save new revision with incremented revision number
+			revisionPost = await eventRevisionModel.create({
+				...(event._doc as IEventRevisionModel),
+				editedBy: req.session.userId,
+				revision: revision[0].revision + 1,
+				eventId: Types.ObjectId(_id),
+			});
 		} else {
-			return error_500(res, error);
+			// create new revision with revision number 1
+			revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: req.session.userId, revision: 1, eventId: Types.ObjectId(_id) });
 		}
 	}
+
+	return res.status(!!event ? 200 : 422).json({
+		data: event,
+		message: !!event
+			? `Successfully updated event${!!revisionPost ? ` and successfully moved old event post to revision history` : ` fail to move old event post to revision history`}`
+			: `${id_type_event}: "${_id}" not found`,
+		success: !!event,
+	});
 };
 
 // DELETE
 export const deleteEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const event = await eventModel.findByIdAndDelete(_id);
-		const { deletedCount, ok } = await eventRevisionModel.deleteMany({ eventId: Types.ObjectId(_id) });
-		return res.status(!!event ? 200 : 422).json({
-			data: event,
-			message: !!event
-				? `Successfully deleted event post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
-				: `${id_type_event}: "${_id}" not found`,
-			success: !!event,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_event);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const event = await eventModel.findByIdAndDelete(_id);
+	const { deletedCount, ok } = await eventRevisionModel.deleteMany({ eventId: Types.ObjectId(_id) });
+	return res.status(!!event ? 200 : 422).json({
+		data: event,
+		message: !!event
+			? `Successfully deleted event post${ok ? ` and its revision history (Got ${deletedCount} deleted)` : " and fail to delete version history (Operations failed)"}`
+			: `${id_type_event}: "${_id}" not found`,
+		success: !!event,
+	});
 };
 
 // --------------------------------------------------------------------------------------------
@@ -209,68 +185,52 @@ export const getAllEventRevisions = async (req: Request, res: Response) => {
 
 export const getEventRevisionsByEventId = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const count = await eventRevisionModel.countDocuments({ eventId: Types.ObjectId(_id) }).exec();
-		const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
-		const page = parseInt(req.query.page as string) - 1 || 0;
+	const count = await eventRevisionModel.countDocuments({ eventId: Types.ObjectId(_id) }).exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
 
-		const eventRevisions = (await eventRevisionModel
-			.aggregate([
-				{ $match: { eventId: Types.ObjectId(_id) } },
-				{ $sort: { createdAt: -1 } },
-				{ $skip: page * perPage },
-				{ $limit: perPage },
-				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-				{ $unset: unsetAuthorFields("author") },
-				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-				{ $unset: unsetAuthorFields("editedBy") },
-			])
-			.exec()) as IEventRevisionModel[];
+	const eventRevisions = (await eventRevisionModel
+		.aggregate([
+			{ $match: { eventId: Types.ObjectId(_id) } },
+			{ $sort: { createdAt: -1 } },
+			{ $skip: page * perPage },
+			{ $limit: perPage },
+			{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+			{ $unset: unsetAuthorFields("author") },
+			{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+			{ $unset: unsetAuthorFields("editedBy") },
+		])
+		.exec()) as IEventRevisionModel[];
 
-		return res.status(200).json({
-			data: eventRevisions,
-			page: page + 1,
-			pages: Math.ceil(count / perPage),
-			message: "Event revisions retrieved successfully",
-			success: true,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Event revision eventId");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(200).json({
+		data: eventRevisions,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
+		message: "Event revisions retrieved successfully",
+		success: true,
+	});
 };
 
 export const getOneEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const eventRevision = (
-			await eventRevisionModel
-				.aggregate([
-					{ $match: { _id: Types.ObjectId(_id) } },
-					{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
-					{ $unset: unsetAuthorFields("author") },
-					{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
-					{ $unset: unsetAuthorFields("editedBy") },
-					{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
-				])
-				.exec()
-		)[0] as IEventRevisionModel;
+	const eventRevision = (
+		await eventRevisionModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "event" } },
+			])
+			.exec()
+	)[0] as IEventRevisionModel;
 
-		return res.status(!!eventRevision ? 200 : 422).json({
-			data: eventRevision,
-			message: !!eventRevision ? "Event revision retrieved successfully" : `${id_type_eventRevision}: "${_id}" not found`,
-			success: !!eventRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_eventRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!eventRevision ? 200 : 422).json({
+		data: eventRevision,
+		message: !!eventRevision ? "Event revision retrieved successfully" : `${id_type_eventRevision}: "${_id}" not found`,
+		success: !!eventRevision,
+	});
 };
 
 // POST
@@ -286,37 +246,21 @@ export const createEventRevision = async (req: Request, res: Response) => {
 // PUT
 export const updateEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const eventRevision = await eventRevisionModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true });
-		return res.status(!!eventRevision ? 200 : 422).json({
-			data: eventRevision,
-			message: !!eventRevision ? "Event revision updated successfully" : `Fail to update. ${id_type_eventRevision}: "${_id}" not found`,
-			success: !!eventRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_eventRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const eventRevision = await eventRevisionModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true });
+	return res.status(!!eventRevision ? 200 : 422).json({
+		data: eventRevision,
+		message: !!eventRevision ? "Event revision updated successfully" : `Fail to update. ${id_type_eventRevision}: "${_id}" not found`,
+		success: !!eventRevision,
+	});
 };
 
 // DELETE
 export const deleteEventRevision = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const eventRevision = await eventRevisionModel.findByIdAndDelete(_id);
-		return res.status(!!eventRevision ? 200 : 422).json({
-			data: eventRevision,
-			message: !!eventRevision ? "Event revision deleted successfully" : `${id_type_eventRevision}: "${_id}" not found`,
-			success: !!eventRevision,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, id_type_eventRevision);
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const eventRevision = await eventRevisionModel.findByIdAndDelete(_id);
+	return res.status(!!eventRevision ? 200 : 422).json({
+		data: eventRevision,
+		message: !!eventRevision ? "Event revision deleted successfully" : `${id_type_eventRevision}: "${_id}" not found`,
+		success: !!eventRevision,
+	});
 };

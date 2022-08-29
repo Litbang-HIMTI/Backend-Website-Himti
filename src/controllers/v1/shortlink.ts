@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { shortLinkModel, IShortLinkModel } from "../../models/shortlink";
-import { colUser, error_400_id, error_500, unsetAuthorFields, ___issue___ } from "../../utils";
+import { colUser, unsetAuthorFields, ___issue___ } from "../../utils";
 
 // GET
 export const getAllShortLinks = async (req: Request, res: Response) => {
@@ -58,11 +58,7 @@ export const getOneShortLink_public = async (req: Request, res: Response) => {
 export const getOneShortLink_admin = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	// get GET parameter
-	if (!_id) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
-
-	const shortLink = await shortLinkModel.findOne({ _id });
-	if (!shortLink) return res.status(422).json({ data: null, message: `ShortLink _id: "${_id}" not found`, success: false });
-
+	const shortLink = await shortLinkModel.findById({ _id });
 	return res.status(!!shortLink ? 200 : 422).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink found and retrieved successfully" : `ShortLink _id: "${_id}" not found`,
@@ -104,37 +100,21 @@ export const createShortLink = async (req: Request, res: Response) => {
 export const updateShortLink = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	const { url } = req.body;
-	try {
-		const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url, editedBy: req.session.userId }, { runValidators: true, new: true });
-		return res.status(!!shortLink ? 200 : 422).json({
-			data: shortLink,
-			message: !!shortLink ? "ShortLink updated successfully" : `Fail to update. ShortLink _id: "${_id}" not found`,
-			success: !!shortLink,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "ShortLink _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url, editedBy: req.session.userId }, { runValidators: true, new: true });
+	return res.status(!!shortLink ? 200 : 422).json({
+		data: shortLink,
+		message: !!shortLink ? "ShortLink updated successfully" : `Fail to update. ShortLink _id: "${_id}" not found`,
+		success: !!shortLink,
+	});
 };
 
 // DELETE
 export const deleteShortLink = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const shortLink = await shortLinkModel.findByIdAndRemove({ _id });
-		return res.status(!!shortLink ? 200 : 422).json({
-			data: shortLink,
-			message: !!shortLink ? "ShortLink deleted successfully" : `Fail to delete. ShortLink _id: "${_id}" not found`,
-			success: !!shortLink,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "ShortLink _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const shortLink = await shortLinkModel.findByIdAndRemove({ _id });
+	return res.status(!!shortLink ? 200 : 422).json({
+		data: shortLink,
+		message: !!shortLink ? "ShortLink deleted successfully" : `Fail to delete. ShortLink _id: "${_id}" not found`,
+		success: !!shortLink,
+	});
 };

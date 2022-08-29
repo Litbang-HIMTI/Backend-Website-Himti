@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { IUserModel, userModel } from "../../models/user";
-import { colGroup, error_400_id, error_500, ___issue___ } from "../../utils";
+import { colGroup, ___issue___ } from "../../utils";
 
 const validatePasswordInputed = (password: string) => {
 	// validate password manually //
@@ -56,17 +56,10 @@ export const getOneUser_public = async (req: Request, res: Response) => {
 			.exec()
 	)[0] as IUserModel;
 
-	if (!user)
-		return res.status(422).json({
-			data: null,
-			message: `User "${username}" not found`,
-			success: false,
-		});
-
-	return res.status(200).json({
+	return res.status(!!user ? 200 : 422).json({
 		data: user,
-		message: `User "${username}" retrieved successfully`,
-		success: true,
+		message: !!user ? `User "${username}" retrieved successfully` : `User "${username}" not found`,
+		success: !!user,
 	});
 };
 
@@ -78,17 +71,10 @@ export const getOneUser_protected = async (req: Request, res: Response) => {
 			.exec()
 	)[0] as IUserModel;
 
-	if (!user)
-		return res.status(422).json({
-			data: null,
-			message: `User "${_id}" not found`,
-			success: false,
-		});
-
-	return res.status(200).json({
+	return res.status(!!user ? 200 : 422).json({
 		data: user,
-		message: `User "${_id}" retrieved successfully`,
-		success: true,
+		message: !!user ? `User _id: "${_id}" retrieved successfully` : `User _id: "${_id}" not found`,
+		success: !!user,
 	});
 };
 
@@ -118,20 +104,12 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUserData = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 
-	try {
-		const user = await userModel.findByIdAndUpdate(_id, req.body, { new: true }).select("-hash -salt");
-		return res.status(!!user ? 200 : 422).json({
-			data: user,
-			message: !!user ? `User ${user.username} _id: "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
-			success: !!user,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "User _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const user = await userModel.findByIdAndUpdate(_id, req.body, { new: true }).select("-hash -salt");
+	return res.status(!!user ? 200 : 422).json({
+		data: user,
+		message: !!user ? `User ${user.username} _id: "${_id}" updated successfully` : `Unable to update user. User _id: "${_id}" not found`,
+		success: !!user,
+	});
 };
 
 export const changePassword = async (req: Request, res: Response) => {

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { forumCategoryModel, IForumCategoryModel } from "../../models/forum_category";
 import { forumModel } from "../../models/forum";
-import { error_400_id, error_500, ___issue___ } from "../../utils";
+import { ___issue___ } from "../../utils";
 
 // --------------------------------------------------------------------------------------------
 // FORUM CATEGORY
@@ -49,10 +49,7 @@ export const getOneForumCategory = async (req: Request, res: Response) => {
 
 export const getOneForumCategory_admin = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	// get GET parameter
-	if (!_id) return res.status(400).json({ data: null, message: "Invalid parameter", success: false });
-
-	const category = await forumCategoryModel.findOne({ _id });
+	const category = await forumCategoryModel.findById({ _id });
 
 	return res.status(!!category ? 200 : 422).json({
 		data: category,
@@ -75,38 +72,22 @@ export const createForumCategory = async (req: Request, res: Response) => {
 export const updateForumCategory = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 
-	try {
-		const category = await forumCategoryModel.findByIdAndUpdate(_id, { ...req.body }, { new: true, runValidators: true });
-		return res.status(!!category ? 200 : 422).json({
-			data: category,
-			message: !!category ? "Forum category updated successfully" : `Fail to update. Forum category _id: "${_id}" not found`,
-			success: !!category,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum category _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	const category = await forumCategoryModel.findByIdAndUpdate(_id, { ...req.body }, { new: true, runValidators: true });
+	return res.status(!!category ? 200 : 422).json({
+		data: category,
+		message: !!category ? "Forum category updated successfully" : `Fail to update. Forum category _id: "${_id}" not found`,
+		success: !!category,
+	});
 };
 
 // DELETE
 export const deleteForumCategory = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	try {
-		const category = await forumCategoryModel.findByIdAndRemove(_id);
+	const category = await forumCategoryModel.findByIdAndRemove(_id);
 
-		return res.status(!!category ? 200 : 422).json({
-			data: category,
-			message: !!category ? "Forum category deleted successfully" : `Fail to delete. Forum category _id: "${_id}" not found`,
-			success: !!category,
-		});
-	} catch (error) {
-		if (error.name === "CastError") {
-			return error_400_id(res, _id, "Forum category _id");
-		} else {
-			return error_500(res, error);
-		}
-	}
+	return res.status(!!category ? 200 : 422).json({
+		data: category,
+		message: !!category ? "Forum category deleted successfully" : `Fail to delete. Forum category _id: "${_id}" not found`,
+		success: !!category,
+	});
 };
