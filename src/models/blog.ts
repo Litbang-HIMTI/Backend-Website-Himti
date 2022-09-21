@@ -8,6 +8,7 @@ interface IBlog {
 	visibility: string;
 	description: string;
 	content: string;
+	likes: number;
 	thumbnail?: string;
 	tags?: string[];
 	pinned?: boolean;
@@ -49,6 +50,10 @@ const blogSchema = new Schema<IBlogModel>(
 		content: {
 			type: String,
 			required: true,
+		},
+		likes: {
+			type: Number,
+			default: 0,
 		},
 		thumbnail: {
 			type: String,

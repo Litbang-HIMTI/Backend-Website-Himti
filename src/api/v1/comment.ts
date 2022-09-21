@@ -1,6 +1,16 @@
 import { Router } from "express";
 import { validateForumMod, validateStaff } from "../../controllers/v1/auth";
-import { getAllComments, getCommentByAuthor, getCommentByForumId, createComment, updateComment, deleteComment, getCommentStats } from "../../controllers/v1/comment";
+import {
+	getAllComments,
+	getCommentByAuthor,
+	getCommentByForumId,
+	getCommentByPostId,
+	getCommentByEventId,
+	createComment,
+	updateComment,
+	deleteComment,
+	getCommentStats,
+} from "../../controllers/v1/comment";
 
 const r = Router();
 
@@ -9,6 +19,8 @@ r.get("/stats", validateStaff, getCommentStats);
 
 // * public
 r.get("/forum/:forumId", getCommentByForumId);
+r.get("/blog/:postId", getCommentByPostId);
+r.get("/event/:eventId", getCommentByEventId);
 r.get("/author/:authorId", getCommentByAuthor);
 r.post("/", createComment);
 

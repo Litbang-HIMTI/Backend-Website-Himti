@@ -56,6 +56,29 @@ export const getOneBlog = async (req: Request, res: Response) => {
 	});
 };
 
+export const getOneBlogAndItsComments = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	const blog = (
+		await blogModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colBlog, localField: "_id", foreignField: "blogId", as: "comments" } },
+				{ $unset: ["comments.blogId"] },
+			])
+			.exec()
+	)[0] as IBlogModel;
+
+	return res.status(!!blog ? 200 : 422).json({
+		data: blog,
+		message: !!blog ? "Blog retrieved successfully" : `Blog _id: "${_id}" not found`,
+		success: !!blog,
+	});
+};
+
 interface ITagsCategoryCount {
 	_id: string;
 	count: number;

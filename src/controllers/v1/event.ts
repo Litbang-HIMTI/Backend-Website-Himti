@@ -58,6 +58,29 @@ export const getOneEvent = async (req: Request, res: Response) => {
 	});
 };
 
+export const getOneEventAndItsComments = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	const event = (
+		await eventModel
+			.aggregate([
+				{ $match: { _id: Types.ObjectId(_id) } },
+				{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+				{ $unset: unsetAuthorFields("author") },
+				{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+				{ $unset: unsetAuthorFields("editedBy") },
+				{ $lookup: { from: colEvent, localField: "comments.eventId", foreignField: "_id", as: "comments.eventId" } },
+				{ $unset: ["comments.eventId"] },
+			])
+			.exec()
+	)[0] as IEventModel;
+
+	return res.status(!!event ? 200 : 422).json({
+		data: event,
+		message: !!event ? "Event retrieved successfully" : `Event _id: "${_id}" not found`,
+		success: !!event,
+	});
+};
+
 interface ITagsCategoryCount {
 	_id: string;
 	count: number;

@@ -18,6 +18,7 @@ r.get("/tags", cEvent.getTagsOnly);
 r.get("/organizer", cEvent.getOrganizerOnly);
 r.get("/", cEvent.getAllEvents);
 r.get("/:_id", cEvent.getOneEvent);
+r.get("/:_id/full", cEvent.getOneEventAndItsComments);
 
 // * Protected editor only
 r.use(validateEditor);

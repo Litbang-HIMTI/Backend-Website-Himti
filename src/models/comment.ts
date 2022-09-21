@@ -1,10 +1,12 @@
 import { Schema, model, Document } from "mongoose";
-import { colComment, colForum, colUser } from "../utils/constants";
+import { colBlog, colComment, colEvent, colForum, colUser } from "../utils/constants";
 
 interface IComment {
 	author?: Schema.Types.ObjectId;
 	content: string;
-	forumId: Schema.Types.ObjectId;
+	forumId?: Schema.Types.ObjectId;
+	blogId?: Schema.Types.ObjectId;
+	eventId?: Schema.Types.ObjectId;
 }
 export interface ICommentModel extends IComment, Document {}
 
@@ -24,8 +26,18 @@ const commentSchema = new Schema<ICommentModel>(
 		forumId: {
 			type: Schema.Types.ObjectId,
 			ref: colForum,
-			required: true,
+			default: undefined,
 		},
+		blogId: {
+			type: Schema.Types.ObjectId,
+			ref: colBlog,
+			default: undefined,
+		},
+		eventId: {
+			type: Schema.Types.ObjectId,
+			ref: colEvent,
+			default: undefined,
+		}
 	},
 	{ collection: colComment, timestamps: true }
 );

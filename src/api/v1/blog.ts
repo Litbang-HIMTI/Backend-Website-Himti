@@ -18,6 +18,7 @@ r.get("/stats", validateStaff, cBlog.getPostStats);
 r.get("/tags", cBlog.getTagsOnly);
 r.get("/", cBlog.getAllBlogs);
 r.get("/:_id", cBlog.getOneBlog);
+r.get("/:_id/full", cBlog.getOneBlogAndItsComments);
 
 // * protected editor only
 r.use(validateEditor);
