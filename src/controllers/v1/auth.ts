@@ -106,7 +106,6 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const check = async (req: Request, res: Response) => {
-	console.log(req.session);
 	if (req.session && req.session.user) {
 		// get user data
 		const user = await userModel.findById(req.session.userId).select("-salt -hash");
