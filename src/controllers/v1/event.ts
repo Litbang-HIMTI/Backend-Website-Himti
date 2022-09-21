@@ -132,7 +132,9 @@ export const createEvent = async (req: Request, res: Response) => {
 export const updateEvent = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	let revisionPost;
-	const event = await eventModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { runValidators: true, new: true }).select("-__v -_id -updatedAt -createdAt");
+	const event = await eventModel
+		.findByIdAndUpdate(_id, { ...req.body, editedBy: Types.ObjectId(req.session.userId) }, { runValidators: true, new: true })
+		.select("-__v -_id -updatedAt -createdAt");
 	if (event) {
 		const revision = await eventRevisionModel.find({ eventId: _id }).select("-_id -__v -createdAt -updatedAt").sort({ revision: -1 /* desc */ }).limit(1);
 
@@ -140,13 +142,13 @@ export const updateEvent = async (req: Request, res: Response) => {
 			// update revision by spread and save new revision with incremented revision number
 			revisionPost = await eventRevisionModel.create({
 				...(event._doc as IEventRevisionModel),
-				editedBy: req.session.userId,
+				editedBy: Types.ObjectId(req.session.userId),
 				revision: revision[0].revision + 1,
 				eventId: Types.ObjectId(_id),
 			});
 		} else {
 			// create new revision with revision number 1
-			revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: req.session.userId, revision: 1, eventId: Types.ObjectId(_id) });
+			revisionPost = await eventRevisionModel.create({ ...(event._doc as IEventRevisionModel), editedBy: Types.ObjectId(req.session.userId), revision: 1, eventId: Types.ObjectId(_id) });
 		}
 	}
 

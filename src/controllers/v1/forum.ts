@@ -118,7 +118,7 @@ export const getForumStats = async (_req: Request, res: Response) => {
 
 // POST
 export const createForum = async (req: Request, res: Response) => {
-	const forum = await forumModel.create({ ...req.body, author: req.session.userId! });
+	const forum = await forumModel.create({ ...req.body, author: Types.ObjectId(req.session.userId) });
 	return res.status(!!forum ? 201 : 500).json({
 		data: forum,
 		message: !!forum ? "Forum post created successfully" : `Unable to create forum post. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -129,7 +129,7 @@ export const createForum = async (req: Request, res: Response) => {
 // PUT
 export const updateForum = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, updatedBy: req.session.userId }, { new: true, runValidators: true });
+	const forum = await forumModel.findByIdAndUpdate(_id, { ...req.body, updatedBy: Types.ObjectId(req.session.userId) }, { new: true, runValidators: true });
 	return res.status(!!forum ? 200 : 422).json({
 		data: forum,
 		message: !!forum ? "Forum updated successfully" : `Fail to update. Forum _id: "${_id}" not found`,

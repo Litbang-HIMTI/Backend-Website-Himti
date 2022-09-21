@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { shortLinkModel, IShortLinkModel } from "../../models/shortlink";
 import { colUser, unsetAuthorFields, ___issue___ } from "../../utils";
 
@@ -88,7 +89,7 @@ export const getShortlinkStats = async (_req: Request, res: Response) => {
 // POST
 export const createShortLink = async (req: Request, res: Response) => {
 	const { url, shorten } = req.body;
-	const shortLink = await shortLinkModel.create({ author: req.session.userId!, url, shorten });
+	const shortLink = await shortLinkModel.create({ author: Types.ObjectId(req.session.userId), url, shorten });
 	return res.status(!!shortLink ? 201 : 500).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink created successfully" : `Unable to create shortlink. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -100,7 +101,7 @@ export const createShortLink = async (req: Request, res: Response) => {
 export const updateShortLink = async (req: Request, res: Response) => {
 	const { _id } = req.params;
 	const { url } = req.body;
-	const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url, editedBy: req.session.userId }, { runValidators: true, new: true });
+	const shortLink = await shortLinkModel.findByIdAndUpdate({ _id }, { url, editedBy: Types.ObjectId(req.session.userId) }, { runValidators: true, new: true });
 	return res.status(!!shortLink ? 200 : 422).json({
 		data: shortLink,
 		message: !!shortLink ? "ShortLink updated successfully" : `Fail to update. ShortLink _id: "${_id}" not found`,

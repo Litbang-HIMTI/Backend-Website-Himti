@@ -10,9 +10,9 @@ export const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 export const urlSaferRegex = /^[a-zA-Z0-9_-]+$/;
 
 /**
- *  Alpha numeric, underscore, hyphen, space, ', ", comma, and @ regex
+ *  Alpha numeric, underscore, hyphen, space, ', ", dot, comma, and @ regex
  */
-export const urlSafeRegex = /^[a-zA-Z0-9_-\s'",@]+$/;
+export const urlSafeRegex = /^[a-zA-Z0-9_-\s'".,@]+$/;
 
 /**
  * URL regex

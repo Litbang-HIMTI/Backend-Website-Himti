@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import { blogModel } from "src/models/blog";
-import { eventModel } from "src/models/event";
+import { blogModel, IBlogModel } from "../../models/blog";
+import { eventModel, IEventModel } from "../../models/event";
 import { commentModel, ICommentModel } from "../../models/comment";
 import { forumModel } from "../../models/forum";
-import { ___issue___, colUser, unsetAuthorFields, colForum } from "../../utils";
+import { ___issue___, colUser, unsetAuthorFields, colForum, colBlog, colEvent } from "../../utils";
 
 // GET
 export const getAllComments = async (req: Request, res: Response) => {
@@ -20,6 +20,12 @@ export const getAllComments = async (req: Request, res: Response) => {
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
+		{ $unset: ["forumId.content"] },
+		{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blogId" } },
+		{ $unset: ["blogId.content"] },
+		{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "eventId" } },
+		{ $unset: ["eventId.content"] },
 		{ $unset: ["content"] },
 	];
 	if (content) aggregations.pop(); // remove unset content so we can get the content
@@ -49,6 +55,12 @@ export const getCommentByAuthor = async (req: Request, res: Response) => {
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colForum, localField: "forumId", foreignField: "_id", as: "forumId" } },
+		{ $unset: ["forumId.content"] },
+		{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blogId" } },
+		{ $unset: ["blogId.content"] },
+		{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "eventId" } },
+		{ $unset: ["eventId.content"] },
 		{ $unset: ["content"] },
 	];
 	if (content) aggregations.pop(); // remove unset content so we can get the content
@@ -186,14 +198,14 @@ export const createComment = async (req: Request, res: Response) => {
 				return res.status(403).json({ data: null, message: "Forum is locked", success: false });
 		}
 
-		const comment = await commentModel.create({ author: req.session.userId ? req.session.userId : undefined, forumId: Types.ObjectId(forumId), content });
+		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, forumId: Types.ObjectId(forumId), content });
 		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
 			message: !!comment ? "Comment created successfully" : `Unable to create comment. If you think that this is a bug, please submit an issue at ${___issue___}`,
 			success: !!comment,
 		});
 	} else if (postId) {
-		const post = await blogModel.findById(postId);
+		const post = (await blogModel.findById(postId)) as IBlogModel;
 		if (!post)
 			return res.status(422).json({
 				data: null,
@@ -201,14 +213,14 @@ export const createComment = async (req: Request, res: Response) => {
 				success: false,
 			});
 
-		const comment = await commentModel.create({ author: req.session.userId ? req.session.userId : undefined, blogId: Types.ObjectId(postId), content });
+		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, blogId: Types.ObjectId(postId), content });
 		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
 			message: !!comment ? "Comment created successfully" : `Unable to create comment. If you think that this is a bug, please submit an issue at ${___issue___}`,
 			success: !!comment,
 		});
 	} else if (eventId) {
-		const event = await eventModel.findById(eventId);
+		const event = (await eventModel.findById(eventId)) as IEventModel;
 		if (!event)
 			return res.status(422).json({
 				data: null,
@@ -216,7 +228,7 @@ export const createComment = async (req: Request, res: Response) => {
 				success: false,
 			});
 
-		const comment = await commentModel.create({ author: req.session.userId ? req.session.userId : undefined, eventId: Types.ObjectId(eventId), content });
+		const comment = await commentModel.create({ author: req.session.userId ? Types.ObjectId(req.session.userId) : undefined, eventId: Types.ObjectId(eventId), content });
 		return res.status(!!comment ? 201 : 500).json({
 			data: comment,
 			message: !!comment ? "Comment created successfully" : `Unable to create comment. If you think that this is a bug, please submit an issue at ${___issue___}`,

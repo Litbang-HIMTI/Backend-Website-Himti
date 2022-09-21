@@ -62,7 +62,7 @@ export const createNote = async (req: Request, res: Response) => {
 	const maxPosition = await noteModel.find({}).sort({ position: -1 }).limit(1).exec();
 	const position = maxPosition.length ? maxPosition[0].position + 1 : 1;
 
-	const note = await noteModel.create({ ...req.body, position: position, author: req.session.userId });
+	const note = await noteModel.create({ ...req.body, position: position, author: Types.ObjectId(req.session.userId) });
 	return res.status(!!note ? 201 : 500).json({
 		data: note,
 		message: !!note ? "Note created successfully" : `Unable to create note. If you think that this is a bug, please submit an issue at ${___issue___}`,
@@ -73,7 +73,7 @@ export const createNote = async (req: Request, res: Response) => {
 // PUT
 export const updateNote = async (req: Request, res: Response) => {
 	const { _id } = req.params;
-	const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, editedBy: req.session.userId }, { new: true, runValidators: true });
+	const note = await noteModel.findByIdAndUpdate(_id, { ...req.body, editedBy: Types.ObjectId(req.session.userId) }, { new: true, runValidators: true });
 	return res.status(!!note ? 200 : 422).json({
 		data: note,
 		message: !!note ? "Note updated successfully" : `Fail to update. Note _id: "${_id}" not found`,
