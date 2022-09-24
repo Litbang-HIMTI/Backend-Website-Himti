@@ -334,6 +334,50 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+  /blog/{_id}/full:
+    get:
+      tags:
+        - Forum
+      summary: Get a blog by its id with all comments
+      description: Get a blog by its id with all comments
+      operationId: getBlogyIdFull
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the blog
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/blogWithComment"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
   /blog/{_id}/revision:
     get:
       tags:
@@ -935,6 +979,50 @@ paths:
                 $ref: "#/components/schemas/error_default"
       security:
         - cookieAuth: []
+  /event/{_id}/full:
+    get:
+      tags:
+        - Forum
+      summary: Get an event by its id with all comments
+      description: Get an event by its id with all comments
+      operationId: getEventByIdFull
+      parameters:
+        - name: _id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/eventWithComment"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "422":
+          description: Validation error such as Id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_notFound"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
   /event/{_id}/revision:
     get:
       tags:
@@ -2069,6 +2157,108 @@ paths:
         - name: forumId
           in: path
           description: ID of the forum
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page. If not provided will returns all the data
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/blog/{blogId}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of a blog
+      description: Get all comments of a blog
+      operationId: getAllCommentsOfBlog
+      parameters:
+        - name: blogId
+          in: path
+          description: ID of the blog post
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: perPage
+          in: query
+          description: Limit per page. If not provided will returns all the data
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/commentList"
+        "400":
+          description: A bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+        "500":
+          description: A server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/error_default"
+      security: []
+  /comment/event/{eventId}:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments of an event
+      description: Get all comments of an event
+      operationId: getAllCommentsOfEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event post
           required: true
           schema:
             type: string
@@ -3823,6 +4013,50 @@ components:
         updated_at:
           type: string
           format: date-time
+    blogWithComment: 
+      type: object
+      properties:
+        _id:
+          type: object
+          uniqueItems: true
+        author:
+          $ref: "#/components/schemas/userPublic"
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
     blogList:
       type: object
       properties:
@@ -4036,6 +4270,50 @@ components:
         updated_at:
           type: string
           format: date-time
+    eventWithComment: 
+      type: object
+      properties:
+        _id:
+          type: string
+          uniqueItems: true
+        author:
+          $ref: "#/components/schemas/userPublic"
+        title:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - public
+            - draft
+            - private
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        pinned:
+          type: boolean
+          description: Whether the post is pinned or not
+        showAtHome:
+          type: boolean
+          description: Whether the blog post is shown at the home page or not
+        editedBy:
+          $ref: "#/components/schemas/userPublic"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
     eventList:
       type: object
       properties:
@@ -4449,6 +4727,12 @@ components:
         forumId:
           type: object
           $ref: "#/components/schemas/forum"
+        blogId:
+          type: object
+          $ref: "#/components/schemas/blog"
+        eventId:
+          type: object
+          $ref: "#/components/schemas/event"
         created_at:
           type: string
           format: date-time

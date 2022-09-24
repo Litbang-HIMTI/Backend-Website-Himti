@@ -4,7 +4,7 @@ import {
 	getAllComments,
 	getCommentByAuthor,
 	getCommentByForumId,
-	getCommentByPostId,
+	getCommentByBlogId,
 	getCommentByEventId,
 	createComment,
 	updateComment,
@@ -19,7 +19,7 @@ r.get("/stats", validateStaff, getCommentStats);
 
 // * public
 r.get("/forum/:forumId", getCommentByForumId);
-r.get("/blog/:postId", getCommentByPostId);
+r.get("/blog/:blogId", getCommentByBlogId);
 r.get("/event/:eventId", getCommentByEventId);
 r.get("/author/:authorId", getCommentByAuthor);
 r.post("/", createComment);

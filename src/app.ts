@@ -34,9 +34,9 @@ import { TRoles } from "./models/user";
 dotenv.config(); // load env
 const app = express();
 const ttl = 24 * 60 * 60 * 1000 * 3; // 3 days
-const sessionCfg = {
+const sessionCfg: expressSession.SessionOptions = {
 	secret: process.env.SESSION_SECRET!,
-	cookie: { maxAge: ttl, secure: ___prod___ },
+	cookie: { maxAge: ttl, secure: ___prod___, sameSite: ___prod___ ? "none" : "lax", httpOnly: false, domain: ___prod___ ? "himtiuinjkt.or.id" : undefined },
 	resave: false,
 	saveUninitialized: false,
 	store: new MongoStore({

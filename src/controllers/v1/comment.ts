@@ -106,21 +106,21 @@ export const getCommentByForumId = async (req: Request, res: Response) => {
 	});
 };
 
-export const getCommentByPostId = async (req: Request, res: Response) => {
-	const { postId } = req.params;
-	const count = await commentModel.countDocuments({ postId: Types.ObjectId(postId) }).exec();
+export const getCommentByBlogId = async (req: Request, res: Response) => {
+	const { blogId } = req.params;
+	const count = await commentModel.countDocuments({ blogId: Types.ObjectId(blogId) }).exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
 	const content = req.query.content === "1";
 
 	const aggregations = [
-		{ $match: { postId: Types.ObjectId(postId) } },
+		{ $match: { blogId: Types.ObjectId(blogId) } },
 		{ $sort: { createdAt: -1 } },
 		{ $skip: perPage * page },
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
-		{ $lookup: { from: colForum, localField: "postId", foreignField: "_id", as: "postId" } },
+		{ $lookup: { from: colBlog, localField: "blogId", foreignField: "_id", as: "blogId" } },
 		{ $unset: ["content"] },
 	];
 
@@ -151,7 +151,7 @@ export const getCommentByEventId = async (req: Request, res: Response) => {
 		{ $limit: perPage },
 		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
 		{ $unset: unsetAuthorFields("author") },
-		{ $lookup: { from: colForum, localField: "eventId", foreignField: "_id", as: "eventId" } },
+		{ $lookup: { from: colEvent, localField: "eventId", foreignField: "_id", as: "eventId" } },
 		{ $unset: ["content"] },
 	];
 

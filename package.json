@@ -10,8 +10,6 @@
 		"dev:ts": "nodemon src/index.ts",
 		"tsnode": "ts-node src/index.ts",
 		"build": "tsc",
-		"tsc": "./node_modules/typescript/bin/tsc",
-		"postinstall": "npm run tsc",
 		"format:check": "prettier --check .gitignore \"**/*.+(js|ts|json)\"",
 		"format:write": "prettier --write .gitignore \"**/*.+(js|ts|json)\"",
 		"lint:check": "eslint .eslintignore --ext .js,.ts .",
