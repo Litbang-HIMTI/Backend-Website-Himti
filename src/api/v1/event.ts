@@ -11,12 +11,13 @@ r.put("/revision/:_id", validateEditor, cEvent.updateEventRevision);
 r.delete("/revision/:_id", validateEditor, cEvent.deleteEventRevision);
 
 // * staff dashboard
+r.get("/admin", validateStaff, cEvent.getAllEventsAdmin);
 r.get("/stats", validateStaff, cEvent.getEventStats);
 
 // * Public
 r.get("/tags", cEvent.getTagsOnly);
 r.get("/organizer", cEvent.getOrganizerOnly);
-r.get("/", cEvent.getAllEvents);
+r.get("/", cEvent.getAllEventsPublic);
 r.get("/:_id", cEvent.getOneEvent);
 r.get("/:_id/full", cEvent.getOneEventAndItsComments);
 

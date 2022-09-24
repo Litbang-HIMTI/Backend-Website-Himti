@@ -12,11 +12,12 @@ r.put("/revision/:_id", validateEditor, cBlog.updateBlogRevision);
 r.delete("/revision/:_id", validateEditor, cBlog.deleteBlogRevision);
 
 // * staff dashboard
+r.get("/admin", validateStaff, cBlog.getAllBlogsAdmin);
 r.get("/stats", validateStaff, cBlog.getPostStats);
 
 // * public get blog
 r.get("/tags", cBlog.getTagsOnly);
-r.get("/", cBlog.getAllBlogs);
+r.get("/", cBlog.getAllBlogsPublic);
 r.get("/:_id", cBlog.getOneBlog);
 r.get("/:_id/full", cBlog.getOneBlogAndItsComments);
 

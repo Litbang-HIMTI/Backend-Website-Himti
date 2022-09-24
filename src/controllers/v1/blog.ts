@@ -5,7 +5,37 @@ import { ___issue___, colUser, colBlog, unsetAuthorFields } from "../../utils";
 // --------------------------------------------------------------------------------------------
 // BLOG
 // GET
-export const getAllBlogs = async (req: Request, res: Response) => {
+export const getAllBlogsPublic = async (req: Request, res: Response) => {
+	const count = await blogModel.countDocuments().exec();
+	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
+	const page = parseInt(req.query.page as string) - 1 || 0;
+	const content = req.query.content === "1";
+
+	const aggregations = [
+		{ $match: { visibility: "public" } },
+		{ $sort: { createdAt: -1 } },
+		{ $skip: perPage * page },
+		{ $limit: perPage },
+		{ $lookup: { from: colUser, localField: "author", foreignField: "_id", as: "author" } },
+		{ $unset: unsetAuthorFields("author") },
+		{ $lookup: { from: colUser, localField: "editedBy", foreignField: "_id", as: "editedBy" } },
+		{ $unset: unsetAuthorFields("editedBy") },
+		{ $unset: ["content"] },
+	];
+	if (content) aggregations.pop(); // remove unset content so we can get the content
+
+	const blogs = (await blogModel.aggregate(aggregations).exec()) as IBlogModel[];
+
+	return res.status(200).json({
+		data: blogs,
+		page: page + 1,
+		pages: Math.ceil(count / perPage),
+		message: "Blogs retrieved successfully",
+		success: true,
+	});
+};
+
+export const getAllBlogsAdmin = async (req: Request, res: Response) => {
 	const count = await blogModel.countDocuments().exec();
 	const perPage = parseInt(req.query.perPage as string) || count || 15; // no perPage means get all
 	const page = parseInt(req.query.page as string) - 1 || 0;
