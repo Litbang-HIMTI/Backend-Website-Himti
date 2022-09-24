@@ -20,6 +20,7 @@ r.get("/tags", cBlog.getTagsOnly);
 r.get("/", cBlog.getAllBlogsPublic);
 r.get("/:_id", cBlog.getOneBlog);
 r.get("/:_id/full", cBlog.getOneBlogAndItsComments);
+r.put("/:_id/like", cBlog.likeBlog);
 
 // * protected editor only
 r.use(validateEditor);

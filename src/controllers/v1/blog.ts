@@ -109,6 +109,17 @@ export const getOneBlogAndItsComments = async (req: Request, res: Response) => {
 	});
 };
 
+export const likeBlog = async (req: Request, res: Response) => {
+	const { _id } = req.params;
+	// find and update blog likes, increment by 1
+	const blog = await blogModel.findOneAndUpdate({ _id: Types.ObjectId(_id) }, { $inc: { likes: 1 } }).exec();
+	return res.status(!!blog ? 200 : 422).json({
+		data: blog,
+		message: !!blog ? "Blog liked successfully" : `Blog _id: "${_id}" not found`,
+		success: !!blog,
+	});
+};
+
 interface ITagsCategoryCount {
 	_id: string;
 	count: number;
